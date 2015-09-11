@@ -16,11 +16,11 @@ from .. import util
 
 #orbitcolumns = {'iord':1,'time':2,'step':3,'mass':4,'pos':[5,6,7],'vel':[8,9,10],'mdot':12,'dm':13,'dt':15,'a':16}
 
-def sepOrbitbyStep(file):
+def sepOrbitbyStep(file,min=0,max=1000000000):
 	if not os.path.exists('orbitsteps'): os.system('mkdir orbitsteps')
 	os.chdir('orbitsteps')
 	print "separating orbit file by step..."
-	os.system("awk -F ' ' '{if($3!=int($3)) print>(int($3)+1); else print>$3}' "+'../'+file)
+	os.system("awk -F ' ' '{if($3!=int($3) && $3 >= "+str(min)+" && $3 <= "+str(max)+") print>(int($3)+1); if($3==int($3) && $3 >= "+str(min)+" && $3 <= "+str(max)+") print>$3}' "+'../'+file)
 	os.chdir('../')
 	return
 
