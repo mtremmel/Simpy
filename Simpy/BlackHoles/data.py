@@ -43,6 +43,7 @@ def getOrbitValbyStep(simname,minstep=1,maxstep=4096,clean=True,filename=None,re
 		del(pot)
 		gc.collect()
 		curstep, = np.where(step==i)
+		if len(curstep)==0: continue
 		ubhid,cnt = np.unique(bhid[curstep],return_index=True) #only add BHs that are actually present at the current timestep
 		output['iord'] = np.append(output['iord'],ubhid)
 		output['step'] = np.append(output['step'],step[curstep][cnt])
