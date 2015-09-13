@@ -18,7 +18,7 @@ def histogram(a,inbins,weights=None):
 
 def timeweightedAve(x,dt):
 	T = np.sum(dt)
-	mindt = dt.min()
+	mindt = dt[(dt>0)].min()
 	ave = np.sum(x*dt/T)
 	variance = np.average((x-ave)**2, weights=dt/mindt)
 	return (ave, np.sqrt(variance))
