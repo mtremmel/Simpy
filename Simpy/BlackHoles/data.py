@@ -30,43 +30,54 @@ def getOrbitValbyStep(simname,minstep=1,maxstep=4096,clean=True,filename=None,re
 	minstep, maxstep = min, max steps the code will expect to have in the orbit file. 
 	clean = True/False, clean up the extra files made from the oritinal orbit file (this is done to spare memory, but they take up lots of space...
         '''
-	ea = np.array([])
-	output = {'iord':ea,'time':ea,'step':ea,'mass':ea,'x':ea,'y':ea,'z':ea,'vx':ea,'vy':ea,'vz':ea,'mdot':ea,'mdotmean':ea,'mdotsig':ea,'a':ea}
+	ea = []
+	output = {'iord':[],'time':[],'step':[],'mass':[],'x':[],'y':[],'z':[],'vx':[],'vy':[],'vz':[],'mdot':[],'mdotmean':[],'mdotsig':[],'a':[]}
 	for i in range(minstep,maxstep+1):
 		if os.path.exists('orbitsteps/'+str(i)):
 			print "getting data for step ", i
 			bhid,time,step,mass,x,y,z,vx,vy,vz,pot,mdot,dm,E,dt,a = readcol.readcol('orbitsteps/'+str(i),twod=False)
 			if clean==True: os.system('rm orbitsteps/'+str(i))
 		else: continue
-		del(E)
-		del(dm)
-		del(pot)
-		gc.collect()
-		curstep, = np.where(step==i)
-		if len(curstep)==0: continue
-		ubhid,cnt = np.unique(bhid[curstep],return_index=True) #only add BHs that are actually present at the current timestep
-		output['iord'] = np.append(output['iord'],ubhid)
-		output['step'] = np.append(output['step'],step[curstep][cnt])
-		output['mass'] = np.append(output['mass'],mass[curstep][cnt])
-		output['time'] = np.append(output['time'],time[curstep][cnt])
-		output['x'] = np.append(output['x'],x[curstep][cnt])
-		output['y'] = np.append(output['y'],y[curstep][cnt])
-		output['z'] = np.append(output['z'],z[curstep][cnt])
-		output['vx'] = np.append(output['vx'],vx[curstep][cnt])
-                output['vy'] = np.append(output['vy'],vy[curstep][cnt])
-                output['vz'] = np.append(output['vz'],vz[curstep][cnt])
-		output['mdot'] = np.append(output['mdot'],mdot[curstep][cnt])
-		output['a'] = np.append(output['a'],a[curstep][cnt])
-		#nbh = len(ubhid)
-		#cc = 0
-		for id in ubhid:
-			#cc+=1
-			#if cc%100==0: print float(cc)*100/nbh, " % done getting ave mdot properties"
-			curbh, = np.where(bhid==id)
-			utimes, ind = np.unique(time[curbh],return_index=True)
-			mean,std = util.timeweightedAve(mdot[curbh[ind]],dt[curbh[ind]])	
-			output['mdotmean'] = np.append(output['mdotmean'],mean)
-			output['mdotsig'] = np.append(output['mdotsig'],std)
+		print "done reading"
+		ord = np.argsort(bhid)
+		bhid = bhid[ord]
+		time = time[ord]
+		step = step[ord]
+		mass = mass[ord]
+		x = x[ord]
+		y = y[ord]
+		z = z[ord]
+		vx = vx[ord]
+		vy = vy[ord]
+		vz = vz[ord]
+		mdot = mdot[ord]
+		dt = dt[ord]
+		a = a[ord]
+		ubhid,uind= np.unique(bhid,return_index=True)	
+		print "here"
+		for ii in range(len(ubhid)):
+			if ii < len(ubhid)-1: idind = range(uind[ii],uind[ii+1])
+			else: idind = range(uind[ii],len(step))
+			curstep, = np.where(step[idind]==i)
+			if len(curstep)==0:continue
+			curstep = curstep[0]
+			output['iord'].append(ubhid[ii])
+	                output['step'].append(step[idind][curstep])
+	                output['mass'].append(mass[idind][curstep])
+	                output['time'].append(time[idind][curstep])
+	                output['x'].append(x[idind][curstep])
+	                output['y'].append(y[idind][curstep])
+	                output['z'].append(z[idind][curstep])
+	                output['vx'].append(vx[idind][curstep])
+	                output['vy'].append(vy[idind][curstep])
+	                output['vz'].append(vz[idind][curstep])
+	                output['mdot'].append(mdot[idind][curstep])
+	                output['a'].append(a[idind][curstep])
+			utimes, ind = np.unique(time[idind],return_index=True)
+			mean,std = util.timeweightedAve(mdot[idind][ind],dt[idind][ind])
+			output['mdotmean'].append(mean)
+                        output['mdotsig'].append(std)
+		print "here 2"
 	if filename:
 		f = open(filename,'wb')
 		pickle.dump(output, f)
