@@ -38,7 +38,6 @@ def getOrbitValbyStep(simname,minstep=1,maxstep=4096,clean=True,filename=None,re
 			bhid,time,step,mass,x,y,z,vx,vy,vz,pot,mdot,dm,E,dt,a = readcol.readcol('orbitsteps/'+str(i),twod=False)
 			if clean==True: os.system('rm orbitsteps/'+str(i))
 		else: continue
-		print "done reading"
 		ord = np.argsort(bhid)
 		bhid = bhid[ord]
 		time = time[ord]
@@ -54,7 +53,6 @@ def getOrbitValbyStep(simname,minstep=1,maxstep=4096,clean=True,filename=None,re
 		dt = dt[ord]
 		a = a[ord]
 		ubhid,uind= np.unique(bhid,return_index=True)	
-		print "here"
 		for ii in range(len(ubhid)):
 			if ii < len(ubhid)-1: idind = range(uind[ii],uind[ii+1])
 			else: idind = range(uind[ii],len(step))
@@ -77,7 +75,6 @@ def getOrbitValbyStep(simname,minstep=1,maxstep=4096,clean=True,filename=None,re
 			mean,std = util.timeweightedAve(mdot[idind][ind],dt[idind][ind])
 			output['mdotmean'].append(mean)
                         output['mdotsig'].append(std)
-		print "here 2"
 	if filename:
 		f = open(filename,'wb')
 		pickle.dump(output, f)
