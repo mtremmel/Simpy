@@ -117,13 +117,11 @@ def sticthOrbitSteps(simname,nfiles, ret_output=False,overwrite=True, nstart=1):
 		output_part = pickle.load(f)
 		f.close()
 		for key in output.keys():
-			print len(output_part[key]), key
 			output[key] = np.append(output[key],output_part[key])
 		del(output_part)
 		gc.collect()
 	tofile = []
         for key in output:
-		print key, len(output[key])
                 tofile.append(output[key])
 	tofile = tuple(tofile)
 
