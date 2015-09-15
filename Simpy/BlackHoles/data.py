@@ -103,6 +103,7 @@ def truncOrbitFile(simname,ret_output=False):
 def sticthOrbitSteps(simname,nfiles, ret_output=False,overwrite=True, nstart=1):
 	ea = np.array([])
 	output = {'iord':ea,'time':ea,'step':ea,'mass':ea,'x':ea,'y':ea,'z':ea,'vx':ea,'vy':ea,'vz':ea,'mdot':ea,'mdotmean':ea,'mdotsig':ea,'a':ea}
+	outorder = ['iord','time','step','mass','x','y','z','vx','vy','vz','mdot','mdotmean','mdotsig','a']
 	outputname = simname+'.shortened.orbit'
 
 	if os.path.exists(outputname) and overwrite==False:
@@ -121,7 +122,7 @@ def sticthOrbitSteps(simname,nfiles, ret_output=False,overwrite=True, nstart=1):
 		del(output_part)
 		gc.collect()
 	tofile = []
-        for key in output:
+        for key in outorder:
                 tofile.append(output[key])
 	tofile = tuple(tofile)
 
