@@ -1,4 +1,5 @@
 import numpy as np
+from pynbody.analysis import pkdgrav_cosmo as cosmo
 
 def getTime(z,sim):
         c = cosmo.Cosmology(sim=sim)

@@ -2,7 +2,7 @@ import pynbody
 import numpy as np
 import readcol
 import os
-from . import data
+from . import orbit, mergers
 from .. import *
 
 
