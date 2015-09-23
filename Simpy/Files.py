@@ -60,7 +60,11 @@ def makelinks(parentdir, simname):
 	steps = f.readlines()
 	f.close()
 	for i in range(len(files)):
-		os.system('ln -s ' + files[i].strip('\n') + ' ' + simname + '.' + steps[i].strip('\n'))
+		if not os.path.exists(simname + '.' + steps[i].strip('\n')):
+			sos.system('ln -s ' + files[i].strip('\n') + ' ' + simname + '.' + steps[i].strip('\n'))
+		else:
+			print "link already found. skipping. . ."
+			continue
 	os.system('ln -s ' + pathdir + simname + '.orbit ' + simname + '.orbit')
 	os.system('ln -s ' + pathdir + simname + '.starlog ' + simname + '.starlog')
 	os.system('ln -s ' + pathdir + simname + '.BHAccLog ' + simname + '.BHAccLog')
