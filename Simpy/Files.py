@@ -83,9 +83,8 @@ def mkXML(startstep=None, endstep=None):
 	for i in range(len(files)):
 		stint = int(steps[i].strip('\n'))
 		print stint
-		if startstep:
-			if stint < statstep: continue
-			if stint > endstep: break
+		if startstep and stint < statstep: continue
+		if endstep and stint > endstep: break
 		os.chdir(files[i].strip('\n'))
 		os.system('~trq/bin/make_xml.pl')
 	os.chdir(wdir)
