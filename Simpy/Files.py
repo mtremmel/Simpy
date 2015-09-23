@@ -53,6 +53,9 @@ def makelinks(parentdir, simname):
 	f.close()
 	for i in range(len(files)):
 		os.system('ln -s ' + files[i].strip('\n') + ' ' + simname + '.' + steps[i].strip('\n'))
+	os.system('ln -s ' + pathname + simname + '.orbit ' + simname + '.orbit')
+	os.system('ln -s ' + pathname + simname + '.starlog ' + simname + '.starlog')
+	os.system('ln -s ' + pathname + simname + '.BHAccLog ' + simname + '.BHAccLog')
 
 
 def mkXML(do='All',start=0):
