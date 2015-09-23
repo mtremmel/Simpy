@@ -80,7 +80,7 @@ def mkXML(startstep=None, endstep=None):
 	f = open('steps.list', 'r')
 	steps = f.readlines()
 	f.close()
-	for i in range(len(files):
+	for i in range(len(files)):
 		stint = int(steps[i].strip('\n'))
 		print stint
 		if startstep:
