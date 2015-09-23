@@ -71,14 +71,21 @@ def makelinks(parentdir, simname):
 	return
 
 
-def mkXML(do='All',start=0):
+def mkXML(startstep=None, endstep=None):
 	wdir = os.getcwd()
 	cklists(parentdir, simname, NCHILADA=True)
 	f = open('files.list','r')
 	files = f.readlines()
-	if do == 'All': num = len(files)
-	else: num = do
-	for i in range(num)+start:
+	f.close()
+	f = open('steps.list', 'r')
+	steps = f.readlines()
+	f.close()
+	for i in range(len(files):
+		stint = int(steps[i].strip('\n'))
+		print stint
+		if startstep:
+			if stint < statstep: continue
+			if stint > endstep: break
 		os.chdir(files[i].strip('\n'))
 		os.system('~trq/bin/make_xml.pl')
 	os.chdir(wdir)
