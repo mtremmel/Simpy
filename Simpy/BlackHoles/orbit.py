@@ -146,19 +146,21 @@ def sticthOrbitSteps(simname, nfiles, ret_output=False, overwrite=True, nstart=1
 class Orbit(object):
 
 	@classmethod
-	def _get_slice_ind(self,key):
+	def _get_slice_ind(self,key,timesort=True):
 		'''
 		return unique values as well as a list of indices of data with each value of self.data[key]
 		key = (string) target key to do operation on
+		timesort = True/False whether you want to return data sorted by time. Doesn't do anything for single time slices
 		'''
-
-		ord_ = np.argsort(self.data[key])
-		uvalues, ind = np.unique(self.data[key][ord_],return_index=True)
+		if key != 'time' and key != 'step' and timesort:
+			tord = np.argsort(self.data['time'])
+		ord_ = np.argsort(self.data[key][tord])
+		uvalues, ind = np.unique(self.data[key][tord][ord_],return_index=True)
 		slice_ = []
 		for i in range(len(uvalues)-1):
-			slice_.append(ord_[ind[i]:ind[i+1]])
-		slice_.append(ord_[ind[i+1]:])
-		return uvalues, slice
+			slice_.append(tord[ord_[ind[i]:ind[i+1]]])
+		slice_.append(ord_[ind[i + 1]:])
+		return uvalues, slice_
 
 	def __init__(self, simname, savefile=None):
 		ofile = simname + ".shortened.orbit"
@@ -172,18 +174,23 @@ class Orbit(object):
 
 		#read raw data from shortened orbit file
 		print "reading in data. . ."
-		self.data['iord'], self.data['time'], self.data['step'], self.data['mass'], self.data['x'], self.data['y'], self.data['z'], self.data['vx'], self.data['vy'], self.data['vz'], self.data['mdot'], self.data['mdotmean'] , self.data['mdotsig'], self.data['scalefac'] = readcol.readcol(ofile, twod=False)
+		self.data['iord'], self.data['time'], self.data['step'], self.data['mass'], self.data['x'], self.data['y'], self.data['z'], self.data['vx'], self.data['vy'], self.data['vz'], self.data['mdot'], self.data['mdotmean'], self.data['mdotsig'], self.data['scalefac'] = readcol.readcol(ofile, twod=False)
 
-		print "reducing data. . ."
 		#get information on iord,step data for easy future data recovery
+		print "reducing data. . ."
 		self.bhiords, self.id_slice = self._get_slice_ind('iord')
 		self.steps, self.step_slice = self._get_slice_ind('step')
 		self.times = np.unique(self.data['time'])
 
+		if savefile:
+			f = open(savefile,'wb')
+			pickle.dump(self,f)
+			f.close()
+
 	def single_BH_data(self,iord,key):
 		o, = np.where(self.bhiords==iord)
-		slice_ = self.step_slice[o[0]]
-		return self.data[key][slice_]
+		slice_ = self.id_slice[o[0]]
+		return self.data[key][slice
 
 	def single_step_data(self,iord,key):
 		o, = np.where(self.bhiords==iord)
