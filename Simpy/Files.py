@@ -11,7 +11,14 @@ def getFileLists(parentdir, simname, NCHILADA=True):
 	else:
 		os.system('ls ' + parentdir + simname+'.00* --directory > files.list')
 		os.system('ls ' + parentdir + simname + '.00* --directory | cut -d"." -f' + str(num + 1) +' > steps.list')
-	os.system('ls ' + parentdir + simname +'.00*.grp | cut -d "." -f1-' + str(num + 1) + '> grpfiles.list' )
+	##os.system('ls ' + parentdir + simname +'.00*.grp | cut -d "." -f1-' + str(num + 1) + '> grpfiles.list' )
+	return
+
+
+def listfilebytype(parentdir, simname, ending):
+	simname_split = totalpath.split('.')
+	num = len(simname_split)
+	os.system('ls ' + parentdir + simname +'.00*.'+ending+' | cut -d "." -f1-' + str(num + 1) + '> grpfiles.list')
 	return
 
 
@@ -19,6 +26,7 @@ def cklists(parentdir,simname,NCHILADA=True):
 	if not os.path.exists('files.list'):
 		print "files,steps lists not found, running getFileLists..."
 		getFileLists(parentdir, simname, NCHILADA=NCHILADA)
+	return
 
 
 def mkAbridge(filename,columns=[1,2,3,4],condition=None,suffix=None):
@@ -53,9 +61,10 @@ def makelinks(parentdir, simname):
 	f.close()
 	for i in range(len(files)):
 		os.system('ln -s ' + files[i].strip('\n') + ' ' + simname + '.' + steps[i].strip('\n'))
-	os.system('ln -s ' + pathname + simname + '.orbit ' + simname + '.orbit')
-	os.system('ln -s ' + pathname + simname + '.starlog ' + simname + '.starlog')
-	os.system('ln -s ' + pathname + simname + '.BHAccLog ' + simname + '.BHAccLog')
+	os.system('ln -s ' + pathdir + simname + '.orbit ' + simname + '.orbit')
+	os.system('ln -s ' + pathdir + simname + '.starlog ' + simname + '.starlog')
+	os.system('ln -s ' + pathdir + simname + '.BHAccLog ' + simname + '.BHAccLog')
+	return
 
 
 def mkXML(do='All',start=0):
