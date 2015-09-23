@@ -73,7 +73,6 @@ def makelinks(parentdir, simname):
 
 def mkXML(startstep=None, endstep=None):
 	wdir = os.getcwd()
-	cklists(parentdir, simname, NCHILADA=True)
 	f = open('files.list','r')
 	files = f.readlines()
 	f.close()
