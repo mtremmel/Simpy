@@ -20,7 +20,7 @@ def sepOrbitbyStep(file, min=0, max=1000000000):
 	return
 
 
-def getOrbitValbyStep(simname, minstep=1, maxstep=4096, clean=True, filename=None, ret_output=False):
+def getOrbitValbyStep(simname, minstep=1, maxstep=4096, clean=False, filename=None, ret_output=False):
 	'''
 	simname = name of simulation (i.e. simname.004096)
 	minstep, maxstep = min, max steps the code will expect to have in the orbit file. 
@@ -83,10 +83,11 @@ def getOrbitValbyStep(simname, minstep=1, maxstep=4096, clean=True, filename=Non
 		return output
 
 
-def truncOrbitFile(simname, ret_output=False):
-	output = getOrbitValbyStep(simname)
+def truncOrbitFile(simname,minstep=1, maxstep=4096, ret_output=False):
+	output = getOrbitValbyStep(simname,minstep=minstep,maxstep=maxstep)
+	outorder = ['iord', 'time', 'step', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'mdot', 'mdotmean', 'mdotsig', 'a']
 	tofile = []
-	for key in output:
+	for key in outputorder:
 		tofile.append(output[key])
 	if ret_output == False:
 		del (output)
@@ -94,7 +95,7 @@ def truncOrbitFile(simname, ret_output=False):
 	tofile = tuple(tofile)
 	outputname = simname + '.shortened.orbit'
 	print "saving to file..."
-	np.savetxt(outputname, np.column_stack(tofile))
+	np.savetxt(outputname, np.column_stack(tofile),fmt=['%d', '%f', '%d', '%e', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f'])
 	del (tofile)
 	gc.collect()
 	if ret_output:
