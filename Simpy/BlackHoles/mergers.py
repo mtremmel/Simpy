@@ -14,7 +14,7 @@ def findmergers(outname, diagname='romulus8.3.out'):
 def reducedata(simname, RetData=False, outname='out', mergename='BHmerge.txt'):
     if not os.path.exists(mergename):
         print "didn't find merger file... getting mergers from outputs"
-        findmergers(mergename, outname=outname)
+        findmergers(mergename, diagname=outname)
     if not os.path.exists('files.list'):
         Files.getFileLists(simname)
     f = open('files.list', 'r')
