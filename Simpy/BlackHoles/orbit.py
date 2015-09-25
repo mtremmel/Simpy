@@ -185,13 +185,12 @@ class Orbit(object):
 		if not os.path.exists('files.list'):
 			Files.getFileLists(simname)
 
-		self.data = {}
-
 		# read raw data from shortened orbit file
 		print "reading in data. . ."
-		self.data['iord'], self.data['time'], self.data['step'], self.data['mass'], self.data['x'], self.data['y'], \
-		self.data['z'], self.data['vx'], self.data['vy'], self.data['vz'], self.data['mdot'], self.data['mdotmean'], \
-		self.data['mdotsig'], self.data['scalefac'] = readcol.readcol(ofile, twod=False)
+		bhid, time, step, mass, x, y, z, vx, vy, vz, mdot, mdotmean, mdotsig, scalefac = readcol.readcol(ofile, twod=False)
+		self.data = {'iord':bhid, 'time':time, 'step':step, 'mass':mass, 'x':x, 'y':y, 'z':z, 'vx':vx, 'vy':vy, 'vz':vz, 'mdot':mdot, 'mdotmean':mdotmean, 'mdotsig':mdotsig, 'scalefac':scalefac}
+		del(bhid, time, step, mass, x, y, z, vx, vy, vz, mdot, mdotmean, mdotsig, scalefac)
+		gc.collect()
 
 		# get information on iord,step data for easy future data recovery
 		print "reducing data. . ."
