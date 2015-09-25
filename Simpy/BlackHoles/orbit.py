@@ -34,7 +34,7 @@ def sepOrbitbyStep(file, min=0, max=1000000000):
 	return
 
 
-def getOrbitValbyStep(simname, minstep=1, maxstep=4096, clean=False, filename=None, ret_output=False):
+def getOrbitValbyStep(simname, minstep=1, maxstep=4096, MBHinit = 1e6, clean=False, filename=None, ret_output=False):
 	'''
 	simname = name of simulation (i.e. simname.004096)
 	minstep, maxstep = min, max steps the code will expect to have in the orbit file. 
@@ -42,6 +42,10 @@ def getOrbitValbyStep(simname, minstep=1, maxstep=4096, clean=False, filename=No
 		'''
 	output = {'iord': [], 'time': [], 'step': [], 'mass': [], 'x': [], 'y': [], 'z': [], 'vx': [], 'vy': [], 'vz': [],
 			  'mdot': [], 'mdotmean': [], 'mdotsig': [], 'a': []}
+	f = open('files.list','r')
+	sim = pynbody.load(f.readline().strip('\n'))
+	munits = sim.infer_original_units('Msol')
+	MBHinit = MBHinit / float(munits)
 	for i in range(minstep, maxstep + 1):
 		if os.path.exists('orbitsteps/' + str(i)):
 			print "getting data for step ", i
@@ -64,6 +68,8 @@ def getOrbitValbyStep(simname, minstep=1, maxstep=4096, clean=False, filename=No
 		mdot = mdot[ord]
 		dt = dt[ord]
 		a = a[ord]
+		bad, = np.where((mass - mdot*dt < MBHinit)|(mass<MBHinit))
+		mdot[bad] = 0
 		ubhid, uind = np.unique(bhid, return_index=True)
 		for ii in range(len(ubhid)):
 			if ii < len(ubhid) - 1:
