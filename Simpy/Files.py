@@ -1,31 +1,30 @@
 import os
 
 
-def getFileLists(parentdir, simname, NCHILADA=True):
-	totalpath = parentdir + simname
-	simname_split = totalpath.split('.')
+def getFileLists(simname, NCHILADA=True):
+	simname_split = simname.split('.')
 	num = len(simname_split)
 	if not NCHILADA:
-		os.system('ls ' + parentdir + '*.iord | cut -d"." -f1-' + str(num + 1) + ' > files.list')
-		os.system('ls ' + parentdir + '*.iord | cut -d"." -f' + str(num + 1) + ' > steps.list')
+		os.system('ls *.iord | cut -d"." -f1-' + str(num + 1) + ' > files.list')
+		os.system('ls *.iord | cut -d"." -f' + str(num + 1) + ' > steps.list')
 	else:
-		os.system('ls ' + parentdir + simname+'.00* --directory > files.list')
-		os.system('ls ' + parentdir + simname + '.00* --directory | cut -d"." -f' + str(num + 1) +' > steps.list')
+		os.system('ls ' + simname + '.00* --directory > files.list')
+		os.system('ls ' + simname + '.00* --directory | cut -d"." -f' + str(num + 1) +' > steps.list')
 	##os.system('ls ' + parentdir + simname +'.00*.grp | cut -d "." -f1-' + str(num + 1) + '> grpfiles.list' )
 	return
 
 
-def listfilebytype(parentdir, simname, ending):
-	simname_split = totalpath.split('.')
+def listfilebytype(simname, ending):
+	simname_split = simname.split('.')
 	num = len(simname_split)
-	os.system('ls ' + parentdir + simname +'.00*.'+ending+' | cut -d "." -f1-' + str(num + 1) + '> grpfiles.list')
+	os.system('ls ' + simname +'.00*.'+ending+' | cut -d "." -f1-' + str(num + 1) + '> grpfiles.list')
 	return
 
 
-def cklists(parentdir,simname,NCHILADA=True):
+def cklists(simname,NCHILADA=True):
 	if not os.path.exists('files.list'):
 		print "files,steps lists not found, running getFileLists..."
-		getFileLists(parentdir, simname, NCHILADA=NCHILADA)
+		getFileLists(simname, NCHILADA=NCHILADA)
 	return
 
 
