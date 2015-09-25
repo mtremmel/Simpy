@@ -23,13 +23,17 @@ def mkAbridgedOrbit(simname, sim, endname, lmin=1e43, mmin=1e6):
 	return
 
 
-def sepOrbitbyStep(file, min=0, max=1000000000):
+def sepOrbitbyStep(simname, min=0, max=1000000000, MBHinit=1e6, NCHILADA=True):
+	Files.cklists(simname,NCHILADA=NCHILADA)
+	f = open('files.list','r')
+	sim = pynbody.load(f.readline().strip('\n'))
+	munits = sim.infer_original_units('Msol')
+	MBHinit = MBHinit/float(munits)
 	if not os.path.exists('orbitsteps'): os.system('mkdir orbitsteps')
 	os.chdir('orbitsteps')
 	print "separating orbit file by step..."
-	os.system("awk -F ' ' '{if($3!=int($3) && $3 >= " + str(min) + " && $3 <= " + str(
-		max) + ") print>(int($3)+1); if($3==int($3) && $3 >= " + str(min) + " && $3 <= " + str(
-		max) + ") print>$3}' " + '../' + file)
+	os.system("awk -F ' ' '{if($4 - $13 > "+str(MBHinit)+" && $3!=int($3) && $3 >= " + str(min) + " && $3 <= " + str(
+		max) + ") print>(int($3)+1); if($4 - $13 > "+str(MBHinit)+" && $3==int($3) && $3 >= " + str(min) + " && $3 <= " + str(max) + ") print>$3}' " + '../' + file)
 	os.chdir('../')
 	return
 
@@ -46,6 +50,7 @@ def getOrbitValbyStep(minstep=1, maxstep=4096, MBHinit = 1e6, clean=False, filen
 	sim = pynbody.load(f.readline().strip('\n'))
 	munits = sim.infer_original_units('Msol')
 	MBHinit = MBHinit / float(munits)
+	f.close()
 	for i in range(minstep, maxstep + 1):
 		if os.path.exists('orbitsteps/' + str(i)):
 			print "getting data for step ", i
@@ -68,8 +73,8 @@ def getOrbitValbyStep(minstep=1, maxstep=4096, MBHinit = 1e6, clean=False, filen
 		mdot = mdot[ord]
 		dt = dt[ord]
 		a = a[ord]
-		bad, = np.where((mass - mdot*dt < MBHinit)|(mass<MBHinit))
-		mdot[bad] = 0
+		#bad, = np.where((mass - mdot*dt < MBHinit)|(mass<MBHinit))
+		#mdot[bad] = 0
 		ubhid, uind = np.unique(bhid, return_index=True)
 		for ii in range(len(ubhid)):
 			if ii < len(ubhid) - 1:
@@ -104,7 +109,7 @@ def getOrbitValbyStep(minstep=1, maxstep=4096, MBHinit = 1e6, clean=False, filen
 
 
 def truncOrbitFile(simname, minstep=1, maxstep=4096, MBHinit = 1e6, ret_output=False):
-	output = getOrbitValbyStep(simname, minstep=minstep, maxstep=maxstep, MBHinit=MBHinit)
+	output = getOrbitValbyStep(simname, minstep=minstep, maxstep=maxstep, MBHinit=MBHinit, ret_output=True)
 	outorder = ['iord', 'time', 'step', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'mdot', 'mdotmean', 'mdotsig', 'a']
 	tofile = []
 	for key in outorder:
