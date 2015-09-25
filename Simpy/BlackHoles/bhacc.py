@@ -33,7 +33,7 @@ def getRhoAccHist(inputname, sim, savefile='RhoAcc.pkl', volume=25**3):
 	return rhoBH,scale
 
 
-def pringRhoAccHist(rhoBH, scale, data=True, style='b-', ylog=True, xlog=True, overplot=False, lw=2, label=False):
+def printRhoAccHist(rhoBH, scale, data=True, style='b-', ylog=True, xlog=True, overplot=False, lw=2, label=False):
 	shankar09L = 3.2e5
 	shankar09H = 5.4e5
 	Salvaterra12 = 0.66e4
