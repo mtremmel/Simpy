@@ -212,15 +212,15 @@ class Orbit(object):
 		uvalues, ind = np.unique(self.data[key][ord_], return_index=True)
 		slice_ = []
 		for i in range(len(uvalues) - 1):
-		ss = ord_[ind[i]:ind[i + 1]]
-		if orderby:
-			sort_ = np.argsort(self.data[orderby][ss])
-			ss = ss[sort_]
-		slice_.append(ss)
+			ss = ord_[ind[i]:ind[i + 1]]
+			if orderby:
+				sort_ = np.argsort(self.data[orderby][ss])
+				ss = ss[sort_]
+			slice_.append(ss)
 		ss = ord_[ind[i + 1]:]
 		if orderby: 
 			sort_ = np.argsort(self.data[orderby][ss])
-				ss = ss[sort_]
+			ss = ss[sort_]
 		slice_.append(ss)
 		return uvalues, slice_
 
