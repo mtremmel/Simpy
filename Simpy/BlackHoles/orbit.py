@@ -196,13 +196,20 @@ class Orbit(object):
                 return unique values as well as a list of indices of data with each value of self.data[key]
                 key = (string) target key to do operation on
                 '''
-                tord = np.argsort(self.data[orderby])
-                ord_ = np.argsort(self.data[key][tord])
-                uvalues, ind = np.unique(self.data[key][tord][ord_], return_index=True)
+                ord_ = np.argsort(self.data[key])
+                uvalues, ind = np.unique(self.data[key][ord_], return_index=True)
                 slice_ = []
                 for i in range(len(uvalues) - 1):
-                        slice_.append(tord[ord_[ind[i]:ind[i + 1]]])
-                slice_.append(ord_[ind[i + 1]:])
+			ss = ord_[ind[i]:ind[i + 1]]
+			if orderby: 
+				sort_ = np.argsort(self.data[orderby][ss])
+				ss = ss[sort_]
+			slice_.append(ss)
+		ss = ord_[ind[i + 1]:]
+		if orderby: 
+                	sort_ = np.argsort(self.data[orderby][ss])
+                        ss = ss[sort_]
+                slice_.append(ss)
                 return uvalues, slice_
 
 	def single_BH_data(self, iord, key):
