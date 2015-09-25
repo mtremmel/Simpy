@@ -183,7 +183,7 @@ class Orbit(object):
 		units = {'iord':None, 'time':'Gyr', 'step':None, 'mass':'Msol', 'mdot':'Msol yr**-1', 'mdotmean':'Msol yr**-1', 'mdotsig':'Msol yr**-1', 'x':'kpc', 'y':'kpc', 'z':'kpc', 'vx':'km s**-1', 'vy':'km s**-1', 'vz':'km s**-1','scalefac':None}
 		f = open('files.list','r')
 		sim = f.readline()
-		s = pynbody.load(sim)
+		s = pynbody.load(sim.strip('\n'))
 		for key in self.data.keys():
 			unit = None
 			if units[key] is not None:
@@ -203,26 +203,26 @@ class Orbit(object):
 		return
 		
 
-        def _get_slice_ind(self, key,orderby='time'):
-                '''
-                return unique values as well as a list of indices of data with each value of self.data[key]
-                key = (string) target key to do operation on
-                '''
-                ord_ = np.argsort(self.data[key])
-                uvalues, ind = np.unique(self.data[key][ord_], return_index=True)
-                slice_ = []
-                for i in range(len(uvalues) - 1):
-			ss = ord_[ind[i]:ind[i + 1]]
-			if orderby: 
-				sort_ = np.argsort(self.data[orderby][ss])
-				ss = ss[sort_]
-			slice_.append(ss)
+	def _get_slice_ind(self, key,orderby='time'):
+		'''
+		return unique values as well as a list of indices of data with each value of self.data[key]
+		key = (string) target key to do operation on
+		'''
+		ord_ = np.argsort(self.data[key])
+		uvalues, ind = np.unique(self.data[key][ord_], return_index=True)
+		slice_ = []
+		for i in range(len(uvalues) - 1):
+		ss = ord_[ind[i]:ind[i + 1]]
+		if orderby:
+			sort_ = np.argsort(self.data[orderby][ss])
+			ss = ss[sort_]
+		slice_.append(ss)
 		ss = ord_[ind[i + 1]:]
 		if orderby: 
-                	sort_ = np.argsort(self.data[orderby][ss])
-                        ss = ss[sort_]
-                slice_.append(ss)
-                return uvalues, slice_
+			sort_ = np.argsort(self.data[orderby][ss])
+				ss = ss[sort_]
+		slice_.append(ss)
+		return uvalues, slice_
 
 	def single_BH_data(self, iord, key):
 		o, = np.where(self.bhiords == iord)
