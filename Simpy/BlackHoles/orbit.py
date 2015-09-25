@@ -112,7 +112,7 @@ def getOrbitValbyStep(minstep=1, maxstep=4096, clean=False, filename=None, ret_o
 
 
 def truncOrbitFile(simname, minstep=1, maxstep=4096, ret_output=False):
-	output = getOrbitValbyStep(simname, minstep=minstep, maxstep=maxstep, ret_output=True)
+	output = getOrbitValbyStep(minstep=minstep, maxstep=maxstep, ret_output=True)
 	outorder = ['iord', 'time', 'step', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'mdot', 'mdotmean', 'mdotsig', 'a']
 	tofile = []
 	for key in outorder:
