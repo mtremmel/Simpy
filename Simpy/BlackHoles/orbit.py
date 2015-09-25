@@ -101,7 +101,7 @@ def truncOrbitFile(simname, minstep=1, maxstep=4096, ret_output=False):
 	output = getOrbitValbyStep(simname, minstep=minstep, maxstep=maxstep)
 	outorder = ['iord', 'time', 'step', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'mdot', 'mdotmean', 'mdotsig', 'a']
 	tofile = []
-	for key in outputorder:
+	for key in outorder:
 		tofile.append(output[key])
 	if ret_output == False:
 		del (output)
@@ -189,7 +189,7 @@ class Orbit(object):
 			if units[key] is not None:
 				unit = s.infer_original_units(units[key])
 			self.data[key] = pynbody.array.SimArray(self.data[key],unit)
-													)
+
 		# get information on iord,step data for easy future data recovery
 		print "reducing data. . ."
 		self.bhiords, self.id_slice = self._get_slice_ind('iord')
