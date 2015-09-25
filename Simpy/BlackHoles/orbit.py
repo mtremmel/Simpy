@@ -3,7 +3,7 @@ import pynbody
 
 import os
 import pickle
-import readcol
+from .. import readcol
 import gc
 from .. import Files
 from .. import util
@@ -160,25 +160,9 @@ def sticthOrbitSteps(simname, nfiles, ret_output=False, overwrite=True, nstart=1
 
 
 class Orbit(object):
-	@classmethod
-	def _get_slice_ind(self, key, timesort=True):
-		'''
-		return unique values as well as a list of indices of data with each value of self.data[key]
-		key = (string) target key to do operation on
-		timesort = True/False whether you want to return data sorted by time. Doesn't do anything for single time slices
-		'''
-		if key != 'time' and key != 'step' and timesort:
-			tord = np.argsort(self.data['time'])
-		ord_ = np.argsort(self.data[key][tord])
-		uvalues, ind = np.unique(self.data[key][tord][ord_], return_index=True)
-		slice_ = []
-		for i in range(len(uvalues) - 1):
-			slice_.append(tord[ord_[ind[i]:ind[i + 1]]])
-		slice_.append(ord_[ind[i + 1]:])
-		return uvalues, slice_
-
 	def __init__(self, simname, savefile=None):
 		ofile = simname + ".shortened.orbit"
+		print ofile
 		if not os.path.exists(ofile):
 			print "ERROR shortened orbit file not found! Exiting..."
 			return
@@ -187,7 +171,10 @@ class Orbit(object):
 
 		# read raw data from shortened orbit file
 		print "reading in data. . ."
-		bhid, time, step, mass, x, y, z, vx, vy, vz, mdot, mdotmean, mdotsig, scalefac = readcol.readcol(ofile, twod=False)
+		print readcol.__file__
+		bhid, time, step, mass, x, y, z, vx, vy, vz, mdot, mdotmean, mdotsig, scalefac = readcol.readcol(ofile, twod=False,nanval=0.0)
+		print mdotsig
+		print "here"
 		self.data = {'iord':bhid, 'time':time, 'step':step, 'mass':mass, 'x':x, 'y':y, 'z':z, 'vx':vx, 'vy':vy, 'vz':vz, 'mdot':mdot, 'mdotmean':mdotmean, 'mdotsig':mdotsig, 'scalefac':scalefac}
 		del(bhid, time, step, mass, x, y, z, vx, vy, vz, mdot, mdotmean, mdotsig, scalefac)
 		gc.collect()
@@ -202,6 +189,21 @@ class Orbit(object):
 			f = open(savefile, 'wb')
 			pickle.dump(self, f)
 			f.close()
+		
+
+        def _get_slice_ind(self, key,orderby='time'):
+                '''
+                return unique values as well as a list of indices of data with each value of self.data[key]
+                key = (string) target key to do operation on
+                '''
+                tord = np.argsort(self.data[orderby])
+                ord_ = np.argsort(self.data[key][tord])
+                uvalues, ind = np.unique(self.data[key][tord][ord_], return_index=True)
+                slice_ = []
+                for i in range(len(uvalues) - 1):
+                        slice_.append(tord[ord_[ind[i]:ind[i + 1]]])
+                slice_.append(ord_[ind[i + 1]:])
+                return uvalues, slice_
 
 	def single_BH_data(self, iord, key):
 		o, = np.where(self.bhiords == iord)

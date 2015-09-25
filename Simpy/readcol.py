@@ -22,7 +22,7 @@ except ValueError:
 def readcol(filename,skipline=0,skipafter=0,names=False,fsep=None,twod=True,
         fixedformat=None,asdict=False,comment='#',verbose=True,nullval=None,
         asStruct=False,namecomment=True,removeblanks=False,header_badchars=None,
-        asRecArray=False):
+        asRecArray=False,nanval=None):
     """
     The default return is a two dimensional float array.  If you want a list of
     columns output instead of a 2D array, pass 'twod=False'.  In this case,
@@ -174,7 +174,8 @@ def readcol(filename,skipline=0,skipafter=0,names=False,fsep=None,twod=True,
     if nullval is not None:
         x[x==nullval] = numpy.nan
         x = get_autotype(x)
-
+    if nanval is not None:
+	x[numpy.isnan(x)] = nanval
     if asdict or asStruct:
         mydict = dict(zip(nms,x.T))
         for k,v in mydict.iteritems():
