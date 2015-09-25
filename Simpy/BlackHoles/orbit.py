@@ -34,7 +34,7 @@ def sepOrbitbyStep(file, min=0, max=1000000000):
 	return
 
 
-def getOrbitValbyStep(simname, minstep=1, maxstep=4096, MBHinit = 1e6, clean=False, filename=None, ret_output=False):
+def getOrbitValbyStep(minstep=1, maxstep=4096, MBHinit = 1e6, clean=False, filename=None, ret_output=False):
 	'''
 	simname = name of simulation (i.e. simname.004096)
 	minstep, maxstep = min, max steps the code will expect to have in the orbit file. 
