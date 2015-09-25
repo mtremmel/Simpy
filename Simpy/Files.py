@@ -51,7 +51,7 @@ def mkAbridge(filename,columns=[1,2,3,4],condition=None,suffix=None):
 
 
 def makelinks(parentdir, simname):
-	cklists(parentdir, simname, NCHILADA=True)
+	cklists(parentdir+simname, NCHILADA=True)
 	f = open('files.list', 'r')
 	files = f.readlines()
 	f.close()
