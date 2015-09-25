@@ -1,12 +1,10 @@
 import numpy as np
-import readcol
+from .. import Files, cosmology, readcol
 import os
-from .. import cosmology
-from .. import Files
 import pynbody
 
 
-def findmergers(outname, diagname='romulus8.3.out'):
+def findmergers(outname, diagname='out'):
     os.system("awk '/BHSink/ && /Merge/ && /eating/' *" + diagname + "* > " + outname)
     return
 

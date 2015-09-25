@@ -9,6 +9,20 @@ from .. import Files
 from .. import util
 
 
+def mkAbridgedOrbit(simname, sim, endname, lmin=1e43, mmin=1e6):
+	munits = sim.infer_original_units('Msol')
+	tunits = sim.infer_original_units('Gyr')
+	mdotunits = munits / tunits
+
+	Mlimitsim = mmin / munits.in_units('Msol')
+	mdotlimit = lmin / (0.1 * 3e10 * 3e10)
+	mdotlimit /= mdotunits.in_units('g s**-1')
+	cstr = """ awk '{if ($4 - $13> """ + str(Mlimitsim) + """ && $12 > """ + str(
+		mdotlimit) + """) print  $4 " " $12 " " $13 " " $15 " " $16}' """ + simname + ".orbit > " + simname + ".orbit.abridged." + endname
+	os.system(cstr)
+	return
+
+
 def sepOrbitbyStep(file, min=0, max=1000000000):
 	if not os.path.exists('orbitsteps'): os.system('mkdir orbitsteps')
 	os.chdir('orbitsteps')
@@ -83,8 +97,8 @@ def getOrbitValbyStep(simname, minstep=1, maxstep=4096, clean=False, filename=No
 		return output
 
 
-def truncOrbitFile(simname,minstep=1, maxstep=4096, ret_output=False):
-	output = getOrbitValbyStep(simname,minstep=minstep,maxstep=maxstep)
+def truncOrbitFile(simname, minstep=1, maxstep=4096, ret_output=False):
+	output = getOrbitValbyStep(simname, minstep=minstep, maxstep=maxstep)
 	outorder = ['iord', 'time', 'step', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'mdot', 'mdotmean', 'mdotsig', 'a']
 	tofile = []
 	for key in outputorder:
@@ -95,7 +109,8 @@ def truncOrbitFile(simname,minstep=1, maxstep=4096, ret_output=False):
 	tofile = tuple(tofile)
 	outputname = simname + '.shortened.orbit'
 	print "saving to file..."
-	np.savetxt(outputname, np.column_stack(tofile),fmt=['%d', '%f', '%d', '%e', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f'])
+	np.savetxt(outputname, np.column_stack(tofile),
+			   fmt=['%d', '%f', '%d', '%e', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f'])
 	del (tofile)
 	gc.collect()
 	if ret_output:
@@ -145,9 +160,8 @@ def sticthOrbitSteps(simname, nfiles, ret_output=False, overwrite=True, nstart=1
 
 
 class Orbit(object):
-
 	@classmethod
-	def _get_slice_ind(self,key,timesort=True):
+	def _get_slice_ind(self, key, timesort=True):
 		'''
 		return unique values as well as a list of indices of data with each value of self.data[key]
 		key = (string) target key to do operation on
@@ -156,10 +170,10 @@ class Orbit(object):
 		if key != 'time' and key != 'step' and timesort:
 			tord = np.argsort(self.data['time'])
 		ord_ = np.argsort(self.data[key][tord])
-		uvalues, ind = np.unique(self.data[key][tord][ord_],return_index=True)
+		uvalues, ind = np.unique(self.data[key][tord][ord_], return_index=True)
 		slice_ = []
-		for i in range(len(uvalues)-1):
-			slice_.append(tord[ord_[ind[i]:ind[i+1]]])
+		for i in range(len(uvalues) - 1):
+			slice_.append(tord[ord_[ind[i]:ind[i + 1]]])
 		slice_.append(ord_[ind[i + 1]:])
 		return uvalues, slice_
 
@@ -173,27 +187,29 @@ class Orbit(object):
 
 		self.data = {}
 
-		#read raw data from shortened orbit file
+		# read raw data from shortened orbit file
 		print "reading in data. . ."
-		self.data['iord'], self.data['time'], self.data['step'], self.data['mass'], self.data['x'], self.data['y'], self.data['z'], self.data['vx'], self.data['vy'], self.data['vz'], self.data['mdot'], self.data['mdotmean'], self.data['mdotsig'], self.data['scalefac'] = readcol.readcol(ofile, twod=False)
+		self.data['iord'], self.data['time'], self.data['step'], self.data['mass'], self.data['x'], self.data['y'], \
+		self.data['z'], self.data['vx'], self.data['vy'], self.data['vz'], self.data['mdot'], self.data['mdotmean'], \
+		self.data['mdotsig'], self.data['scalefac'] = readcol.readcol(ofile, twod=False)
 
-		#get information on iord,step data for easy future data recovery
+		# get information on iord,step data for easy future data recovery
 		print "reducing data. . ."
 		self.bhiords, self.id_slice = self._get_slice_ind('iord')
 		self.steps, self.step_slice = self._get_slice_ind('step')
 		self.times = np.unique(self.data['time'])
 
 		if savefile:
-			f = open(savefile,'wb')
-			pickle.dump(self,f)
+			f = open(savefile, 'wb')
+			pickle.dump(self, f)
 			f.close()
 
-	def single_BH_data(self,iord,key):
-		o, = np.where(self.bhiords==iord)
+	def single_BH_data(self, iord, key):
+		o, = np.where(self.bhiords == iord)
 		slice_ = self.id_slice[o[0]]
 		return self.data[key][slice_]
 
-	def single_step_data(self,iord,key):
-		o, = np.where(self.bhiords==iord)
+	def single_step_data(self, iord, key):
+		o, = np.where(self.bhiords == iord)
 		slice_ = self.step_slice[o[0]]
 		return self.data[key][slice_]
