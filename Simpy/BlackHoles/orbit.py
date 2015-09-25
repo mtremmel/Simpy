@@ -38,7 +38,7 @@ def sepOrbitbyStep(simname, minstep=0, maxstep=1000000000, MBHinit=1e6, NCHILADA
 	return
 
 
-def getOrbitValbyStep(minstep=1, maxstep=4096, MBHinit = 1e6, clean=False, filename=None, ret_output=False):
+def getOrbitValbyStep(minstep=1, maxstep=4096, clean=False, filename=None, ret_output=False):
 	'''
 	simname = name of simulation (i.e. simname.004096)
 	minstep, maxstep = min, max steps the code will expect to have in the orbit file. 
@@ -46,11 +46,14 @@ def getOrbitValbyStep(minstep=1, maxstep=4096, MBHinit = 1e6, clean=False, filen
 		'''
 	output = {'iord': [], 'time': [], 'step': [], 'mass': [], 'x': [], 'y': [], 'z': [], 'vx': [], 'vy': [], 'vz': [],
 			  'mdot': [], 'mdotmean': [], 'mdotsig': [], 'a': []}
-	f = open('files.list','r')
-	sim = pynbody.load(f.readline().strip('\n'))
-	munits = sim.infer_original_units('Msol')
-	MBHinit = MBHinit / float(munits)
-	f.close()
+	#f = open('files.list','r')
+	#sim = pynbody.load(f.readline().strip('\n'))
+	#munits = sim.infer_original_units('Msol')
+	#MBHinit = MBHinit / float(munits)
+	#f.close()
+	if not os.path.exists('orbitsteps/'):
+		print "ERROR! can't find orbitsteps... run sepOrbitbyStep first!"
+		return
 	for i in range(minstep, maxstep + 1):
 		if os.path.exists('orbitsteps/' + str(i)):
 			print "getting data for step ", i
@@ -108,8 +111,8 @@ def getOrbitValbyStep(minstep=1, maxstep=4096, MBHinit = 1e6, clean=False, filen
 		return output
 
 
-def truncOrbitFile(simname, minstep=1, maxstep=4096, MBHinit = 1e6, ret_output=False):
-	output = getOrbitValbyStep(simname, minstep=minstep, maxstep=maxstep, MBHinit=MBHinit, ret_output=True)
+def truncOrbitFile(simname, minstep=1, maxstep=4096, ret_output=False):
+	output = getOrbitValbyStep(simname, minstep=minstep, maxstep=maxstep, ret_output=True)
 	outorder = ['iord', 'time', 'step', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'mdot', 'mdotmean', 'mdotsig', 'a']
 	tofile = []
 	for key in outorder:
