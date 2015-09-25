@@ -179,6 +179,17 @@ class Orbit(object):
 		del(bhid, time, step, mass, x, y, z, vx, vy, vz, mdot, mdotmean, mdotsig, scalefac)
 		gc.collect()
 
+		#make each data object a simulation array with correct units
+		units = {'iord':None, 'time':'Gyr', 'step':None, 'mass':'Msol', 'mdot':'Msol yr**-1', 'mdotmean':'Msol yr**-1', 'mdotsig':'Msol yr**-1', 'x':'kpc', 'y':'kpc', 'z':'kpc', 'vx':'km s**-1', 'vy':'km s**-1', 'vz':'km s**-1','scalefac':None}
+		f = open('files.list','r')
+		sim = f.readline()
+		s = pynbody.load(sim)
+		for key in self.data.keys():
+			unit = None
+			if units[key] is not None:
+				unit = s.infer_original_units(units[key])
+			self.data[key] = pynbody.array.SimArray(self.data[key],unit)
+													)
 		# get information on iord,step data for easy future data recovery
 		print "reducing data. . ."
 		self.bhiords, self.id_slice = self._get_slice_ind('iord')
@@ -189,6 +200,7 @@ class Orbit(object):
 			f = open(savefile, 'wb')
 			pickle.dump(self, f)
 			f.close()
+		return
 		
 
         def _get_slice_ind(self, key,orderby='time'):
