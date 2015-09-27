@@ -16,14 +16,14 @@ def reducedata(simname, RetData=False, outname='out', mergename='BHmerge.txt'):
     if not os.path.exists('files.list'):
         Files.getFileLists(simname)
     f = open('files.list', 'r')
-    Files = f.readlines()
+    farr = f.readlines()
     f.close()
     f = open('steps.list', 'r')
-    steps = f.readlines()
+    sarr = f.readlines()
     f.close()
 
-    s = pynbody.load(Files[-1].strip('\n'))
-    lstep = float(steps[-1].strip('\n'))
+    s = pynbody.load(farr[-1].strip('\n'))
+    lstep = float(sarr[-1].strip('\n'))
 
     simtime = cosmology.getTime(s.properties['a'] ** -1 - 1, s)
     dt = simtime / lstep
