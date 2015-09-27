@@ -175,6 +175,7 @@ def sticthOrbitSteps(simname, nfiles, ret_output=False, overwrite=True, nstart=1
 
 class Orbit(object):
 	def __init__(self, simname, savefile=None):
+		self.simname = simname
 		ofile = simname + ".shortened.orbit"
 		print ofile
 		if not os.path.exists(ofile):
@@ -247,3 +248,28 @@ class Orbit(object):
 		o, = np.where(self.bhiords == iord)
 		slice_ = self.step_slice[o[0]]
 		return self.data[key][slice_]
+
+	def getprogbhs(self):
+		time, step, ID, IDeat, ratio, kick = readcol.readcol(self.simname+'.mergers',twod=False)
+		initlist = [[] for i in range(len(self.bhiords))]
+		self.prog = {'iord':initlist, 'kick': initlist, 'ratio': initlist, 'step': initlist, 'time': initlist}
+		o = np.argsort(ID)
+		ID = ID[o]
+		step = step[o]
+		IDeat = IDeat[o]
+		time = time[o]
+		ratio = ratio[o]
+		kick = kick[o]
+		uID, ind = np.unique(ID,return_index=True)
+		eaterind, = np.where(np.in1d(ID, uID))
+		for i in range(len(uID)-1):
+			self.prog['iord'][eaterind[i]].extend(IDeat[ind[i]:ind[i+1]])
+			self.prog['step'][eaterind[i]].extend(step[ind[i]:ind[i+1]])
+			self.prog['time'][eaterind[i]].extend(time[ind[i]:ind[i+1]])
+			self.prog['ratio'][eaterind[i]].extend(ratio[ind[i]:ind[i+1]])
+			if kick.max() > 0:
+				self.prog['kick'][eaterind[i]].extend(kick[ind[i]:ind[i+1]])
+
+
+
+

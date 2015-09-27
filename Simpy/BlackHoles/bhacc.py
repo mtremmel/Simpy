@@ -6,7 +6,7 @@ import numpy as np
 import pynbody
 
 
-def getRhoAccHist(inputname, sim, savefile='RhoAcc.pkl', volume=25**3):
+def getRhoAccHist(inputname, sim, savefile='RhoAcc.pkl', volume=25**3, Mmin=1e6, ):
 	mass, mdot, dm, dt, scale = readcol.readcol(inputname,twod=False)
 	del(mass)
 	del(dm)
