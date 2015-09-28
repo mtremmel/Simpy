@@ -292,15 +292,16 @@ class Orbit(object):
 			del grp, simind, orbind
 			gc.collect()
 
-	def plt_single_BH_data(self, iord, keyx, keyy, style, lw=1, msize=10, ylog=True, xlog=False, label=None):
+	def plt_single_BH_data(self, iord, keyx, unitx, keyy, unity, style, lw=1, msize=10, ylog=True, xlog=False, label=None):
 		from .. import plotting
 
 		ydat = self.single_BH_data(iord,keyy)
 		xdat = self.single_BH_data(iord,keyx)
-		plotting.plt.plot(xdat, ydat, style, label=label, linewidth=lw, markersize=msize)
+		plotting.plt.plot(xdat.in_units(unitx), ydat.in_units(unity), style, label=label, linewidth=lw, markersize=msize)
 		if xlog:
 			plotting.plt.xscale('log', base=10)
 		if ylog:
 			plotting.plt.yscale('log', base=10)
-		plotting.plt.legend()
+		if label:
+			plotting.plt.legend()
 		return
