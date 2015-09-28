@@ -186,28 +186,38 @@ class Orbit(object):
 		gc.collect()
 
 		#make each data object a simulation array with correct units
-		units = {'iord':None, 'time':'Gyr', 'step':None, 'mass':'Msol', 'mdot':'Msol yr**-1', 'mdotmean':'Msol yr**-1', 'mdotsig':'Msol yr**-1', 'x':'kpc', 'y':'kpc', 'z':'kpc', 'vx':'km s**-1', 'vy':'km s**-1', 'vz':'km s**-1','scalefac':None}
+		defunits = {'iord':None, 'time':'Gyr', 'step':None, 'mass':'Msol', 'mdot':'Msol yr**-1', 'mdotmean':'Msol yr**-1', 'mdotsig':'Msol yr**-1', 'x':'kpc', 'y':'kpc', 'z':'kpc', 'vx':'km s**-1', 'vy':'km s**-1', 'vz':'km s**-1','scalefac':None}
 		f = open('files.list','r')
 		sim = f.readline()
 		s = pynbody.load(sim.strip('\n'))
 		f.close()
 		for key in self.data.keys():
 			unit = None
-			if units[key] is not None:
-				unit = s.infer_original_units(units[key])
+			if defunits[key] is not None:
+				unit = s.infer_original_units(defunits[key])
 			self.data[key] = pynbody.array.SimArray(self.data[key],unit)
+			if defunits[key] is not None:
+				self.data[key].convert_units(defunits[key])
 
 		# get information on iord,step data for easy future data recovery
 		print "reducing data. . ."
 		self.bhiords, self.id_slice = self._get_slice_ind('iord')
 		self.steps, self.step_slice = self._get_slice_ind('step')
 		self.times = np.unique(self.data['time'])
+		self._calc_lum(er=0.1)
 
 		if savefile:
 			f = open(savefile, 'wb')
 			pickle.dump(self, f)
 			f.close()
 		return
+
+	def _calc_lum(self, er=0.1):
+		csq = pynbody.array.SimArray((2.998e10)**2,'erg g**-1')
+		self.data['lum'] = self.data['mdot'].in_units('g s**-1')*csq*er
+		return
+
+
 		
 
 	def _get_slice_ind(self, key,orderby='time'):
