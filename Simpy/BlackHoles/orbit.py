@@ -248,7 +248,7 @@ class Orbit(object):
 	def getprogbhs(self):
 		time, step, ID, IDeat, ratio, kick = readcol.readcol(self.simname+'.mergers',twod=False)
 		initlist = [[] for i in range(len(self.bhiords))]
-		self.prog = {'iord':initlist, 'kick': initlist, 'ratio': initlist, 'step': initlist, 'time': initlist}
+		self.prog = {'iord':[[] for i in range(len(self.bhiords))],'kick':[[] for i in range(len(self.bhiords))], 'ratio':[[] for i in range(len(self.bhiords))], 'step':[[] for i in range(len(self.bhiords))], 'time':[[] for i in range(len(self.bhiords))]}
 		o = np.argsort(ID)
 		ID = ID[o]
 		step = step[o]
