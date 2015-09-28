@@ -173,7 +173,6 @@ class Orbit(object):
 		self.simname = simname
 		self.nchil = NCHILADA
 		ofile = simname + ".shortened.orbit"
-		print ofile
 		if not os.path.exists(ofile):
 			print "ERROR shortened orbit file not found! Exiting..."
 			return
@@ -181,10 +180,7 @@ class Orbit(object):
 
 		# read raw data from shortened orbit file
 		print "reading in data. . ."
-		print readcol.__file__
 		bhid, time, step, mass, x, y, z, vx, vy, vz, mdot, mdotmean, mdotsig, scalefac = readcol.readcol(ofile, twod=False,nanval=0.0)
-		print mdotsig
-		print "here"
 		self.data = {'iord':bhid, 'time':time, 'step':step, 'mass':mass, 'x':x, 'y':y, 'z':z, 'vx':vx, 'vy':vy, 'vz':vz, 'mdot':mdot, 'mdotmean':mdotmean, 'mdotsig':mdotsig, 'scalefac':scalefac}
 		del(bhid, time, step, mass, x, y, z, vx, vy, vz, mdot, mdotmean, mdotsig, scalefac)
 		gc.collect()
