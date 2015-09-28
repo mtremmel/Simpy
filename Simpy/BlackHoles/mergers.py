@@ -4,8 +4,8 @@ import os
 import pynbody
 
 
-def findmergers(outname, diagname='out'):
-    os.system("awk '/BHSink/ && /Merge/ && /eating/' *" + diagname + "* > " + outname)
+def findmergers(outname, diagname='*out*'):
+    os.system("awk '/BHSink/ && /Merge/ && /eating/' " + diagname + " > " + outname)
     return
 
 
