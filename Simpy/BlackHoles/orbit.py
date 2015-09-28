@@ -257,7 +257,7 @@ class Orbit(object):
 		ratio = ratio[o]
 		kick = kick[o]
 		uID, ind = np.unique(ID,return_index=True)
-		eaterind, = np.where(np.in1d(ID, uID))
+		eaterind, = np.where(np.in1d(self.bhiords, uID))
 		for i in range(len(uID)-1):
 			self.prog['iord'][eaterind[i]].extend(IDeat[ind[i]:ind[i+1]])
 			self.prog['step'][eaterind[i]].extend(step[ind[i]:ind[i+1]])
