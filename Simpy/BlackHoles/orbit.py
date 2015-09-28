@@ -8,7 +8,6 @@ import gc
 from .. import Files
 from .. import util
 
-
 def mkAbridgedOrbit(simname, sim, endname, lmin=1e43, mmin=1e6):
 	munits = sim.infer_original_units('Msol')
 	tunits = sim.infer_original_units('Gyr')
@@ -46,11 +45,7 @@ def getOrbitValbyStep(minstep=1, maxstep=4096, clean=False, filename=None, ret_o
 		'''
 	output = {'iord': [], 'time': [], 'step': [], 'mass': [], 'x': [], 'y': [], 'z': [], 'vx': [], 'vy': [], 'vz': [],
 			  'mdot': [], 'mdotmean': [], 'mdotsig': [], 'a': []}
-	#f = open('files.list','r')
-	#sim = pynbody.load(f.readline().strip('\n'))
-	#munits = sim.infer_original_units('Msol')
-	#MBHinit = MBHinit / float(munits)
-	#f.close()
+
 	if not os.path.exists('orbitsteps/'):
 		print "ERROR! can't find orbitsteps... run sepOrbitbyStep first!"
 		return
@@ -174,15 +169,15 @@ def sticthOrbitSteps(simname, nfiles, ret_output=False, overwrite=True, nstart=1
 
 
 class Orbit(object):
-	def __init__(self, simname, savefile=None):
+	def __init__(self, simname, savefile=None, NCHILADA=True):
 		self.simname = simname
+		self.nchil = NCHILADA
 		ofile = simname + ".shortened.orbit"
 		print ofile
 		if not os.path.exists(ofile):
 			print "ERROR shortened orbit file not found! Exiting..."
 			return
-		if not os.path.exists('files.list'):
-			Files.getFileLists(simname)
+		Files.cklists(simname, NCHILADA=NCHILADA)
 
 		# read raw data from shortened orbit file
 		print "reading in data. . ."
@@ -199,6 +194,7 @@ class Orbit(object):
 		f = open('files.list','r')
 		sim = f.readline()
 		s = pynbody.load(sim.strip('\n'))
+		f.close()
 		for key in self.data.keys():
 			unit = None
 			if units[key] is not None:
@@ -270,6 +266,45 @@ class Orbit(object):
 			if kick.max() > 0:
 				self.prog['kick'][eaterind[i]].extend(kick[ind[i]:ind[i+1]])
 
+	def gethalos(self):
+		f = open('files.list','r')
+		simfiles = f.readlines()
+		nsnaps = len(simfiles)
+		f.close()
+		f = open('steps','r')
+		snaps = f.readlines()
+		f.close()
+		initarr = np.ones((len(self.bhiords),len(snaps))) * -1
+		self.bhhalos = {'Grp':initarr}
+		for i in range(nsnaps):
+			if os.path.exists(simfiles[i].strip('\n')+'.rockstar.grp'):
+				grpfile = simfiles[i].strip('\n')+'.rockstar.grp'
+			else:
+				if os.path.exists(simfiles[i].strip('\n')+'.amiga.grp'):
+					grpfile = simfiles[i].strip('\n')+'.amiga.grp'
+				else:
+					print "ERROR there is no grp file for this step!"
+					continue
+			sim = pynbody.load(simfiles[i].strip('\n'))
+			simind = np.where(np.in1d(sim.stars['iord'],self.bhiords))
+			orbind = np.where(np.inqd(self.bhiords,sim.stars['iord']))
+			simind += len(sim.dm)+len(sim.gas)
+			del sim['iord']
+			gc.collect()
+			grp = readcol.readcol(grpfile,skipline=1)
+			self.bhhalos['Grp'][orbind][:,i] = grp[simind]
+			del grp, simind, orbind
+			gc.collect()
 
+	def plt_single_BH_data(self, iord, keyx, keyy, style, lw=1, msize=10, ylog=True, xlog=False, label=None):
+		from .. import plotting
 
-
+		ydat = self.single_BH_data(iord,keyy)
+		xdat = self.single_BH_data(iord,keyx)
+		plotting.plt.plot(xdat, ydat, style, label=label, linewidth=lw, markersize=msize)
+		if xlog:
+			plotting.plt.xscale('log', base=10)
+		if ylog:
+			plotting.plt.yscale('log', base=10)
+		plotting.plt.legend()
+		return

@@ -51,3 +51,5 @@ def reducedata(simname, RetData=False, outname='out', mergename='BHmerge.txt'):
         return output
     else:
         return
+
+
