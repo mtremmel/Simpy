@@ -88,6 +88,6 @@ def mkXML(startstep=None, endstep=None):
 			print "xml file found!"
 			continue
 		os.system('~trq/bin/make_xml.pl')
-	os.chdir(wdir)
+		os.chdir(wdir)
 	return
 
