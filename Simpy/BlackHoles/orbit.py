@@ -197,6 +197,7 @@ class Orbit(object):
 				unit = s.infer_original_units(defunits[key])
 			self.data[key] = pynbody.array.SimArray(self.data[key],unit)
 			if defunits[key] is not None:
+				print unit, defunits[key]
 				self.data[key].convert_units(defunits[key])
 
 		# get information on iord,step data for easy future data recovery
