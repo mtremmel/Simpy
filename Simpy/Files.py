@@ -29,7 +29,7 @@ def cklists(simname,NCHILADA=True):
 
 
 def mkAbridge(filename,columns=[1,2,3,4],condition=None,suffix=None):
-	if sufffix==None:
+	if suffix==None:
 		outfile = filename+'.abridged'
 	else:
 		outfile = filename + suffix
@@ -60,13 +60,13 @@ def makelinks(parentdir, simname):
 	f.close()
 	for i in range(len(files)):
 		if not os.path.exists(simname + '.' + steps[i].strip('\n')):
-			sos.system('ln -s ' + files[i].strip('\n') + ' ' + simname + '.' + steps[i].strip('\n'))
+			os.system('ln -s ' + files[i].strip('\n') + ' ' + simname + '.' + steps[i].strip('\n'))
 		else:
 			print "link already found. skipping. . ."
 			continue
-	os.system('ln -s ' + pathdir + simname + '.orbit ' + simname + '.orbit')
-	os.system('ln -s ' + pathdir + simname + '.starlog ' + simname + '.starlog')
-	os.system('ln -s ' + pathdir + simname + '.BHAccLog ' + simname + '.BHAccLog')
+	os.system('ln -s ' + parentdir + simname + '.orbit ' + simname + '.orbit')
+	os.system('ln -s ' + parentdir + simname + '.starlog ' + simname + '.starlog')
+	os.system('ln -s ' + parentdir + simname + '.BHAccLog ' + simname + '.BHAccLog')
 	return
 
 
@@ -81,9 +81,12 @@ def mkXML(startstep=None, endstep=None):
 	for i in range(len(files)):
 		stint = int(steps[i].strip('\n'))
 		print stint
-		if startstep and stint < statstep: continue
+		if startstep and stint < startstep: continue
 		if endstep and stint > endstep: break
 		os.chdir(files[i].strip('\n'))
+		if os.path.exists('description.xml'):
+			print "xml file found!"
+			continue
 		os.system('~trq/bin/make_xml.pl')
 	os.chdir(wdir)
 	return
