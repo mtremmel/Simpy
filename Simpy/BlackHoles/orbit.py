@@ -191,10 +191,12 @@ class Orbit(object):
 		sim = f.readline()
 		s = pynbody.load(sim.strip('\n'))
 		f.close()
+		for key in ['x','y','z','vx','vy','vz']: self.data[key] *= self.data['scalefac']
 		for key in self.data.keys():
 			unit = None
 			if defunits[key] is not None:
 				unit = s.infer_original_units(defunits[key])
+				if key in ['x','y','z','vx','vy','vz']: unit = unit/pynbody.units.Unit('a')
 			self.data[key] = pynbody.array.SimArray(self.data[key],unit)
 			if defunits[key] is not None:
 				print unit, defunits[key]
