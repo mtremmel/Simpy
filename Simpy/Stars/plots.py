@@ -2,7 +2,7 @@ import numpy as np
 from .. import plotting, cosmology
 from . import get
 
-def plt_SFH(sim, color='b', linestyle='dashed', lw=3,bins=50, trange=None, label=None, ret_hist=True, type='time',xlog=False,ylog=False):
+def plt_SFH(sim, color='b', linestyle='solid', lw=3,bins=50, trange=None, label=None, ret_hist=True, type='time',xlog=False,ylog=False):
 	tform = get.tform_fromsnap(sim,'Gyr')
 	massform = sim.stars['massform'].in_units('Msol')
 
@@ -10,7 +10,9 @@ def plt_SFH(sim, color='b', linestyle='dashed', lw=3,bins=50, trange=None, label
 		if trange is None:
 			trange = [0,tform.max()]
 		dt = (trange[1] - trange[0])*1e9/bins
-		sfr,tedges = plotting.plt.hist(tform, range=trange, bins=bins, linestyle=linestyle, color=color,label=label,histtype='step',weights=massform/dt, linewidth=lw)
+		data = plotting.plt.hist(tform, range=trange, bins=bins, linestyle=linestyle, color=color,label=label,histtype='step',weights=massform/dt, linewidth=lw)
+		sfr = data[0]
+		tedges = data[1]
 		plotting.plt.xlabel(r'Time [Gyr]', fontsize=30)
 
 
