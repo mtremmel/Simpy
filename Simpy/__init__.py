@@ -1,3 +1,3 @@
-from . import Files, cosmology, readcol, util, plotting
-from . BlackHoles, StarFormation
+from .Files import *
+from .readcol import readcol
 
