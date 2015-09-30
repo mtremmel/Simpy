@@ -1,5 +1,6 @@
-import numpy as np
 from pynbody.analysis import pkdgrav_cosmo as cosmo
+import numpy as np
+from scipy import optimize as opt
 
 def getTime(z,sim):
         c = cosmo.Cosmology(sim=sim)
