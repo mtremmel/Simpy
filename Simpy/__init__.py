@@ -1,3 +1,3 @@
-from . import Files, cosmology
+from . import Files, cosmology, util
 from .readcol import readcol
 
