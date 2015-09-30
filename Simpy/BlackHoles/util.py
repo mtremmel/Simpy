@@ -1,6 +1,7 @@
-from . import orbit, mergers
-from .util import *
-
+import pynbody
+import numpy as np
+import os
+from .. import readcol
 
 def writebhmark(simname, step, Name=None, iord=False, massrange=False):
     if not Name:
