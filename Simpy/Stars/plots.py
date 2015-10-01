@@ -21,6 +21,7 @@ def plt_SFH(sim, color='b', linestyle='solid', lw=3,bins=50, trange=None, label=
 			trange = [0,25]
 		dz = (trange[1]-trange[0])/float(bins)
 		zbins = np.arange(trange[0],trange[1]+dz,dz)
+		zbins = zbins[::-1]  #flip array so times will be monotonically increasing
 		tedges = np.array([cosmology.getTime(z,sim) for z in zbins])
 		dt = (tedges[1:] - tedges[0:-1]) * 1e9
 		data = np.histogram(tform, range=trange, bins=tedges,weights=massform)
