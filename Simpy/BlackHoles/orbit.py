@@ -261,7 +261,7 @@ class Orbit(object):
 		sl = pynbody.tipsy.StarLog(self.simname+'.starlog')
 		ord = np.argsort(sl['iord'])
 		bhind, = np.where(np.in1d(sl['iord'][ord],self.bhiords))
-		if len(np.where(sl['tform'][bhind]>0))>0:
+		if len(np.where(sl['tform'][ord][bhind]>0))>0:
 			print "WARNING! Positive tforms found! Something wrong with starlog file matching"
 		self.tform = sl['tform'][ord][bhind] * -1
 		del sl
