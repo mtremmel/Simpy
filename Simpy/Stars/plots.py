@@ -26,9 +26,13 @@ def plt_SFH(sim, color='b', linestyle='solid', lw=3,bins=50, trange=None, label=
 		dt = (tedges[1:] - tedges[0:-1]) * 1e9
 		data = np.histogram(tform, range=trange, bins=tedges,weights=massform)
 		sfr = data[0]/dt
-		plotting.plt.step(zbins[0:-1],sfr,linestyle=linestyle, color=color, label=label, linewidth=lw, where='post')
-
-	plotting.plt.ylabel('SFR [M$_{\odot}$ yr$^{-1}$]')
+		if xlog is False:
+			plotting.plt.step(zbins[0:-1],sfr,linestyle=linestyle, color=color, label=label, linewidth=lw, where='post')
+		if xlog is True:
+			plotting.plt.step(zbins[0:-1]+1,sfr,linestyle=linestyle, color=color, label=label, linewidth=lw, where='post')
+			plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10],['0','1','2','3','4','5','6','7','8','9'])
+		plotting.plt.xlabel('z',fontsize=30)
+	plotting.plt.ylabel('SFR [M$_{\odot}$ yr$^{-1}$]', fontsize=30)
 	if xlog:
 		plotting.plt.xscale('log', base=10)
 	if ylog:
