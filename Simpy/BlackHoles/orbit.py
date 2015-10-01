@@ -215,13 +215,13 @@ class Orbit(object):
 			f.close()
 		return
 
+
 	def _calc_lum(self, er=0.1):
 		csq = pynbody.array.SimArray((2.998e10)**2,'erg g**-1')
 		self.data['lum'] = self.data['mdot'].in_units('g s**-1')*csq*er
 		return
 
 
-		
 
 	def _get_slice_ind(self, key,orderby='time'):
 		'''
@@ -244,15 +244,60 @@ class Orbit(object):
 		slice_.append(ss)
 		return uvalues, slice_
 
+
 	def single_BH_data(self, iord, key):
 		o, = np.where(self.bhiords == iord)
 		slice_ = self.id_slice[o[0]]
 		return self.data[key][slice_]
 
+
 	def single_step_data(self, iord, key):
 		o, = np.where(self.bhiords == iord)
 		slice_ = self.step_slice[o[0]]
 		return self.data[key][slice_]
+
+
+	def get_all_BH_tform(self):
+		sl = pynbody.tipsy.StarLog(self.simname+'.starlog')
+		ord = np.argsort(sl['iord'])
+		bhind, = np.where(np.in1d(sl['iord'][ord],self.bhiords))
+		if len(np.where(sl['tform'][bhind]>0))>0:
+			print "WARNING! Positive tforms found! Something wrong with starlog file matching"
+		self.tform = sl['tform'][ord][bhind] * -1
+		del sl
+		gc.collect()
+
+
+	def get_single_BH_dm(self, iord):
+		if hasattr(self,'tform') is False:
+			self.get_all_BH_tform()
+		time = self.single_BH_data(iord,'time')
+		mdot = self.single_BH_data(iord,'mdot')
+		time.convert_units('yr')
+		timel = np.append(self.tform[(self.bhiords==iord)].in_units('yr'),time[:,-1])
+		timeh = time[1:]
+		dt = pynbody.array.SimArray(timeh - timel,'yr')
+		return dt*mdot.in_units('Msol yr**-1')
+
+
+	def get_acc_hist(self):
+		self.acchist = {'dm':np.array([]), 'time':np.array([]), 'mass':np.array([]), 'scalefac':np.array([]), 'lum':np.array([])}
+		for iord in self.bhiords:
+			dmpart = self.get_single_BH_dm(iord)
+			mpart = self.single_BH_data(iord,'mass')
+			lumpart = self.single_BH_data(iord,'lum')
+			tpart = self.single_BH_data(iord,'time')
+			scalepart = self.single_BH_data(iord,'scalefac')
+			np.append(self.acchist['dm'],dmpart.in_units('Msol'))
+			np.append(self.acchist['mass'], mpart.in_units('Msol'))
+			np.append(self.acchist['lum'],lumpart.in_units('ergs s**-1'))
+			np.append(self.acchist['time'], tpart.in_units('Gyr'))
+			np.append(self.acchist['scalefac'], scalepart)
+
+		ord = np.sort(self.acchist['scalefac'])
+		for key in self.acchist.keys():
+			self.acchist[key] = self.acchist[key][ord]
+
 
 	def getprogbhs(self):
 		time, step, ID, IDeat, ratio, kick = readcol.readcol(self.simname+'.mergers',twod=False)
@@ -274,6 +319,7 @@ class Orbit(object):
 			self.prog['ratio'][eaterind[i]].extend(ratio[ind[i]:ind[i+1]])
 			if kick.max() > 0:
 				self.prog['kick'][eaterind[i]].extend(kick[ind[i]:ind[i+1]])
+
 
 	def gethalos(self):
 		f = open('files.list','r')
@@ -304,6 +350,7 @@ class Orbit(object):
 			self.bhhalos['Grp'][orbind][:,i] = grp[simind]
 			del grp, simind, orbind
 			gc.collect()
+
 
 	def plt_single_BH_data(self, iord, keyx, unitx, keyy, unity, style, lw=1, msize=10, ylog=True, xlog=False, label=None):
 		from .. import plotting
