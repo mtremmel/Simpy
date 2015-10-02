@@ -191,6 +191,16 @@ class Orbit(object):
 		sim = f.readline()
 		s = pynbody.load(sim.strip('\n'))
 		f.close()
+
+		#control for "fake" bhs caused by restarts from outputs
+		print "checking for fake BHs. . ."
+		sl = pynbody.tipsy.StarLog(self.simname+'.starlog')
+		slbhiords = sl['iord'][(sl['tform']<0)]
+		ok, = np.where(np.inqd(self.data['iord'],slbhiords))
+		for key in self.data.keys():
+			self.data[key] = self.data[key][ok]
+
+		#convert comoving quantities to physical units
 		for key in ['x','y','z','vx','vy','vz']: self.data[key] *= self.data['scalefac']
 		for key in self.data.keys():
 			unit = None
