@@ -282,7 +282,7 @@ class Orbit(object):
 		if hasattr(self,'tform') is False:
 			self.get_all_BH_tform()
 		time = self.single_BH_data(iord,'time')
-		mdot = self.single_BH_data(iord,'mdot')
+		mdot = self.single_BH_data(iord,'mdotmean')
 		time.convert_units('yr')
 		timel = np.append(self.tform[(self.bhiords==iord)].in_units('yr'), time[:-1])
 		assert timel[0] < time[0]
