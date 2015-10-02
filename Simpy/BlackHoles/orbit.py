@@ -285,6 +285,7 @@ class Orbit(object):
 		mdot = self.single_BH_data(iord,'mdot')
 		time.convert_units('yr')
 		timel = np.append(self.tform[(self.bhiords==iord)].in_units('yr'), time[:-1])
+		assert timel[0] < time[0]
 		dt = pynbody.array.SimArray(time - timel, 'yr')
 		return dt*mdot.in_units('Msol yr**-1')
 
