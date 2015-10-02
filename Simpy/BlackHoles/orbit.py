@@ -218,6 +218,7 @@ class Orbit(object):
 		self.steps, self.step_slice = self._get_slice_ind('step')
 		self.times = np.unique(self.data['time'])
 		self._calc_lum(er=0.1)
+		self.get_all_BH_tform(sl)
 
 		if savefile:
 			f = open(savefile, 'wb')
@@ -267,8 +268,8 @@ class Orbit(object):
 		return self.data[key][slice_]
 
 
-	def get_all_BH_tform(self):
-		sl = pynbody.tipsy.StarLog(self.simname+'.starlog')
+	def get_all_BH_tform(self,sl):
+		#sl = pynbody.tipsy.StarLog(self.simname+'.starlog')
 		ord = np.argsort(sl['iord'])
 		bhind, = np.where(np.in1d(sl['iord'][ord],self.bhiords))
 		self.tform = sl['tform'][ord][bhind] * -1
