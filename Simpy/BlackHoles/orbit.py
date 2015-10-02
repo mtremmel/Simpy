@@ -262,8 +262,8 @@ class Orbit(object):
 		return self.data[key][slice_]
 
 
-	def single_step_data(self, iord, key):
-		o, = np.where(self.bhiords == iord)
+	def single_step_data(self, step, key):
+		o, = np.where(self.steps == step)
 		slice_ = self.step_slice[o[0]]
 		return self.data[key][slice_]
 
