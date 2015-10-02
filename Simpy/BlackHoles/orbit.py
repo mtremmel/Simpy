@@ -196,7 +196,7 @@ class Orbit(object):
 		print "checking for fake BHs. . ."
 		sl = pynbody.tipsy.StarLog(self.simname+'.starlog')
 		slbhiords = sl['iord'][(sl['tform']<0)]
-		ok, = np.where(np.inqd(self.data['iord'],slbhiords))
+		ok, = np.where(np.in1d(self.data['iord'],slbhiords))
 		for key in self.data.keys():
 			self.data[key] = self.data[key][ok]
 
