@@ -184,18 +184,18 @@ class Orbit(object):
 
 		# read raw data from shortened orbit file
 		print "reading in data. . ."
-		bhid, time, step, mass, x, y, z, vx, vy, vz, mdot, mdotmean, mdotsig, scalefac = readcol.readcol(ofile,
+		bhid, time, step, mass, x, y, z, vx, vy, vz, mdot, mdotmean, mdotsig, scalefac, dM = readcol.readcol(ofile,
 																										 twod=False,
 																										 nanval=0.0)
 		self.data = {'iord': bhid, 'time': time, 'step': step, 'mass': mass, 'x': x, 'y': y, 'z': z, 'vx': vx, 'vy': vy,
-					 'vz': vz, 'mdot': mdot, 'mdotmean': mdotmean, 'mdotsig': mdotsig, 'scalefac': scalefac}
-		del (bhid, time, step, mass, x, y, z, vx, vy, vz, mdot, mdotmean, mdotsig, scalefac)
+					 'vz': vz, 'mdot': mdot, 'mdotmean': mdotmean, 'mdotsig': mdotsig, 'scalefac': scalefac, 'dM': dM}
+		del (bhid, time, step, mass, x, y, z, vx, vy, vz, mdot, mdotmean, mdotsig, scalefac, dM)
 		gc.collect()
 
 		# make each data object a simulation array with correct units
 		defunits = {'iord': None, 'time': 'Gyr', 'step': None, 'mass': 'Msol', 'mdot': 'Msol yr**-1',
 					'mdotmean': 'Msol yr**-1', 'mdotsig': 'Msol yr**-1', 'x': 'kpc', 'y': 'kpc', 'z': 'kpc',
-					'vx': 'km s**-1', 'vy': 'km s**-1', 'vz': 'km s**-1', 'scalefac': None}
+					'vx': 'km s**-1', 'vy': 'km s**-1', 'vz': 'km s**-1', 'scalefac': None, 'dM': 'Msol'}
 		f = open('files.list', 'r')
 		sim = f.readline()
 		s = pynbody.load(sim.strip('\n'))
