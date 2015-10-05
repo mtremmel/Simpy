@@ -123,7 +123,7 @@ def truncOrbitFile(simname, minstep=1, maxstep=4096, ret_output=False):
 	outputname = simname + '.shortened.orbit'
 	print "saving to file..."
 	np.savetxt(outputname, np.column_stack(tofile),
-			   fmt=['%d', '%f', '%d', '%e', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f','%f'])
+			   fmt=['%d', '%f', '%d', '%e', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f','%e'])
 	del (tofile)
 	gc.collect()
 	if ret_output:
@@ -132,15 +132,14 @@ def truncOrbitFile(simname, minstep=1, maxstep=4096, ret_output=False):
 
 
 def sticthOrbitSteps(simname, nfiles, ret_output=False, overwrite=True, nstart=1):
-	ea = np.array([])
-	output = {'iord': ea, 'time': ea, 'step': ea, 'mass': ea, 'x': ea, 'y': ea, 'z': ea, 'vx': ea, 'vy': ea, 'vz': ea,
-			  'mdot': ea, 'mdotmean': ea, 'mdotsig': ea, 'a': ea}
-	outorder = ['iord', 'time', 'step', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'mdot', 'mdotmean', 'mdotsig', 'a']
+	output = {'iord': np.array([]), 'time': np.array([]), 'step': np.array([]), 'mass': np.array([]), 'x': np.array([]), 'y': np.array([]), 'z': np.array([]), 'vx': np.array([]), 'vy': np.array([]), 'vz': np.array([]),'mdot': np.array([]), 'mdotmean': np.array([]), 'mdotsig': np.array([]), 'a': np.array([]), 'dM': np.array([])}
+
+	outorder = ['iord', 'time', 'step', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'mdot', 'mdotmean', 'mdotsig', 'a','dM']
 	outputname = simname + '.shortened.orbit'
 
 	if os.path.exists(outputname) and overwrite == False:
 		cols = {'iord': 1, 'time': 2, 'step': 3, 'mass': 4, 'x': 5, 'y': 6, 'z': 7, 'vx': 8, 'vy': 9, 'vz': 10,
-				'mdot': 11, 'mdotmean': 12, 'mdotsig': 13, 'a': 14}
+				'mdot': 11, 'mdotmean': 12, 'mdotsig': 13, 'a': 14, 'dM': 15}
 		data = readcol.readcol(simname + '.shortened.orbit')
 		for key in output.keys():
 			output[key] = data[:, cols[key] - 1]
@@ -161,7 +160,7 @@ def sticthOrbitSteps(simname, nfiles, ret_output=False, overwrite=True, nstart=1
 
 	print "saving to file..."
 	np.savetxt(outputname, np.column_stack(tofile),
-			   fmt=['%d', '%f', '%d', '%e', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f'])
+			   fmt=['%d', '%f', '%d', '%e', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f','%e'])
 	del (tofile)
 	gc.collect()
 	if ret_output == True:
