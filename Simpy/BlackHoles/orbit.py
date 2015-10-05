@@ -52,8 +52,7 @@ def getOrbitValbyStep(minstep=1, maxstep=4096, clean=False, filename=None, ret_o
 	for i in range(minstep, maxstep + 1):
 		if os.path.exists('orbitsteps/' + str(i)):
 			print "getting data for step ", i
-			bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt, a = readcol.readcol(
-				'orbitsteps/' + str(i), twod=False)
+			bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt, a = readcol.readcol('orbitsteps/' + str(i), twod=False)
 			if clean == True: os.system('rm orbitsteps/' + str(i))
 		else:
 			continue
@@ -94,8 +93,8 @@ def getOrbitValbyStep(minstep=1, maxstep=4096, clean=False, filename=None, ret_o
 			output['vz'].append(vz[idind][curstep])
 			output['mdot'].append(mdot[idind][curstep])
 			output['a'].append(a[idind][curstep])
-			utimes, ind = np.unique(time[idind], return_index=True)
-			mean, std = util.timeweightedAve(mdot[idind][ind], dt[idind][ind])
+#			utimes, ind = np.unique(time[idind], return_index=True)
+			mean, std = util.timeweightedAve(mdot[idind], dt[idind])
 			output['mdotmean'].append(mean)
 			output['mdotsig'].append(std)
 	if filename:
