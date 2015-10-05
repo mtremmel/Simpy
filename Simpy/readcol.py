@@ -91,7 +91,7 @@ def readcol(filename,skipline=0,skipafter=0,names=False,fsep=None,twod=True,
     read in all of the rows with length=mode(row lengths).
     """
     f=open(filename,'r').readlines()
-   
+
     null=[f.pop(0) for i in range(skipline)]
 
     commentfilter = make_commentfilter(comment)
@@ -126,7 +126,7 @@ def readcol(filename,skipline=0,skipafter=0,names=False,fsep=None,twod=True,
             nms=nameline.split(fsep)
 
     null=[f.pop(0) for i in range(skipafter)]
-   
+
     if fixedformat:
         myreadff = lambda x: readff(x,fixedformat)
         splitarr = map(myreadff,f)
@@ -175,7 +175,7 @@ def readcol(filename,skipline=0,skipafter=0,names=False,fsep=None,twod=True,
         x[x==nullval] = numpy.nan
         x = get_autotype(x)
     if nanval is not None:
-	x[numpy.isnan(x)] = nanval
+        x[numpy.isnan(x)] = nanval
     if asdict or asStruct:
         mydict = dict(zip(nms,x.T))
         for k,v in mydict.iteritems():
@@ -223,7 +223,7 @@ class Struct(object):
             v = namedict.pop(k)
             if k[0].isdigit():
                 k = 'n'+k
-            namedict[R.sub('',k)] = v  
+            namedict[R.sub('',k)] = v
         self.__dict__ = namedict
 
     def add_column(self,name,data):
