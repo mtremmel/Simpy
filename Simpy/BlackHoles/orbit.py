@@ -302,8 +302,7 @@ class Orbit(object):
 
 		ord = np.sort(self.acchist['scalefac'])
 		for key in self.acchist.keys():
-			self.acchist[key] = self.acchist[key][ord]
-			self.acchist[key] = pynbody.array.SimArray(self.acchist[key],units[key])
+			self.acchist[key] = pynbody.array.SimArray(self.acchist[key][ord],units[key])
 
 
 	def getprogbhs(self):
