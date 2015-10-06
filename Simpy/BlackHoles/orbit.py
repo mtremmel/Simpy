@@ -284,27 +284,6 @@ class Orbit(object):
 		gc.collect()
 
 
-	def get_acc_hist(self):
-		self.acchist = {'dM': [], 'time': [], 'mass': [], 'scalefac': [],
-						'lum': []}
-		units = {'dM':'Msol','time':'Gyr','scalefac':None, 'mass':'Msol', 'lum':'ergs s**-1'}
-		for iord in self.bhiords:
-			dmpart = self.single_BH_data(iord,'dM')
-			mpart = self.single_BH_data(iord, 'mass')
-			lumpart = self.single_BH_data(iord, 'lum')
-			tpart = self.single_BH_data(iord, 'time')
-			scalepart = self.single_BH_data(iord, 'scalefac')
-			self.acchist['dM'].extend(dmpart)
-			self.acchist['mass'].extend(mpart)
-			self.acchist['lum'].extend(lumpart)
-			self.acchist['time'].extend(tpart)
-			self.acchist['scalefac'].extend(scalepart)
-
-		ord = np.sort(self.acchist['scalefac'])
-		for key in self.acchist.keys():
-			self.acchist[key] = pynbody.array.SimArray(self.acchist[key][ord],units[key])
-
-
 	def getprogbhs(self):
 		time, step, ID, IDeat, ratio, kick = readcol.readcol(self.simname + '.mergers', twod=False)
 		self.prog = {'iord': [[] for i in range(len(self.bhiords))], 'kick': [[] for i in range(len(self.bhiords))],
