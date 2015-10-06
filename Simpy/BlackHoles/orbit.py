@@ -217,7 +217,6 @@ class Orbit(object):
 				if key in ['x', 'y', 'z', 'vx', 'vy', 'vz']: unit = unit / pynbody.units.Unit('a')
 			self.data[key] = pynbody.array.SimArray(self.data[key], unit)
 			if defunits[key] is not None:
-				print unit, defunits[key]
 				self.data[key].convert_units(defunits[key])
 
 		# get information on iord,step data for easy future data recovery
@@ -285,41 +284,30 @@ class Orbit(object):
 		gc.collect()
 
 
-	def get_single_BH_dm(self, iord):
-		if hasattr(self, 'tform') is False:
-			self.get_all_BH_tform()
-		time = self.single_BH_data(iord, 'time')
-		mdot = self.single_BH_data(iord, 'mdotmean')
-		time.convert_units('yr')
-		timel = np.append(self.tform[(self.bhiords == iord)].in_units('yr'), time[:-1])
-		assert timel[0] < time[0]
-		dt = pynbody.array.SimArray(time - timel, 'yr')
-		return dt * mdot.in_units('Msol yr**-1')
-
-
 	def get_acc_hist(self):
-		self.acchist = {'dm': np.array([]), 'time': np.array([]), 'mass': np.array([]), 'scalefac': np.array([]),
-						'lum': np.array([])}
+		self.acchist = {'dM': [], 'time': [], 'mass': [], 'scalefac': [],
+						'lum': []}
+		units = {'dM':'Msol','time':'Gyr','scalefac':None, 'mass':'Msol', 'lum':'ergs s**-1'}
 		for iord in self.bhiords:
-			dmpart = self.get_single_BH_dm(iord)
+			dmpart = self.single_BH_data(iord,'dM')
 			mpart = self.single_BH_data(iord, 'mass')
 			lumpart = self.single_BH_data(iord, 'lum')
 			tpart = self.single_BH_data(iord, 'time')
 			scalepart = self.single_BH_data(iord, 'scalefac')
-			np.append(self.acchist['dm'], dmpart.in_units('Msol'))
-			np.append(self.acchist['mass'], mpart.in_units('Msol'))
-			np.append(self.acchist['lum'], lumpart.in_units('ergs s**-1'))
-			np.append(self.acchist['time'], tpart.in_units('Gyr'))
-			np.append(self.acchist['scalefac'], scalepart)
+			self.acchist['dM'].extend(dmpart)
+			self.acchist['mass'].extend(mpart)
+			self.acchist['lum'].extend(lumpart)
+			self.acchist['time'].extend(tpart)
+			self.acchist['scalefac'].extend(scalepart)
 
 		ord = np.sort(self.acchist['scalefac'])
 		for key in self.acchist.keys():
 			self.acchist[key] = self.acchist[key][ord]
+			self.acchist[key] = pynbody.array.SimArray(self.acchist[key],units[key])
 
 
 	def getprogbhs(self):
 		time, step, ID, IDeat, ratio, kick = readcol.readcol(self.simname + '.mergers', twod=False)
-		initlist = [[] for i in range(len(self.bhiords))]
 		self.prog = {'iord': [[] for i in range(len(self.bhiords))], 'kick': [[] for i in range(len(self.bhiords))],
 					 'ratio': [[] for i in range(len(self.bhiords))], 'step': [[] for i in range(len(self.bhiords))],
 					 'time': [[] for i in range(len(self.bhiords))]}
