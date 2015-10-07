@@ -338,6 +338,7 @@ class Orbit(object):
 			gc.collect()
 
 
+
 	def plt_single_BH_data(self, iord, keyx, unitx, keyy, unity, style, lw=1, msize=10, ylog=True, xlog=False,
 						   label=None):
 		from .. import plotting
@@ -352,4 +353,38 @@ class Orbit(object):
 			plotting.plt.yscale('log', base=10)
 		if label:
 			plotting.plt.legend()
+		return
+
+
+	def plt_acc_hist(self, style, minM = 1e6, maxM = None, minL = 1e42, maxL = None, type='redshift',xlog=False,ylog=False, label=None, lw=1.5):
+		from .. import plotting
+		ord = np.argsort(self.data['scalefac'])
+		if maxL is None: maxL = self.data['lum'].max()*10
+		if minL is None: minL = 0
+		if maxM is not None or minM is not None:
+			if maxM is None: maxM = self.data['mass'].max()*10
+			if minM is None: minM = 0
+			okM, = np.where((self.data['mass'][ord] > minM)&(self.data['mass'][ord] <= maxM))
+			ord = ord[okM]
+		if minL is None or maxL is None:
+			if maxL is None: maxL = self.data['lum'].max()*10
+			if minL is None: minL = 0
+			okL, = np.where((self.data['lum'][ord] > minL)&(self.data['lum'][ord] <= maxL))
+			ord = ord[okL]
+
+		macc = np.cumsum(self.data['dM'][ord])
+
+		if type == 'redshift':
+			if xlog is False:
+				plotting.plt.plot(self.data['scalefac'][ord],macc,style, linewidth=lw, label=label)
+			else:
+				plotting.plt.plot(self.data['scalefac'][ord]+1,macc,style, linewidth=lw, label=label)
+				plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10],['0','1','2','3','4','5','6','7','8','9'])
+
+		if type== 'time':
+			plotting.plt.plot(self.data['time'].in_units('Gyr'),macc,style, linewidth=lw, label=label)
+
+		if xlog is True: plotting.plt.xscale('log',base=10)
+		if ylog is True: plotting.plt.yscale('log',base=10)
+		if label is not None: plotting.plt.legend()
 		return
