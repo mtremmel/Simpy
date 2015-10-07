@@ -383,6 +383,14 @@ class Orbit(object):
 				plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10],['0','1','2','3','4','5','6','7','8','9'])
 
 			if plotdata is True:
+				from colldata import *
+				shankar09 = (shankar09H +shankar09L) / 2.
+				err = shankar09H - shankar09
+				plotting.plt.errorbar([1.03],[shankar09],yerr=[err],color='black',fmt='D',label="Shankar+ 09")
+				Salvaterra12z = (Salvaterra12zH + Salvaterra12zL)/2.
+				plotting.plt.errorbar([Salvaterra12z+1],[Salvaterra12],color='black',fmt='x',xerr=[Salvaterra12zH-Salvaterra12z],yerr=0.5*Salvaterra12,uplims=[True],label='Salvaterra+ 12')
+				plotting.plt.errorbar(Treister13z,Treister13,color='black',fmt='o',xerr=Treister13zErr,yerr=0.5*Treister13,uplims=[True,True,True], label='Treister+ 13')
+				plotting.plt.errorbar(Hopkins07zp1,10**Hopkins07,color='grey',fmt='o',yerr=(Hopkins07merr,Hopkins07perr),label='Hopkins+ 07')
 
 
 		if type== 'time':
@@ -390,5 +398,5 @@ class Orbit(object):
 
 		if xlog is True: plotting.plt.xscale('log',base=10)
 		if ylog is True: plotting.plt.yscale('log',base=10)
-		if label is not None: plotting.plt.legend()
+		if label is not None or plotdata is True: plotting.plt.legend()
 		return
