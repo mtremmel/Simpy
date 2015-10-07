@@ -356,7 +356,7 @@ class Orbit(object):
 		return
 
 
-	def plt_acc_hist(self, style, minM = 1e6, maxM = None, minL = 1e42, maxL = None, type='redshift',xlog=False,ylog=False, label=None, lw=1.5):
+	def plt_acc_hist(self, style, minM = 1e6, maxM = None, minL = 1e42, maxL = None, type='redshift',xlog=False,ylog=False, label=None, lw=1.5, volume=25**3, plotdata=True):
 		from .. import plotting
 		ord = np.argsort(self.data['scalefac'])
 		if maxL is None: maxL = self.data['lum'].max()*10
@@ -377,13 +377,16 @@ class Orbit(object):
 		if type == 'redshift':
 			z = self.data['scalefac']**-1 -1
 			if xlog is False:
-				plotting.plt.plot(z[ord],macc,style, linewidth=lw, label=label)
+				plotting.plt.plot(z[ord],macc/volume,style, linewidth=lw, label=label)
 			else:
-				plotting.plt.plot(z[ord]+1,macc,style, linewidth=lw, label=label)
+				plotting.plt.plot(z[ord]+1,macc/volume,style, linewidth=lw, label=label)
 				plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10],['0','1','2','3','4','5','6','7','8','9'])
 
+			if plotdata is True:
+
+
 		if type== 'time':
-			plotting.plt.plot(self.data['time'].in_units('Gyr'),macc,style, linewidth=lw, label=label)
+			plotting.plt.plot(self.data['time'].in_units('Gyr'),macc/volume,style, linewidth=lw, label=label)
 
 		if xlog is True: plotting.plt.xscale('log',base=10)
 		if ylog is True: plotting.plt.yscale('log',base=10)
