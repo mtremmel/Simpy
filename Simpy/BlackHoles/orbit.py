@@ -383,16 +383,15 @@ class Orbit(object):
 				plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10],['0','1','2','3','4','5','6','7','8','9'])
 
 			if plotdata is True:
-				from colldata import *
-				shankar09 = (shankar09H +shankar09L) / 2.
-				err = shankar09H - shankar09
-				plotting.plt.errorbar([1.03],[shankar09],yerr=[err],color='black',fmt='D',label="Shankar+ 09")
-				Salvaterra12z = (Salvaterra12zH + Salvaterra12zL)/2.
-				plotting.plt.errorbar([Salvaterra12z+1],[Salvaterra12],color='black',fmt='x',xerr=[Salvaterra12zH-Salvaterra12z],yerr=0.5*Salvaterra12,uplims=[True],label='Salvaterra+ 12')
-				plotting.plt.errorbar(Treister13z,Treister13,color='black',fmt='o',xerr=Treister13zErr,yerr=0.5*Treister13,uplims=[True,True,True], label='Treister+ 13')
-				plotting.plt.errorbar(Hopkins07zp1,10**Hopkins07,color='grey',fmt='o',yerr=(Hopkins07merr,Hopkins07perr),label='Hopkins+ 07')
+				import colldata as dat
+				err = dat.shankar09H - dat.shankar09
+				plotting.plt.errorbar([1.03],[dat.shankar09],yerr=[err],color='black',fmt='D',label="Shankar+ 09")
+				plotting.plt.errorbar([dat.Salvaterra12z+1],[dat.Salvaterra12],color='black',fmt='x',xerr=[dat.Salvaterra12zH-dat.Salvaterra12z],yerr=0.5*Salvaterra12,uplims=[True],label='Salvaterra+ 12')
+				plotting.plt.errorbar(dat.Treister13z,dat.Treister13,color='black',fmt='o',xerr=dat.Treister13zErr,yerr=0.5*dat.Treister13,uplims=[True,True,True], label='Treister+ 13')
+				plotting.plt.errorbar(dat.Hopkins07zp1,10**dat.Hopkins07,color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
 
-
+		if type == 'time' and plotdata is True:
+			print "WARNING! Data only valid for redshift plotting. Ignoring keyword for time plot"
 		if type== 'time':
 			plotting.plt.plot(self.data['time'].in_units('Gyr'),macc/volume,style, linewidth=lw, label=label)
 

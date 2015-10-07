@@ -3,6 +3,7 @@ import numpy as np
 
 shankar09L = 3.2e5
 shankar09H = 5.4e5
+shankar09 = (shankar09H +shankar09L) / 2.
 Salvaterra12 = 0.66e4
 Salvaterra12zH = 9
 Salvaterra12zL = 5
