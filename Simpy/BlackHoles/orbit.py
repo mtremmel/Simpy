@@ -375,10 +375,11 @@ class Orbit(object):
 		macc = np.cumsum(self.data['dM'][ord])
 
 		if type == 'redshift':
+			z = self.data['scalefac']**-1 -1
 			if xlog is False:
-				plotting.plt.plot(self.data['scalefac'][ord],macc,style, linewidth=lw, label=label)
+				plotting.plt.plot(z[ord],macc,style, linewidth=lw, label=label)
 			else:
-				plotting.plt.plot(self.data['scalefac'][ord]+1,macc,style, linewidth=lw, label=label)
+				plotting.plt.plot(z[ord]+1,macc,style, linewidth=lw, label=label)
 				plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10],['0','1','2','3','4','5','6','7','8','9'])
 
 		if type== 'time':
