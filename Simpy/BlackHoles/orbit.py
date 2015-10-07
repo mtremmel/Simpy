@@ -386,7 +386,7 @@ class Orbit(object):
 				import colldata as dat
 				err = dat.shankar09H - dat.shankar09
 				plotting.plt.errorbar([1.03],[dat.shankar09],yerr=[err],color='black',fmt='D',label="Shankar+ 09")
-				plotting.plt.errorbar([dat.Salvaterra12z+1],[dat.Salvaterra12],color='black',fmt='x',xerr=[dat.Salvaterra12zH-dat.Salvaterra12z],yerr=0.5*Salvaterra12,uplims=[True],label='Salvaterra+ 12')
+				plotting.plt.errorbar([dat.Salvaterra12z+1],[dat.Salvaterra12],color='black',fmt='x',xerr=[dat.Salvaterra12zH-dat.Salvaterra12z],yerr=0.5*dat.Salvaterra12,uplims=[True],label='Salvaterra+ 12')
 				plotting.plt.errorbar(dat.Treister13z,dat.Treister13,color='black',fmt='o',xerr=dat.Treister13zErr,yerr=0.5*dat.Treister13,uplims=[True,True,True], label='Treister+ 13')
 				plotting.plt.errorbar(dat.Hopkins07zp1,10**dat.Hopkins07,color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
 
