@@ -449,10 +449,9 @@ class Orbit(object):
                 dphi = np.log10((2./5.)*dphi)
                 dphierr = [dphi-np.log10(dphim),np.log10(dphip)-dphi]
                 plotting.plt.errorbar(l1450,dphi,yerr=dphierr,fmt='D',color='k',label='McGreer+ 2013')
-            if overplot==False:
         if overplot is False:
             if dotitle is True:
-                plt.title(str(zbinsl[zz[0]])+' < z < '+str(zbinsh[zz[0]]))
+                plotting.plt.title(str(dat.hop_bhlf_zbinsl[zz[0]])+' < z < '+str(dat.hop_bhlf_zbinsh[zz[0]]))
             plotting.plt.xlabel(r'log$_{10}$($L_{bol}$ [ergs/s]))',fontsize=30)
             plotting.plt.ylabel(r'log$_{10}$($\phi$ [Mpc$^{-3}$ dex$^{-1}$])',fontsize=30)
         if label is not None or plotdata is True:
