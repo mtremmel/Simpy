@@ -434,7 +434,8 @@ class Orbit(object):
         data = np.histogram(np.log10(self.data['lum'][ok]),bins=bins,range=lrange)
         phi = data[0]*(dt/(T*dlogl*volume))
         lbins = data[1]
-        plotting.plt.step(lbins[0:-1],phi,style, label=label, linewidth=lw, where='post')
+        print phi
+        plotting.plt.step(lbins[0:-1],np.log10(phi),style, label=label, linewidth=lw, where='post')
         if plotdata is True:
             #Hopkins 07 data
             tardat, = np.where(dat.hop_bhlf_obs['redshift']==dat.hop_bhlf_z[zz])
