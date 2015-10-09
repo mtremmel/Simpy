@@ -437,7 +437,8 @@ class Orbit(object):
         plotting.plt.step(lbins[0:-1],phi,style, label=label, linewidth=lw, where='post')
         if plotdata is True:
             #Hopkins 07 data
-            plotting.plt.errorbar(dat.hop_bhlf_obs['lbol'][zz] + util.loglbol_sun, dat.hop_bhlf_obs['dphi'][zz],yerr=dat.hop_bhlf_obs['sig'][zz],fmt='o',color='grey',ecolor='grey',label='Hopkins+ 2007 (Compilation)')
+            tardat, = np.where(dat.hop_bhlf_obs['redshift']==dat.hop_bhlf_z[zz])
+            plotting.plt.errorbar(dat.hop_bhlf_obs['lbol'][tardat] + util.loglbol_sun, dat.hop_bhlf_obs['dphi'][tardat],yerr=dat.hop_bhlf_obs['sig'][tardat],fmt='o',color='grey',ecolor='grey',label='Hopkins+ 2007 (Compilation)')
             if dat.hop_bhlf_z[zz]==6:
                 #For z = 6, Barger+ 03 data
                 plotting.plt.errorbar([dat.bar_bhlfz6_L],[dat.bar_bhlfz6_phi],xerr=dat.bar_bhlfz6_Lerr,yerr=dat.bar_bhlfz6_phierr,fmt='^',color='k',label='Barger+2003')
