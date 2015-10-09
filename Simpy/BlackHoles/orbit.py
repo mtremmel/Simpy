@@ -408,7 +408,7 @@ class Orbit(object):
         if label is not None or plotdata is True: plotting.plt.legend()
         return
 
-    def plt_lumfun(self,color,style, minM = 1e6, maxM = None, minL = 1e42, maxL = None, volume=25**3,overplot=False,label=None,bins=50, redshift=1, plotdata=True, dotitle=True):
+    def plt_lumfun(self,style, minM = 1e6, maxM = None, minL = 1e42, maxL = None, volume=25**3,overplot=False,label=None,bins=50, redshift=1, plotdata=True, dotitle=True,lw=2):
         from .. import plotting
         from .. import cosmology
         import colldata as dat
@@ -431,8 +431,10 @@ class Orbit(object):
         if minL >0: lrange = [np.log10(minL), np.log10(maxL)]
         else: lrange = [np.log10(self.data['lum'].min()), np.log10(maxL)]
         dlogl = (lrange[1] - lrange[0])/float(bins)
-        plotting.plt.hist(np.log10(self.data['lum'][ok]),color=color, linestyle=style,bins=bins, range=lrange, weights=dt/(T * volume * dlogl))
-
+        data = np.histogram(np.log10(self.data['lum'][ok]),bins=bins,range=lrange)
+        phi = data[0]*(dt/(T*dlogl*volume))
+        lbins = data[1]
+        plotting.plt.step(lbins[0:-1],phi,style, label=label, linewidth=lw, where='post')
         if plotdata is True:
             #Hopkins 07 data
             plotting.plt.errorbar(dat.hop_bhlf_obs['lbol'][zz] + util.loglbol_sun, dat.hop_bhlf_obs['dphi'][zz],yerr=dat.hop_bhlf_obs['sig'][zz],fmt='o',color='grey',ecolor='grey',label='Hopkins+ 2007 (Compilation)')
