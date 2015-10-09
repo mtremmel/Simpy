@@ -434,6 +434,7 @@ class Orbit(object):
         data = np.histogram(np.log10(self.data['lum'][ok]),bins=bins,range=lrange)
         phi = data[0]*(dt/(T*dlogl*volume))
         lbins = data[1]
+        print dt, T, volume, dlogl,lrange
         print phi
         plotting.plt.step(lbins[0:-1],np.log10(phi),style, label=label, linewidth=lw, where='post')
         if plotdata is True:
