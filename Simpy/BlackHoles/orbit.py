@@ -408,7 +408,7 @@ class Orbit(object):
         if label is not None or plotdata is True: plotting.plt.legend()
         return
 
-    def plt_lumfun(self,style, minM = 1e6, maxM = None, minL = 1e42, maxL = None, volume=25**3,overplot=False,label=None,bins=50, redshift=1, plotdata=True, dotitle=True):
+    def plt_lumfun(self,color,style, minM = 1e6, maxM = None, minL = 1e42, maxL = None, volume=25**3,overplot=False,label=None,bins=50, redshift=1, plotdata=True, dotitle=True):
         from .. import plotting
         from .. import cosmology
         import colldata as dat
@@ -431,7 +431,7 @@ class Orbit(object):
         if minL >0: lrange = [np.log10(minL), np.log10(maxL)]
         else: lrange = [np.log10(self.data['lum'].min()), np.log10(maxL)]
         dlogl = (lrange[1] - lrange[0])/float(bins)
-        plotting.plt.hist(np.log10(self.data['lum'][ok]),style,bins=bins, range=lrange, weights=dt/(T * volume * dlogl))
+        plotting.plt.hist(np.log10(self.data['lum'][ok]),color=color, linestyle=style,bins=bins, range=lrange, weights=dt/(T * volume * dlogl))
 
         if plotdata is True:
             #Hopkins 07 data
