@@ -1,5 +1,6 @@
 from .. import readcol
 import numpy as np
+import os
 
 #Accretion history data
 #Shankar 09
@@ -16,9 +17,9 @@ Treister13 = np.array([851.,666.,674.])
 Treister13z = np.array([6.5,7.5,8.5])
 Treister13zErr = np.array([.5,.5,.5])
 #Hopkins 07
-Hopkins07zp1,Hopkins07 = readcol("../DATA/QSOdata/RhoAccZ.csv",twod=False)
-Hopkins07zp1H,Hopkins07H = readcol("../DATA/QSOdata/RhoAccZPLUS.csv",twod=False)
-Hopkins07zp1L,Hopkins07L = readcol("../DATA/QSOdata/RhoAccZMINUS.csv",twod=False)
+Hopkins07zp1,Hopkins07 = readcol(os.path.join(os.path.dirname(__file__),"data/QSOdata/RhoAccZ.csv"),twod=False)
+Hopkins07zp1H,Hopkins07H = readcol(os.path.join(os.path.dirname(__file__),"data/QSOdata/RhoAccZPLUS.csv"),twod=False)
+Hopkins07zp1L,Hopkins07L = readcol(os.path.join(os.path.dirname(__file__),"data/QSOdata/RhoAccZMINUS.csv"),twod=False)
 Hopkins07perr = 10**Hopkins07H - 10**Hopkins07
 Hopkins07merr = 10**Hopkins07 - 10**Hopkins07L
 
@@ -27,9 +28,9 @@ Hopkins07merr = 10**Hopkins07 - 10**Hopkins07L
 hop_bhlf_z =      np.array([1.  ,1.5 ,2.  ,2.5 ,3.  ,3.5 ,4.  ,4.5 ,5.  ,5.5 ,6.])
 hop_bhlf_zbinsl = np.array([0.75,1.25,1.75,2.25,2.75,3.25,3.75,4.25,4.75,5.25,5.75])
 hop_bhlf_zbinsh = np.array([1.25,1.75,2.25,2.75,3.25,3.75,4.25,4.75,5.25,5.75,6.25])
-hop_bhlf_obs = readcol("../DATA/QSOdata/bol_lf_point_dump.dat",twod=False,asdict=True,skipline=38)
+hop_bhlf_obs = readcol(os.path.join(os.path.dirname(__file__),"data/QSOdata/bol_lf_point_dump.dat"),twod=False,asdict=True,skipline=38)
 #McGreer 13
-mcg_bhlf_obs = readcol("../DATA/QSOdata/M1450z5_McGreer13.dat",twod=False,asdict=True,skipline=1)
+mcg_bhlf_obs = readcol(os.path.join(os.path.dirname(__file__),"data/QSOdata/M1450z5_McGreer13.dat"),twod=False,asdict=True,skipline=1)
 #Barger 03, z = 6
 bar_bhlfz6_phi = np.log10(1e-6)
 bar_bhlfz6_phierr = 0.6
