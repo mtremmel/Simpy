@@ -38,8 +38,8 @@ bar_bhlfz6_L = 45.05
 bar_bhlfz6_Lerr = 0.5
 #Fiore+ 2012 number for z>5.8 quasars
 fio_bhlf_phi6F = np.log10(0.66e-5)
-fio_bhlf_errphi6Fp = np.log10(0.66e-5+1.1e-5) - logphi6F
-fio_bhlf_errphi6Fm = logphi6F - np.log10(0.66e-5-0.5e-5)
+fio_bhlf_errphi6Fp = np.log10(0.66e-5+1.1e-5) - fio_bhlf_phi6F
+fio_bhlf_errphi6Fm = fio_bhlf_phi6F - np.log10(0.66e-5-0.5e-5)
 fio_bhlf_L6F = 45.55
 fio_bhlf_L6Fm = 45.55 - 44.9
 fio_bhlf_L6Fp = 46.2 - 45.55
