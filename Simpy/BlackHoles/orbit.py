@@ -431,7 +431,7 @@ class Orbit(object):
         if minL >0: lrange = [np.log10(minL), np.log10(maxL)]
         else: lrange = [np.log10(self.data['lum'].min()), np.log10(maxL)]
         dlogl = (lrange[1] - lrange[0])/float(bins)
-        plotting.plt.hist(np.log10(self.data['lum'][ok]),style,range=lrange, bins=bins, weights=dt/(T * volume * dlogl))
+        plotting.plt.hist(np.log10(self.data['lum'][ok]),style,bins=bins, range=lrange, weights=dt/(T * volume * dlogl))
 
         if plotdata is True:
             #Hopkins 07 data
