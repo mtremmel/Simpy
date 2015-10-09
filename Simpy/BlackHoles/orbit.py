@@ -424,6 +424,7 @@ class Orbit(object):
         if minM is None: minM = 0
         if maxL is None: maxL = self.data['lum'].max()*2
         if minL is None: minL = 0
+        print minL, maxL, minM, maxM, dat.hop_bhlf_zbinsh[zz], dat.hop_bhlf_zbinsl[zz]
         ok, = np.where((self.data['lum'] > minL)&(self.data['lum'] <= maxL)&(self.data['mass']>minM)&(self.data['mass']<maxM)&(self.data['scalefac']**-1 - 1 > dat.hop_bhlf_zbinsl[zz])&(self.data['scalefac']**-1 - 1 < dat.hop_bhlf_zbinsh[zz]))
         print len(ok)
         tlz = cosmology.getTime(dat.hop_bhlf_zbinsl[zz],sim)
