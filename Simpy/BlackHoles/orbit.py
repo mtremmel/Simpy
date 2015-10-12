@@ -175,6 +175,7 @@ class Orbit(object):
     def __init__(self, simname, savefile=None, NCHILADA=True):
         self.simname = simname
         self.nchil = NCHILADA
+        self.filename=savefile
         ofile = simname + ".shortened.orbit"
         if not os.path.exists(ofile):
             print "ERROR shortened orbit file not found! Exiting..."
@@ -228,9 +229,7 @@ class Orbit(object):
         self.get_all_BH_tform(sl)
 
         if savefile:
-            f = open(savefile, 'wb')
-            pickle.dump(self, f)
-            f.close()
+            self._save(filename=savefile)
         return
 
 
@@ -260,6 +259,19 @@ class Orbit(object):
             ss = ss[sort_]
         slice_.append(ss)
         return uvalues, slice_
+
+    def _save(self,filename=None):
+        if filename is None:
+            if self.filename is not None: ff = self.filename
+            else:
+                print "WARNING! Filename not found. Using default"
+                ff = 'BHorbit.pkl'
+        else: ff = filename
+        f = open(ff,'wb')
+        pickle.dump(self,f)
+        f.close()
+        return
+
 
 
     def single_BH_data(self, iord, key):
