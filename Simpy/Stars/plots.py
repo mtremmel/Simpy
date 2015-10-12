@@ -10,9 +10,10 @@ def SFH(sim, style, lw=3,bins=50, trange=None, label=None, ret_hist=True, type='
 		if trange is None:
 			trange = [0,tform.max()]
 		dt = (trange[1] - trange[0])*1e9/float(bins)
-		data = plotting.plt.hist(tform, style, range=trange, bins=bins,label=label,histtype='step',weights=massform/dt, linewidth=lw)
+		data = np.histogram(tform, range=trange, bins=bins,weights=massform/dt)
 		sfr = data[0]
 		tedges = data[1]
+		plotting.plt.step(tedges[0:-1],sfr,style, label=label, linewidth=lw, where='post')
 		if overplot is False:
 			plotting.plt.xlabel(r'Time [Gyr]', fontsize=30)
 
