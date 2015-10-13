@@ -229,7 +229,7 @@ class Orbit(object):
         self.get_all_BH_tform(sl)
 
         if savefile:
-            self._save(filename=savefile)
+            self.save(filename=savefile)
         return
 
 
