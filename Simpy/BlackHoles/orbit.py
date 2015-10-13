@@ -260,7 +260,7 @@ class Orbit(object):
         slice_.append(ss)
         return uvalues, slice_
 
-    def _save(self,filename=None):
+    def save(self,filename=None):
         if filename is None:
             if self.filename is not None: ff = self.filename
             else:
@@ -273,11 +273,22 @@ class Orbit(object):
         return
 
 
-
     def single_BH_data(self, iord, key):
         o, = np.where(self.bhiords == iord)
         slice_ = self.id_slice[o[0]]
         return self.data[key][slice_]
+
+    def single_BH_data_smooth(self,iord,key,nsteps=10):
+        rawdat = self.single_BH_data(iord, key)
+        time = self.single_BH_data(iord, 'time')
+        nind = len(time) - len(time)%nsteps
+        use = np.arange(nind)
+        rawdat = rawdat[use].reshape((nsteps,nind/nsteps))
+        time = time[use].reshape((nsteps,nind/nsteps))
+        meandat = rawdat.mean(axis=1)
+        meantime = time.mean(axis=1)
+        return meandat, meantime
+
 
 
     def single_step_data(self, step, key):
