@@ -280,14 +280,14 @@ class Orbit(object):
 
     def single_BH_data_smooth(self,iord,key,nsteps=10):
         rawdat = self.single_BH_data(iord, key)
-        time = self.single_BH_data(iord, 'time')
-        nind = len(time) - len(time)%nsteps
+        #time = self.single_BH_data(iord, 'time')
+        nind = len(rawdat) - len(rawdat)%nsteps
         use = np.arange(nind)
         rawdat = rawdat[use].reshape((nind/nsteps,nsteps))
-        time = time[use].reshape((nind/nsteps,nsteps))
+        #time = time[use].reshape((nind/nsteps,nsteps))
         meandat = rawdat.mean(axis=1)
-        meantime = time.mean(axis=1)
-        return meandat, meantime
+        #meantime = time.mean(axis=1)
+        return meandat
 
 
 
@@ -365,11 +365,14 @@ class Orbit(object):
 
 
     def plt_single_BH_data(self, iord, keyx, unitx, keyy, unity, style, lw=1, msize=10, ylog=True, xlog=False,
-                           label=None, overplot=False):
+                           label=None, overplot=False, smooth=False, nsmooth=10):
         from .. import plotting
-
-        ydat = self.single_BH_data(iord, keyy)
-        xdat = self.single_BH_data(iord, keyx)
+        if smooth is False:
+            ydat = self.single_BH_data(iord, keyy)
+            xdat = self.single_BH_data(iord, keyx)
+        else:
+            ydat = self.single_BH_data_smooth(iord, keyy, nsteps=nsmooth)
+            xdat = self.single_BH_data_smooth(iord, keyx, nsteps=nsmooth)
         plotting.plt.plot(xdat.in_units(unitx), ydat.in_units(unity), style, label=label, linewidth=lw,
                           markersize=msize)
         if xlog is True and overplot is False:
