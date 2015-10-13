@@ -283,8 +283,8 @@ class Orbit(object):
         time = self.single_BH_data(iord, 'time')
         nind = len(time) - len(time)%nsteps
         use = np.arange(nind)
-        rawdat = rawdat[use].reshape((nsteps,nind/nsteps))
-        time = time[use].reshape((nsteps,nind/nsteps))
+        rawdat = rawdat[use].reshape((nind/nsteps,nsteps))
+        time = time[use].reshape((nind/nsteps,nsteps))
         meandat = rawdat.mean(axis=1)
         meantime = time.mean(axis=1)
         return meandat, meantime
