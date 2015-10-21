@@ -9,7 +9,7 @@ def findmergers(outname, diagname='*out*'):
     return
 
 
-def reducedata(simname, RetData=False, outname='out', mergename='BHmerge.txt'):
+def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt'):
     if not os.path.exists(mergename):
         print "didn't find merger file... getting mergers from outputs"
         findmergers(mergename, diagname=outname)
