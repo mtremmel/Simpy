@@ -9,12 +9,12 @@ def findmergers(outname, diagname='*out*'):
     return
 
 
-def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt'):
+def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt', NCHILADA=True):
     if not os.path.exists(mergename):
         print "didn't find merger file... getting mergers from outputs"
         findmergers(mergename, diagname=outname)
     if not os.path.exists('files.list'):
-        Files.getFileLists(simname)
+        Files.getFileLists(simname, NCHILADA=NCHILADA)
     f = open('files.list', 'r')
     farr = f.readlines()
     f.close()
