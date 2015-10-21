@@ -1,9 +1,23 @@
 import numpy as np
+import scipy
 
 #useful constants
 c = 2.99792458e10
 lbol_sun = 3.9e33
 loglbol_sun = np.log10(lbol_sun)
+
+def cutdict(target, goodinds):
+	for key in target.keys():
+		target[key] = target[key][goodinds]
+	return
+
+def partial_derivative(func, var=0, point=[]):
+    args = point[:]
+    def wraps(x):
+        args[var] = x
+        return func(*args)
+    return scipy.misc.derivative(wraps, point[var], dx = 1e-8)
+
 
 def histogram(a,inbins,weights=None):
 		if (np.size(np.shape(inbins))!=2) | (np.shape(inbins)[1] != 2):
