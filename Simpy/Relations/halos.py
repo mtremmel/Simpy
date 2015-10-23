@@ -87,12 +87,12 @@ def getstats(simname, step):
 	gc.collect()
 	return amigastat, a**-1 -1
 
-def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plotratio=True, plotfit='mos', ploterr = True, nodata=False, lw=3, correct = True, marksize=10, label=False, ylog=True, xlog=True, overplot=False):
+def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plotratio=True, plotfit='mos', ploterr = True, nodata=False, lw=3, correct = True, marksize=10, label=False, overplot=False):
 	amigastat, redshift = getstats(simname, step)
 	if minmass is None:
-		minm = amigastat['Mvir(M_sol)'].min()
+		minm = np.log10(amigastat['Mvir(M_sol)'].min())
 	else:
-		minm = minmass
+		minm = np.log10(minmass)
 	maxm = amigastat['Mvir(M_sol)'].max()
 	if plotfit is not None:
 		lmhaloline = np.arange(minm-1.0,maxm+0.5,0.01)
@@ -109,13 +109,8 @@ def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plot
 			fitlabel = "Behroozi+ 13"
 			if ploterr is True:
 				print "WARNING ploterr is set to True but behroozi was chosen. Errors not implemented in this yet."
-		plotting.plt.plot(lmhaloline, ratiofit, 'b-', linewidth=lw, label=fitlabel)
-		plotting.plt.fill_between(lmhaloline,ratiofit-sigma,ratiofit+sigma,facecolor='grey',alpha=0.5)
-		if overplot is False:
-			if ylog is True:
-				plotting.plt.yscale('log',base=10)
-			if xlog is True:
-				plotting.plt.xscale('log',base=10)
+		plotting.plt.plot(lmhaloline, np.log10(ratiofit), 'b-', linewidth=lw, label=fitlabel)
+		plotting.plt.fill_between(lmhaloline,np.log10(ratiofit-sigma),np.log10(ratiofit+sigma),facecolor='grey',alpha=0.5)
 
 
 	if nodata is False:
@@ -137,7 +132,8 @@ def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plot
 			xdata /= 0.8
 		if plotratio is True:
 			ydata = ydata/xdata
-
+		ydata = np.log10(ydata)
+		xdata = np.log10(xdata)
 		plotting.plt.plot(xdata, ydata, style, markersize=marksize, label=label)
 
 	plotting.plt.legend()
