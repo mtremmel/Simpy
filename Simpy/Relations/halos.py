@@ -126,7 +126,7 @@ def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plot
 			util.cutdict(amigastat,ok)
 
 		ydata = amigastat['StarMass(M_sol)']
-		xdata = amigastat['M_vir(M_sol)']
+		xdata = amigastat['Mvir(M_sol)']
 		if correct is True:
 			ydata *= 0.6
 			xdata /= 0.8
