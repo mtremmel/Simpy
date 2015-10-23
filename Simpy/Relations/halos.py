@@ -122,7 +122,7 @@ def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plot
 			ok, = np.where(amigastat['Grp']<maxgrp)
 			util.cutdict(amigastat,ok)
 		if nosats is True:
-			ok, = np.where(amigastat['Satellite?'] > -1)
+			ok, = np.where(amigastat['Satellite?'] == -1)
 			util.cutdict(amigastat,ok)
 		ok, = np.where(amigastat['Mvir(M_sol)']>minmass)
 		util.cutdict(amigastat,ok)
