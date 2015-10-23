@@ -1,7 +1,10 @@
 import numpy as np
 from .. import readcol
 from .. import util
+from .. import plotting
+import pynbody
 import os
+import gc
 
 
 #Moster relations
@@ -48,7 +51,7 @@ def errmoster13(logM,z):
 	for i in range(len(logM)):
 		point = [logM[i],z,M10,M11,N10,N11,b10,b11,g10,g11]
 		for j in range(8):
-			sigma[i] += partial_derivative(moster13allvar,var=j+2,point=point)**2 * sigvar[j]**2
+			sigma[i] += util.partial_derivative(moster13allvar,var=j+2,point=point)**2 * sigvar[j]**2
 	sigma = np.sqrt(sigma)
 	return sigma
 
@@ -69,10 +72,12 @@ def behroozi13(logM,a):
 
 
 def getstats(simname, step):
+	print "getting halo stats..."
 	try:
 		amigastat = readcol.readcol(simname + '.' + step + '.amgia.stat', astict=True)
 	except:
 		try:
+			print "amiga file failed, looking for rockstar"
 			amigastat = readcol.readcol(simname + '.' + step + '.rockstar.stat', astict=True)
 		except:
 			print "ERROR cannot find recognized stat file (amiga.stat or rockstar.stat)"
@@ -82,8 +87,13 @@ def getstats(simname, step):
 	gc.collect()
 	return amigastat, a**-1 -1
 
-def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plottype='Ratio', plotfit='mos', ploterr = True, nodata=False, lw=3):
+def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plotratio=True, plotfit='mos', ploterr = True, nodata=False, lw=3, correct = True, marksize=10, label=False, ylog=True, xlog=True, overplot=False):
 	amigastat, redshift = getstats(simname, step)
+	if minmass is None:
+		minm = amigastat['Mvir(M_sol)'].min()
+	else:
+		minm = minmass
+	maxm = amigastat['Mvir(M_sol)'].max()
 	if plotfit is not None:
 		lmhaloline = np.arange(minm-1.0,maxm+0.5,0.01)
 		if plotfit != 'mos' and plotfit != 'beh':
@@ -91,10 +101,21 @@ def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plot
 			plotfit = 'mos'
 		if plotfit == 'mos':
 			ratiofit = moster13(lmhaloline, redshift)
-
+			fitlabel = "Moster+ 13"
+			if ploterr is True:
+				sigma = errmoster13(lmhaloline, redshift)
 		if plotfit == 'beh':
 			ratiofit = behroozi13(lmhaloline, redshift)
-
+			fitlabel = "Behroozi+ 13"
+			if ploterr is True:
+				print "WARNING ploterr is set to True but behroozi was chosen. Errors not implemented in this yet."
+		plotting.plt.plot(lmhaloline, ratiofit, 'b-', linewidth=lw, label=fitlabel)
+		plotting.plt.fill_between(lmhaloline,datay-sigma[plotfit[i]][j,:],datay+sigma[plotfit[i]][j,:],facecolor='grey',alpha=0.5)
+		if overplot is False:
+			if ylog is True:
+				plotting.plt.yscale('log',base=10)
+			if xlog is True:
+				plotting.plt.xscale('log',base=10)
 
 
 	if nodata is False:
@@ -108,6 +129,24 @@ def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plot
 		if minmass is not None:
 			ok, = np.where(amigastat['Mvir(M_sol)']<minmass)
 			util.cutdict(amigastat,ok)
+
+		ydata = amigastat['StarMass(M_sol)']
+		xdata = amigastat['M_vir(M_sol)']
+		if correct is True:
+			ydata *= 0.6
+			xdata /= 0.8
+		if plotratio == 'Ratio' or plottype == 'ratio' or plottype == 'RATIO':
+			ydata = ydata/xdata
+
+		plotting.plt.plot(xdata, ydata, style, markersize=marksize, label=label)
+
+	plotting.plt.legend()
+
+
+
+
+
+
 
 
 
