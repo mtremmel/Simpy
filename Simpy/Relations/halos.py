@@ -94,6 +94,7 @@ def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plot
 	else:
 		minm = np.log10(minmass)
 	maxm = np.log10(amigastat['Mvir(M_sol)'].max())
+	print maxm, minm
 	if plotfit is not None:
 		lmhaloline = np.arange(minm-1.0,maxm+0.5,0.01)
 		if plotfit != 'mos' and plotfit != 'beh':
