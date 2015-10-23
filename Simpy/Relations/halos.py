@@ -87,12 +87,12 @@ def getstats(simname, step):
 	gc.collect()
 	return amigastat, a**-1 -1
 
-def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plotratio=True, plotfit='mos', ploterr = True, nodata=False, lw=3, correct = True, marksize=10, label=False, overplot=False):
+def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plotratio=True, plotfit='mos', ploterr = True, nodata=False, lw=3, correct = True, marksize=10, label=None, overplot=False, nosats=True):
 	amigastat, redshift = getstats(simname, step)
+	print "z = ", redshift
 	if minmass is None:
-		minm = 8
-	else:
-		minm = np.log10(minmass)
+		minmass = 1e8
+	minm = np.log10(minmass)
 	maxm = np.log10(amigastat['Mvir(M_sol)'].max())
 	if plotfit is not None:
 		lmhaloline = np.arange(minm-1.0,maxm+0.5,0.01)
@@ -121,12 +121,13 @@ def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plot
 		if maxgrp is not None:
 			ok, = np.where(amigastat['Grp']<maxgrp)
 			util.cutdict(amigastat,ok)
-		if minmass is not None:
-			ok, = np.where(amigastat['Mvir(M_sol)']<minmass)
+		if nosats is True:
+			ok, = np.where(amigastat['Satellite?'] > -1)
 			util.cutdict(amigastat,ok)
+		ok, = np.where(amigastat['Mvir(M_sol)']>minmass)
+		util.cutdict(amigastat,ok)
 
-		ydata = amigastat['StarMass(M_sol)']
-		xdata = amigastat['Mvir(M_sol)']
+
 		if correct is True:
 			ydata *= 0.6
 			xdata /= 0.8
