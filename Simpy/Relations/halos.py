@@ -74,11 +74,11 @@ def behroozi13(logM,a):
 def getstats(simname, step):
 	print "getting halo stats..."
 	if os.path.exists(simname + '.' + step + '.amgia.stat'):
-		amigastat = readcol.readcol(simname + '.' + step + '.amgia.stat', astict=True)
+		amigastat = readcol.readcol(simname + '.' + step + '.amgia.stat', asdict=True)
 	else:
 			print "amiga file failed, looking for rockstar"
 			if os.path.exists(simname + '.' + step + '.rockstar.stat'):
-				amigastat = readcol.readcol(simname + '.' + step + '.rockstar.stat', astict=True)
+				amigastat = readcol.readcol(simname + '.' + step + '.rockstar.stat', asdict=True)
 			else:
 				print "ERROR cannot find recognized stat file (amiga.stat or rockstar.stat)"
 	s = pynbody.load(simname+'.'+step)
