@@ -90,11 +90,10 @@ def getstats(simname, step):
 def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plotratio=True, plotfit='mos', ploterr = True, nodata=False, lw=3, correct = True, marksize=10, label=False, overplot=False):
 	amigastat, redshift = getstats(simname, step)
 	if minmass is None:
-		minm = np.log10(amigastat['Mvir(M_sol)'].min())
+		minm = 8
 	else:
 		minm = np.log10(minmass)
 	maxm = np.log10(amigastat['Mvir(M_sol)'].max())
-	print maxm, minm
 	if plotfit is not None:
 		lmhaloline = np.arange(minm-1.0,maxm+0.5,0.01)
 		if plotfit != 'mos' and plotfit != 'beh':
