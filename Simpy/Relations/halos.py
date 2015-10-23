@@ -73,15 +73,14 @@ def behroozi13(logM,a):
 
 def getstats(simname, step):
 	print "getting halo stats..."
-	try:
+	if os.path.exists(simname + '.' + step + '.amgia.stat'):
 		amigastat = readcol.readcol(simname + '.' + step + '.amgia.stat', astict=True)
-	except:
-		try:
+	else:
 			print "amiga file failed, looking for rockstar"
-			print simname + '.' + step + '.rockstar.stat'
-			amigastat = readcol.readcol(simname + '.' + step + '.rockstar.stat', astict=True)
-		except:
-			print "ERROR cannot find recognized stat file (amiga.stat or rockstar.stat)"
+			if os.path.exists(simname + '.' + step + '.rockstar.stat'):
+				amigastat = readcol.readcol(simname + '.' + step + '.rockstar.stat', astict=True)
+			else:
+				print "ERROR cannot find recognized stat file (amiga.stat or rockstar.stat)"
 	s = pynbody.load(simname+'.'+step)
 	a = s.properties['a']
 	del(s)
@@ -111,7 +110,7 @@ def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plot
 			if ploterr is True:
 				print "WARNING ploterr is set to True but behroozi was chosen. Errors not implemented in this yet."
 		plotting.plt.plot(lmhaloline, ratiofit, 'b-', linewidth=lw, label=fitlabel)
-		plotting.plt.fill_between(lmhaloline,datay-sigma[plotfit[i]][j,:],datay+sigma[plotfit[i]][j,:],facecolor='grey',alpha=0.5)
+		plotting.plt.fill_between(lmhaloline,ratiofit-sigma,ratiofit+sigma,facecolor='grey',alpha=0.5)
 		if overplot is False:
 			if ylog is True:
 				plotting.plt.yscale('log',base=10)
@@ -136,7 +135,7 @@ def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plot
 		if correct is True:
 			ydata *= 0.6
 			xdata /= 0.8
-		if plotratio == 'Ratio' or plottype == 'ratio' or plottype == 'RATIO':
+		if plotratio is True:
 			ydata = ydata/xdata
 
 		plotting.plt.plot(xdata, ydata, style, markersize=marksize, label=label)
