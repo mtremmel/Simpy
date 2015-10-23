@@ -78,6 +78,7 @@ def getstats(simname, step):
 	except:
 		try:
 			print "amiga file failed, looking for rockstar"
+			print simname + '.' + step + '.rockstar.stat'
 			amigastat = readcol.readcol(simname + '.' + step + '.rockstar.stat', astict=True)
 		except:
 			print "ERROR cannot find recognized stat file (amiga.stat or rockstar.stat)"
