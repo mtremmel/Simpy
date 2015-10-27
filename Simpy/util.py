@@ -18,6 +18,11 @@ def partial_derivative(func, var=0, point=[]):
         return func(*args)
     return scipy.misc.derivative(wraps, point[var], dx = 1e-8)
 
+def init_iord_to_fpos(snap):
+	iord_to_fpos = np.empty(snap['iord'].max()+1,dtype=np.int64)
+	iord_to_fpos[snap['iord']] = np.arange(len(snap))
+	return iord_to_fpos
+
 
 def histogram(a,inbins,weights=None):
 		if (np.size(np.shape(inbins))!=2) | (np.shape(inbins)[1] != 2):
