@@ -75,20 +75,22 @@ def getstats(simname, step):
 	print "getting halo stats..."
 	if os.path.exists(simname + '.' + step + '.amiga.stat'):
 		amigastat = readcol.readcol(simname + '.' + step + '.amiga.stat', asdict=True)
+		type = 'amiga'
 	else:
 			print "amiga file failed, looking for rockstar"
 			if os.path.exists(simname + '.' + step + '.rockstar.stat'):
 				amigastat = readcol.readcol(simname + '.' + step + '.rockstar.stat', asdict=True)
+				type = 'rockstar'
 			else:
 				print "ERROR cannot find recognized stat file (amiga.stat or rockstar.stat)"
 	s = pynbody.load(simname+'.'+step)
 	a = s.properties['a']
 	del(s)
 	gc.collect()
-	return amigastat, a**-1 -1
+	return amigastat, a**-1 -1, type
 
 def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plotratio=True, plotfit='mos', ploterr = True, nodata=False, lw=3, correct = True, marksize=10, label=None, overplot=False, nosats=True):
-	amigastat, redshift = getstats(simname, step)
+	amigastat, redshift, type = getstats(simname, step)
 	print "z = ", redshift
 	if minmass is None:
 		minmass = 1e8
@@ -123,7 +125,10 @@ def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plot
 			ok, = np.where(amigastat['Grp']<maxgrp)
 			util.cutdict(amigastat,ok)
 		if nosats is True:
-			ok, = np.where(amigastat['Satellite?'] == -1)
+			if type == 'rockstar':
+				ok, = np.where(amigastat['Satellite?'] == -1)
+			if type == 'amiga'
+				ok, = np.where(amigastat['Satellite?'] == 'no')
 			util.cutdict(amigastat,ok)
 		ok, = np.where(amigastat['Mvir(M_sol)']>minmass)
 		util.cutdict(amigastat,ok)
