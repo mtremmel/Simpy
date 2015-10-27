@@ -127,7 +127,7 @@ def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plot
 		if nosats is True:
 			if type == 'rockstar':
 				ok, = np.where(amigastat['Satellite?'] == -1)
-			if type == 'amiga'
+			if type == 'amiga':
 				ok, = np.where(amigastat['Satellite?'] == 'no')
 			util.cutdict(amigastat,ok)
 		ok, = np.where(amigastat['Mvir(M_sol)']>minmass)
