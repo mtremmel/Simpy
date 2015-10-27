@@ -96,25 +96,6 @@ def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plot
 		minmass = 1e8
 	minm = np.log10(minmass)
 	maxm = np.log10(amigastat['Mvir(M_sol)'].max())
-	if plotfit is not None:
-		lmhaloline = np.arange(minm-1.0,maxm+0.5,0.01)
-		if plotfit != 'mos' and plotfit != 'beh':
-			print "WARNING! Input string for plotfit type is not recognized... defaulting to Moster+ 13"
-			plotfit = 'mos'
-		if plotfit == 'mos':
-			ratiofit = moster13(lmhaloline, redshift)
-			fitlabel = "Moster+ 13"
-			if ploterr is True:
-				sigma = errmoster13(lmhaloline, redshift)
-		if plotfit == 'beh':
-			ratiofit = behroozi13(lmhaloline, redshift)
-			fitlabel = "Behroozi+ 13"
-			if ploterr is True:
-				print "WARNING ploterr is set to True but behroozi was chosen. Errors not implemented in this yet."
-		plotting.plt.plot(lmhaloline, np.log10(ratiofit), 'b-', linewidth=lw, label=fitlabel)
-		ok, = np.where(np.isnan(np.log10(ratiofit-sigma))==False)
-		plotting.plt.fill_between(lmhaloline[ok],np.log10(ratiofit[ok]-sigma[ok]),np.log10(ratiofit[ok]+sigma[ok]),facecolor='grey',alpha=0.5)
-
 
 	if nodata is False:
 		if skipgrp is not None:
@@ -144,7 +125,27 @@ def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plot
 		xdata = np.log10(xdata)
 		plotting.plt.plot(xdata, ydata, style, markersize=marksize, label=label)
 
-	plotting.plt.legend()
+	if plotfit is not None:
+		lmhaloline = np.arange(minm-1.0,maxm+0.5,0.01)
+		if plotfit != 'mos' and plotfit != 'beh':
+			print "WARNING! Input string for plotfit type is not recognized... defaulting to Moster+ 13"
+			plotfit = 'mos'
+		if plotfit == 'mos':
+			ratiofit = moster13(lmhaloline, redshift)
+			fitlabel = "Moster+ 13, z = "+str(redshift)
+			if ploterr is True:
+				sigma = errmoster13(lmhaloline, redshift)
+		if plotfit == 'beh':
+			ratiofit = behroozi13(lmhaloline, redshift)
+			fitlabel = "Behroozi+ 13, z = "+str(redshift)
+			if ploterr is True:
+				print "WARNING ploterr is set to True but behroozi was chosen. Errors not implemented in this yet."
+		plotting.plt.plot(lmhaloline, np.log10(ratiofit), 'k-', linewidth=lw, label=fitlabel)
+		ok, = np.where(np.isnan(np.log10(ratiofit-sigma))==False)
+		plotting.plt.fill_between(lmhaloline[ok],np.log10(ratiofit[ok]-sigma[ok]),np.log10(ratiofit[ok]+sigma[ok]),facecolor='grey',alpha=0.4)
+
+
+	plotting.plt.legend(loc='lower right')
 
 
 
