@@ -73,8 +73,8 @@ def behroozi13(logM,a):
 
 def getstats(simname, step):
 	print "getting halo stats..."
-	if os.path.exists(simname + '.' + step + '.amgia.stat'):
-		amigastat = readcol.readcol(simname + '.' + step + '.amgia.stat', asdict=True)
+	if os.path.exists(simname + '.' + step + '.amiga.stat'):
+		amigastat = readcol.readcol(simname + '.' + step + '.amiga.stat', asdict=True)
 	else:
 			print "amiga file failed, looking for rockstar"
 			if os.path.exists(simname + '.' + step + '.rockstar.stat'):
