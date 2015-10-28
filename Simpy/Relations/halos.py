@@ -146,7 +146,9 @@ def SMHM(simname, step, style, fitstyle='k-',skipgrp=None, maxgrp = None, minmas
 		plotting.plt.fill_between(lmhaloline[ok],np.log10(ratiofit[ok]-sigma[ok]),np.log10(ratiofit[ok]+sigma[ok]),facecolor='grey',alpha=0.4)
 
 
-	plotting.plt.legend(loc='lower right')
+	plotting.plt.legend(loc='lower right', fontsize=25)
+	plt.ylabel(r'M$_{*}$/M$_{vir}$',fontsize=30)
+	plt.xlabel(r'M$_{vir}$',fontsize=30)
 
 
 
