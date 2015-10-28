@@ -89,7 +89,7 @@ def getstats(simname, step):
 	gc.collect()
 	return amigastat, a**-1 -1, type
 
-def SMHM(simname, step, style, fitstyle='k-',skipgrp=None, maxgrp = None, minmass = None, plotratio=True, plotfit='mos', ploterr = True, nodata=False, lw=3, correct = True, marksize=10, label=None, overplot=False, nosats=True):
+def SMHM(simname, step, style, fitstyle='k-',skipgrp=None, maxgrp = None, minmass = None, plotratio=True, plotfit='mos', ploterr = True, nodata=False, lw=3, correct = True, marksize=10, label=None, overplot=False, sats='Remove'):
 	amigastat, redshift, type = getstats(simname, step)
 	print "z = ", redshift
 	if minmass is None:
@@ -105,12 +105,17 @@ def SMHM(simname, step, style, fitstyle='k-',skipgrp=None, maxgrp = None, minmas
 		if maxgrp is not None:
 			ok, = np.where(amigastat['Grp']<maxgrp)
 			util.cutdict(amigastat,ok)
-		if nosats is True:
+		if sats == 'Remove':
 			if type == 'rockstar':
 				ok, = np.where(amigastat['Satellite?'] == -1)
 			if type == 'amiga':
 				ok, = np.where(amigastat['Satellite?'] == 'no')
 			util.cutdict(amigastat,ok)
+		if sats == 'Only':
+			if type == 'rockstar':
+				ok, = np.where(amigastat['Satellite?'] != -1)
+			if type == 'amiga':
+				ok, = np.where(amigastat['Satellite?'] == 'yes')
 		ok, = np.where(amigastat['Mvir(M_sol)']>minmass)
 		util.cutdict(amigastat,ok)
 
