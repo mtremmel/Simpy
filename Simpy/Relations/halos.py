@@ -147,8 +147,8 @@ def SMHM(simname, step, style, fitstyle='k-',skipgrp=None, maxgrp = None, minmas
 
 
 	plotting.plt.legend(loc='lower right', fontsize=25)
-	plt.ylabel(r'M$_{*}$/M$_{vir}$',fontsize=30)
-	plt.xlabel(r'M$_{vir}$',fontsize=30)
+	plotting.plt.ylabel(r'M$_{*}$/M$_{vir}$',fontsize=30)
+	plotting.plt.xlabel(r'M$_{vir}$',fontsize=30)
 
 
 
