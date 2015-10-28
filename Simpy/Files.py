@@ -86,6 +86,7 @@ def mkXML(startstep=None, endstep=None):
 		os.chdir(files[i].strip('\n'))
 		if os.path.exists('description.xml'):
 			print "xml file found!"
+			os.chdir(wdir)
 			continue
 		os.system('~trq/bin/make_xml.pl')
 		os.chdir(wdir)
