@@ -6,7 +6,7 @@ import gc
 
 def rockstar_iord_to_fpos(snap):
 	iord_to_fpos = util.init_iord_to_fpos(snap)
-	f = open(snap+'rockstar.halo_particles','rb')
+	f = open(snap+'.rockstar.halo_particles','rb')
 	orig = np.fromfile(f,dtype=np.dtype('int64'),count=-1)
 	f.close()
 	return iord_to_fpos[orig]
