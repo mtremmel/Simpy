@@ -126,7 +126,7 @@ def SMHM(simname, step, style, fitstyle='k-',skipgrp=None, maxgrp = None, minmas
 		plotting.plt.plot(xdata, ydata, style, markersize=marksize, label=label)
 
 	if plotfit is not None:
-		zlabel = = '%0.4f'%(redshift)
+		zlabel = '%0.4f'%(redshift)
 		lmhaloline = np.arange(minm-1.0,maxm+0.5,0.01)
 		if plotfit != 'mos' and plotfit != 'beh':
 			print "WARNING! Input string for plotfit type is not recognized... defaulting to Moster+ 13"
