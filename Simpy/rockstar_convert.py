@@ -25,6 +25,9 @@ def convert_all_rockstar():
 		if not os.path.exists(snapn+'.rockstar.halo_particles'):
 			print "snapshot does not have halo_particles file... ignoring this snapshot..."
 			continue
+		if os.path.exists(snapn+'.rockstar.halo_particles_fpos'):
+			print "fpos file already found! skipping..."
+			continue
 		fpos = rockstar_iord_to_fpos(snapn)
 		if type(fpos[-1]) != np.int64:
 			fpos = fpos.astype(np.int64)
