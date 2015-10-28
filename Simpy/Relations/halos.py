@@ -142,8 +142,9 @@ def SMHM(simname, step, style, fitstyle='k-',skipgrp=None, maxgrp = None, minmas
 			if ploterr is True:
 				print "WARNING ploterr is set to True but behroozi was chosen. Errors not implemented in this yet."
 		plotting.plt.plot(lmhaloline, np.log10(ratiofit), fitstyle, linewidth=lw, label=fitlabel)
-		ok, = np.where(np.isnan(np.log10(ratiofit-sigma))==False)
-		plotting.plt.fill_between(lmhaloline[ok],np.log10(ratiofit[ok]-sigma[ok]),np.log10(ratiofit[ok]+sigma[ok]),facecolor='grey',alpha=0.4)
+		if ploterr is True:
+			ok, = np.where(np.isnan(np.log10(ratiofit-sigma))==False)
+			plotting.plt.fill_between(lmhaloline[ok],np.log10(ratiofit[ok]-sigma[ok]),np.log10(ratiofit[ok]+sigma[ok]),facecolor='grey',alpha=0.4)
 
 
 	plotting.plt.legend(loc='lower right', fontsize=25)
