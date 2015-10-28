@@ -1,6 +1,7 @@
 import numpy as np
 from . import util
 import os
+import gc
 
 
 def rockstar_iord_to_fpos(snap):
@@ -25,5 +26,7 @@ def convert_all_rockstar():
 			fpos = fpos.astype(np.int64)
 		outf = open(snap+'.rockstar.halo_particles_fpos','wb')
 		fpos.tofile(outf, format='%l')
+		del(fpos)
+		gc.collect()
 		outf.close()
 
