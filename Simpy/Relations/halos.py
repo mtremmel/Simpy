@@ -89,7 +89,7 @@ def getstats(simname, step):
 	gc.collect()
 	return amigastat, a**-1 -1, type
 
-def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plotratio=True, plotfit='mos', ploterr = True, nodata=False, lw=3, correct = True, marksize=10, label=None, overplot=False, nosats=True):
+def SMHM(simname, step, style, fitstyle='k-',skipgrp=None, maxgrp = None, minmass = None, plotratio=True, plotfit='mos', ploterr = True, nodata=False, lw=3, correct = True, marksize=10, label=None, overplot=False, nosats=True):
 	amigastat, redshift, type = getstats(simname, step)
 	print "z = ", redshift
 	if minmass is None:
@@ -126,21 +126,22 @@ def SMHM(simname, step, style, skipgrp=None, maxgrp = None, minmass = None, plot
 		plotting.plt.plot(xdata, ydata, style, markersize=marksize, label=label)
 
 	if plotfit is not None:
+		zlabel = = '%0.4f'%(redshift)
 		lmhaloline = np.arange(minm-1.0,maxm+0.5,0.01)
 		if plotfit != 'mos' and plotfit != 'beh':
 			print "WARNING! Input string for plotfit type is not recognized... defaulting to Moster+ 13"
 			plotfit = 'mos'
 		if plotfit == 'mos':
 			ratiofit = moster13(lmhaloline, redshift)
-			fitlabel = "Moster+ 13, z = "+str(redshift)
+			fitlabel = "Moster+ 13, z = "+zlabel
 			if ploterr is True:
 				sigma = errmoster13(lmhaloline, redshift)
 		if plotfit == 'beh':
 			ratiofit = behroozi13(lmhaloline, redshift)
-			fitlabel = "Behroozi+ 13, z = "+str(redshift)
+			fitlabel = "Behroozi+ 13, z = "+zlabel
 			if ploterr is True:
 				print "WARNING ploterr is set to True but behroozi was chosen. Errors not implemented in this yet."
-		plotting.plt.plot(lmhaloline, np.log10(ratiofit), 'k-', linewidth=lw, label=fitlabel)
+		plotting.plt.plot(lmhaloline, np.log10(ratiofit), fitstyle, linewidth=lw, label=fitlabel)
 		ok, = np.where(np.isnan(np.log10(ratiofit-sigma))==False)
 		plotting.plt.fill_between(lmhaloline[ok],np.log10(ratiofit[ok]-sigma[ok]),np.log10(ratiofit[ok]+sigma[ok]),facecolor='grey',alpha=0.4)
 
