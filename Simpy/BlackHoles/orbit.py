@@ -7,6 +7,7 @@ from .. import readcol
 import gc
 from .. import Files
 from .. import util
+from .. import cosmology
 
 
 def mkAbridgedOrbit(simname, sim, endname, lmin=1e43, mmin=1e6):
@@ -49,14 +50,23 @@ def getOrbitValbyStep(minstep=1, maxstep=4096, clean=False, filename=None, ret_o
         '''
     output = {'iord': [], 'time': [], 'step': [], 'mass': [], 'x': [], 'y': [], 'z': [], 'vx': [], 'vy': [], 'vz': [],
               'mdot': [], 'mdotmean': [], 'mdotsig': [], 'a': [], 'dM': []}
-
+    oldform = False
+    f = open('files.list','r')
+    files = f.readlines()
+    s = pynbody.load(files[0].strip('\n'))
+    f.close()
     if not os.path.exists('orbitsteps/'):
         print "ERROR! can't find orbitsteps... run sepOrbitbyStep first!"
         return
     for i in range(minstep, maxstep + 1):
         if os.path.exists('orbitsteps/' + str(i)):
             print "getting data for step ", i
-            bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt, a = readcol.readcol(
+            try:
+                bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt, a = readcol.readcol(
+                'orbitsteps/' + str(i), twod=False)
+            except:
+                oldform = True
+                bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt = readcol.readcol(
                 'orbitsteps/' + str(i), twod=False)
             if clean == True: os.system('rm orbitsteps/' + str(i))
         else:
@@ -74,7 +84,10 @@ def getOrbitValbyStep(minstep=1, maxstep=4096, clean=False, filename=None, ret_o
         vz = vz[ord]
         mdot = mdot[ord]
         dt = dt[ord]
-        a = a[ord]
+        if oldform is False:
+            a = a[ord]
+        else:
+            a = cosmology.getScaleFactor(time,s)
         # bad, = np.where((mass - mdot*dt < MBHinit)|(mass<MBHinit))
         # mdot[bad] = 0
         ubhid, uind = np.unique(bhid, return_index=True)
