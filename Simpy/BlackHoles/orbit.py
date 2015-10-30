@@ -87,7 +87,7 @@ def getOrbitValbyStep(minstep=1, maxstep=4096, clean=False, filename=None, ret_o
         if oldform is False:
             a = a[ord]
         else:
-            a = cosmology.getScaleFactor(time,s)
+            a = cosmology.getScaleFactor(time*s.infer_original_units('Gyr').in_units('Gyr'),s)
         # bad, = np.where((mass - mdot*dt < MBHinit)|(mass<MBHinit))
         # mdot[bad] = 0
         ubhid, uind = np.unique(bhid, return_index=True)

@@ -17,6 +17,6 @@ def getScaleFactor(times,s):
                 try: redshift[tt] = opt.newton(func,0)
                 except:
                         print "ERROR did not converge", times[tt],tt
-                        redshift[tt] = -1
+                        redshift[tt] = 20
         scaleFac = 1./(1+redshift)
         return scaleFac, redshift
