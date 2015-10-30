@@ -16,7 +16,9 @@ def getScaleFactor(times,s):
                         return getTime(z,s) - times.in_units('Gyr')[tt]
                 try: redshift[tt] = opt.newton(func,0)
                 except:
-                        try: redshift[tt] = opt.newton(func,20)
+                        try:
+                                print "trying again"
+                                redshift[tt] = opt.newton(func,20)
                         except:
                                 print "ERROR did not converge", times[tt],tt
                                 redshift[tt] = -1
