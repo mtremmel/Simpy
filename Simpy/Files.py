@@ -4,12 +4,15 @@ import os
 def getFileLists(simname, NCHILADA=True):
 	simname_split = simname.split('.')
 	num = len(simname_split)
-	if not NCHILADA:
-		os.system('ls *.iord | cut -d"." -f1-' + str(num + 1) + ' > files.list')
-		os.system('ls *.iord | cut -d"." -f' + str(num + 1) + ' > steps.list')
-	else:
-		os.system('ls ' + simname + '.00* --directory > files.list')
-		os.system('ls ' + simname + '.00* --directory | cut -d"." -f' + str(num + 1) +' > steps.list')
+	os.system('ls ' + simname + '.00???? --directory > files.list')
+	os.system('ls ' + simname + '.00???? --directory | cut -d"." -f' + str(num + 1) + ' > steps.list')
+
+#	if not NCHILADA:
+#		os.system('ls *.iord | cut -d"." -f1-' + str(num + 1) + ' > files.list')
+#		os.system('ls *.iord | cut -d"." -f' + str(num + 1) + ' > steps.list')
+#	else:
+#		os.system('ls ' + simname + '.00???? --directory > files.list')
+#		os.system('ls ' + simname + '.00???? --directory | cut -d"." -f' + str(num + 1) +' > steps.list')
 	##os.system('ls ' + parentdir + simname +'.00*.grp | cut -d "." -f1-' + str(num + 1) + '> grpfiles.list' )
 	return
 
