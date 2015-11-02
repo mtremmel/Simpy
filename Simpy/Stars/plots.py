@@ -69,8 +69,8 @@ def cosmicSFH(sim, style, lw=3, bins=50, zrange=None, label=None, ret_hist=True,
 		zbins = 10**np.arange(np.log10(zrange[0]+1),np.log10(zrange[1]+1)+dz,dz)
 	tedges = np.array([cosmology.getTime(z,sim) for z in zbins])
 	tsorted = np.argsort(tedges)
-	dt = (tedges[0:-1] - tedges[1:]) * 1e9
 	tedges = tedges[tsorted]
+	dt = np.abs((tedges[0:-1] - tedges[1:]) * 1e9)
 	data = np.histogram(tform, bins=tedges, weights=massform)
 	sfr = data[0]/dt
 	zbins = zbins[tsorted]
