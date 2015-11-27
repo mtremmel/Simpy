@@ -147,43 +147,34 @@ def truncOrbitFile(simname, minstep=1, maxstep=4096, ret_output=False):
 
 
 def sticthOrbitSteps(simname, nfiles, ret_output=False, overwrite=True, nstart=1):
-    output = {'iord': np.array([]), 'time': np.array([]), 'step': np.array([]), 'mass': np.array([]), 'x': np.array([]), 'y': np.array([]), 'z': np.array([]), 'vx': np.array([]), 'vy': np.array([]), 'vz': np.array([]),'mdot': np.array([]), 'mdotmean': np.array([]), 'mdotsig': np.array([]), 'a': np.array([]), 'dM': np.array([])}
 
     outorder = ['iord', 'time', 'step', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'mdot', 'mdotmean', 'mdotsig', 'a','dM']
     outputname = simname + '.shortened.orbit'
 
     if os.path.exists(outputname) and overwrite == False:
-        cols = {'iord': 1, 'time': 2, 'step': 3, 'mass': 4, 'x': 5, 'y': 6, 'z': 7, 'vx': 8, 'vy': 9, 'vz': 10,
-                'mdot': 11, 'mdotmean': 12, 'mdotsig': 13, 'a': 14, 'dM': 15}
-        data = readcol.readcol(simname + '.shortened.orbit')
-        for key in output.keys():
-            output[key] = data[:, cols[key] - 1]
-
+        outf = open(outputname,'a')
+    else:
+        outf = open(outputname,'w')
     for i in range(nfiles):
+        print "reading in data from ", simname + '.shortened.orbit' + str(num)
         num = i + nstart
         f = open(simname + '.shortened.orbit' + str(num), 'rb')
         output_part = pickle.load(f)
         f.close()
-        for key in output.keys():
-            output[key] = np.append(output[key], output_part[key])
-        del (output_part)
+        tofile = []
+        for key in outorder:
+            tofile.append(output_part[key])
+            del(output_part[key])
+            gc.collect()
+        del(output_part)
         gc.collect()
-    tofile = []
-    for key in outorder:
-        tofile.append(output[key])
-    tofile = tuple(tofile)
-
-    print "saving to file..."
-    np.savetxt(outputname, np.column_stack(tofile),
+        tofile = tuple(tofile)
+        np.savetxt(outf, np.column_stack(tofile),
                fmt=['%d', '%f', '%d', '%e', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f','%e'])
-    del (tofile)
-    gc.collect()
-    if ret_output == True:
-        return output
-    else:
-        del (output)
+        del(tofile)
         gc.collect()
-        return
+    outf.close()
+    return
 
 
 class Orbit(object):
