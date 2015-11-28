@@ -5,16 +5,34 @@ import pynbody
 def gen_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 	hcur = db.get_halo(simname+'/%'+str(endstep)+'/'+str(halonum))
 	h = hcur
+	if 'BH' not in h.keys():
+		print "ERROR No BHs found in halo "+str(halonum)+" at step "+endstep+"\n"
+		return {}
+
 	bhorbit.getprogbhs()
 	luminosity = np.array([])
 	time = np.array([])
 	step = np.array([])
 	iord = np.array([])
 	while h.previous:
-		print h.previous.timestep, h.timestep
 		tcur = h.timestep.time_gyr
 		tnext = h.previous.timestep.time_gyr
+		print h.previous.timestep, h.timestep
+
 		bhids = np.array([bh.halo_number for bh in h['BH']])
+		if 'BH' not in h.previous.keys():
+			print "No BHs in previous timestep!"
+			for id in bhids:
+				lum = bhorbit.single_BH_data(id, 'lum')
+				t = bhorbit.single_BH_data(id, 'time')
+				s = bhorbit.single_BH_data(id, 'step')
+				ids = np.ones(len(lum)).astype(np.int64)*id
+				np.append(luminosity, lum[(t<=tcur)])
+				np.append(time, t[(t<=tcur)])
+				np.append(step, s[(t<=tcur)])
+				np.append(iord,ids[(t<=tcur)])
+			break
+
 		bhids_prev = np.array([bh.halo_number for bh in h.previous['BH']])
 		prevmatch, = np.where(np.in1d(bhids, bhids_prev))
 		nomatch, = np.where(np.in1d(bhids, bhids_prev)==False)
