@@ -93,8 +93,8 @@ def gen_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 		nactive[i] = len(act)
 		idmax[i] = iord[curt][np.argmax(luminosity[curt])]
 
-	AccHist = {'maxlum':pynbody.array.SimArray(maxlum,'ergs s**-1'),
-			   'totlum':pynbody.array.SimArray(totlum,'ergs s**-1'),
+	AccHist = {'maxlum':pynbody.array.SimArray(maxlum,'erg s**-1'),
+			   'totlum':pynbody.array.SimArray(totlum,'erg s**-1'),
 			   'step':outstep,
 			   'time':pynbody.array.SimArray(outtime,'Gyr'),
 			   'nactive':nactive,
