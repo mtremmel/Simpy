@@ -31,7 +31,7 @@ def gen_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 
 		for i in onomatch:
 			if len(bhorbit.prog['time'][i])==0: continue
-			ok = np.where((np.array(bhorbit.prog['time'][i]) >= tnext)&(np.array(bhorbit.prog['time'][i]) < tnext))
+			ok, = np.where((np.array(bhorbit.prog['time'][i]) >= tnext)&(np.array(bhorbit.prog['time'][i]) < tnext))
 			if len(ok) > 0:
 				tfirst = tcur
 				progmatch, = np.where(np.in1d(bhids_prev,bhorbit.prog['iord'][i][ok]))
