@@ -3,7 +3,7 @@ import halo_db as db
 import pynbody
 
 def gen_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
-	hcur = db.get_halo(simname+'/%'+endstep+'/'+str(halonum))
+	hcur = db.get_halo(simname+'/%'+str(endstep)+'/'+str(halonum))
 	h = hcur
 	bhorbit.getprogbhs()
 	luminosity = np.array([])
