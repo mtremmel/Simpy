@@ -146,7 +146,7 @@ def truncOrbitFile(simname, minstep=1, maxstep=4096, ret_output=False):
     return
 
 
-def sticthOrbitSteps(simname, nfiles, ret_output=False, overwrite=True, nstart=1):
+def sticthOrbitSteps(simname, nfiles, ret_output=False, overwrite=False, nstart=1):
 
     outorder = ['iord', 'time', 'step', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'mdot', 'mdotmean', 'mdotsig', 'a','dM']
     outputname = simname + '.shortened.orbit'
