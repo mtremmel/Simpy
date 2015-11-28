@@ -156,8 +156,8 @@ def sticthOrbitSteps(simname, nfiles, ret_output=False, overwrite=False, nstart=
     else:
         outf = open(outputname,'w')
     for i in range(nfiles):
-        print "reading in data from ", simname + '.shortened.orbit' + str(num)
         num = i + nstart
+        print "reading in data from ", simname + '.shortened.orbit' + str(num)
         f = open(simname + '.shortened.orbit' + str(num), 'rb')
         output_part = pickle.load(f)
         f.close()
