@@ -11,6 +11,7 @@ def gen_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 	step = np.array([])
 	iord = np.array([])
 	while h.previous:
+		print h.previous.timestep, h.timestep
 		tcur = h.timestep.time_gyr
 		tnext = h.previous.timestep.time_gyr
 		bhids = np.array([bh.halo_number for bh in h['BH']])
