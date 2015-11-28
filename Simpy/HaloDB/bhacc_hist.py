@@ -12,7 +12,7 @@ def gen_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 	iord = np.array([])
 	while h.previous:
 		tcur = h.timestep.time_gyr
-		tnext = h.previous.time_gyr
+		tnext = h.previous.timestep.time_gyr
 		bhids = np.array([bh.halo_number for bh in h['BH']])
 		bhids_prev = np.array([bh.halo_number for bh in h.previous['BH']])
 		prevmatch, = np.where(np.in1d(bhids, bhids_prev))
