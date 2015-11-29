@@ -1,6 +1,7 @@
 import numpy as np
 import pynbody
 
+
 def gen_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 	import halo_db as db
 	hcur = db.get_halo(simname+'/%'+str(endstep)+'/'+str(halonum))
