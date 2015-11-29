@@ -212,6 +212,8 @@ class Orbit(object):
         sl = pynbody.tipsy.StarLog(self.simname + '.starlog')
         slbhiords = sl['iord'][(sl['tform'] < 0)]
         ok, = np.where(np.in1d(self.data['iord'], slbhiords))
+        del(sl)
+        gc.collect()
         for key in self.data.keys():
             self.data[key] = self.data[key][ok]
         self.data['iord'][(self.data['iord']<0)] = 2*2147483648 + self.data['iord'][(self.data['iord']<0)]
