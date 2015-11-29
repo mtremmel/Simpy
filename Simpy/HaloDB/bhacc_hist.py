@@ -28,10 +28,10 @@ def gen_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 				t = bhorbit.single_BH_data(id, 'time')
 				s = bhorbit.single_BH_data(id, 'step')
 				ids = np.ones(len(lum)).astype(np.int64)*id
-				np.append(luminosity, lum[(t<=tcur)])
-				np.append(time, t[(t<=tcur)])
-				np.append(step, s[(t<=tcur)])
-				np.append(iord,ids[(t<=tcur)])
+				luminosity = np.append(luminosity, lum[(t<=tcur)])
+				time = np.append(time, t[(t<=tcur)])
+				step = np.append(step, s[(t<=tcur)])
+				iord = np.append(iord,ids[(t<=tcur)])
 			break
 
 		bhids_prev = np.array([bh.halo_number for bh in h.previous['BH']])
@@ -44,10 +44,10 @@ def gen_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 			t = bhorbit.single_BH_data(id, 'time')
 			s = bhorbit.single_BH_data(id, 'step')
 			ids = np.ones(len(lum)).astype(np.int64)*id
-			np.append(luminosity, lum[((t>tnext)&(t<=tcur))])
-			np.append(time, t[((t>tnext)&(t<=tcur))])
-			np.append(step, s[((t>tnext)&(t<=tcur))])
-			np.append(iord,ids[((t>tnext)&(t<=tcur))])
+			luminosity = np.append(luminosity, lum[((t>tnext)&(t<=tcur))])
+			time = np.append(time, t[((t>tnext)&(t<=tcur))])
+			step = np.append(step, s[((t>tnext)&(t<=tcur))])
+			iord = np.append(iord,ids[((t>tnext)&(t<=tcur))])
 
 		for i in onomatch:
 			if len(bhorbit.prog['time'][i])==0: continue
@@ -65,18 +65,18 @@ def gen_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 						print "WARNING! time found for eated BH that excedes current time... should not be possible"
 					if t.max() <= tfirst:
 						tfirst = t.max()
-					np.append(luminosity, lum[((t>tnext)&(t<=tcur))])
-					np.append(time, t[((t>tnext)&(t<=tcur))])
-					np.append(step, s[((t>tnext)&(t<=tcur))])
-					np.append(iord,ids[((t>tnext)&(t<=tcur))])
+					luminosity = np.append(luminosity, lum[((t>tnext)&(t<=tcur))])
+					time = np.append(time, t[((t>tnext)&(t<=tcur))])
+					step = np.append(step, s[((t>tnext)&(t<=tcur))])
+					iord = np.append(iord,ids[((t>tnext)&(t<=tcur))])
 				lum = bhorbit.single_BH_data(bhorbit.bhiords[i], 'lum')
 				t = bhorbit.single_BH_data(bhorbit.bhiords[i], 'time')
 				s = bhorbit.single_BH_data(bhorbit.bhiords[i], 'step')
 				ids = np.ones(len(lum)).astype(np.int64)*id
-				np.append(luminosity, lum[((t>tfirst)&(t<=tcur))])
-				np.append(time, t[((t>tfirst)&(t<=tcur))])
-				np.append(step, s[((t>tfirst)&(t<=tcur))])
-				np.append(iord,ids[((t>tfirst)&(t<=tcur))])
+				luminosity = np.append(luminosity, lum[((t>tfirst)&(t<=tcur))])
+				time = np.append(time, t[((t>tfirst)&(t<=tcur))])
+				step = np.append(step, s[((t>tfirst)&(t<=tcur))])
+				iord = np.append(iord,ids[((t>tfirst)&(t<=tcur))])
 		h = h.previous
 
 	outstep = np.unique(step)
