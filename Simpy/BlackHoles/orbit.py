@@ -73,7 +73,6 @@ def getOrbitValbyStep(minstep=1, maxstep=4096, clean=False, filename=None, ret_o
             continue
         ord = np.argsort(bhid)
         bhid = bhid[ord].astype(np.int64)
-        bhid[(bhid<0)] = 2*2147483648 + bhid[(bhid<0)]  #TEMPORARY fix for integer overflow occuring in both awk *and* starlog reader
         time = time[ord]
         step = step[ord]
         mass = mass[ord]
@@ -215,9 +214,10 @@ class Orbit(object):
         ok, = np.where(np.in1d(self.data['iord'], slbhiords))
         for key in self.data.keys():
             self.data[key] = self.data[key][ok]
-
+        self.data['iord'][(self.data['iord']<0)] = 2*2147483648 + self.data['iord'][(self.data['iord']<0)]
         # convert comoving quantities to physical units
-        for key in ['x', 'y', 'z', 'vx', 'vy', 'vz']: self.data[key] *= self.data['scalefac']
+        for key in ['x', 'y', 'z', 'vx', 'vy', 'vz']:
+            self.data[key] *= self.data['scalefac']
         for key in self.data.keys():
             unit = None
             if defunits[key] is not None:
