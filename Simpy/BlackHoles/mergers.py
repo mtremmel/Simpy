@@ -57,15 +57,20 @@ def get_complete_prog_list(bhorbit, bhid, tmax):
     bhorbit.getprogbhs()
     idlist = []
     idnew = bhorbit.prog['iord'][target][(bhorbit.prog['time'][target]<tmax)]
-    idlist.extend(idnew)
+    idlist.extend(list(idnew))
     deep = 0
     while len(idnew) > 0:
         deep += 1
         idnext = []
         for bid in idnew:
             newtarget, = np.where(bhorbit.bhiords==bid)
+            if len(newtarget)>1:
+                print "Warning! multiple matches in bhiords found for ", bid
+            if len(newtarget)==0:
+                print bid+" not found in orbit object! moving on..."
+                continue
             newpart = bhorbit.prog['iord'][newtarget]
-            idnext.extend(newpart)
+            idnext.extend(list(newpart))
         idnew = idnext
         idlist.extend(idnew)
     print "finished with ", deep, "steps\n"
