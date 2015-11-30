@@ -20,8 +20,12 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 		tnext = h.previous.timestep.time_gyr
 		print h.previous, h, tcur, tnext
 
-		bhids = np.array([bh.halo_number for bh in h['BH']])
-		if 'BH' not in h.previous.keys():
+		nbhs_prev = len(np.where(np.array(h.keys())=='BH'))
+		if nbhs_prev > 1:
+			bhids = np.array([bh.halo_number for bh in h['BH']])
+		if nbhs_prev == 1:
+			bhids = np.array([h['BH'].halo_number])
+		if nbhs_prev == 0:
 			print "No BHs in previous timestep!"
 			for id in bhids:
 				lum = bhorbit.single_BH_data(id, 'lum')
