@@ -69,7 +69,7 @@ def get_complete_prog_list(bhorbit, bhid, tmax):
             if len(newtarget)>1:
                 print "Warning! multiple matches in bhiords found for ", bid
             if len(newtarget)==0:
-                print bid+" not found in orbit object! moving on..."
+                print str(bid)+" not found in orbit object! moving on..."
                 continue
             newtarget = newtarget[0]
             newpart = bhorbit.prog['iord'][newtarget]
