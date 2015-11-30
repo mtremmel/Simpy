@@ -57,8 +57,11 @@ def get_complete_prog_list(bhorbit, bhid, tmax):
     bhorbit.getprogbhs()
     idlist = []
     idnew = bhorbit.prog['iord'][target][(bhorbit.prog['time'][target]<tmax)]
-    idlist.extend(list(idnew))
-    deep = 0
+    if type(idnew)==list:
+        idlist.extend(idnew)
+    else:
+        idlist.append(idnew)
+
     while len(idnew) > 0:
         deep += 1
         idnext = []
@@ -70,9 +73,15 @@ def get_complete_prog_list(bhorbit, bhid, tmax):
                 print bid+" not found in orbit object! moving on..."
                 continue
             newpart = bhorbit.prog['iord'][newtarget]
-            idnext.extend(list(newpart))
+            if type(newpart)==list:
+                idnext.extend(newpart)
+            else
+                idnext.append(newpart)
         idnew = idnext
-        idlist.extend(idnew)
+        if type(idnew)==list:
+            idlist.extend(idnew)
+        else:
+            idlist.append(idnew)
     print "finished with ", deep, "steps\n"
     return idlist
 
