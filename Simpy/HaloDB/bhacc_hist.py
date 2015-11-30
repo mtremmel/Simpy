@@ -137,7 +137,7 @@ def total_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 		cnt += 1
 		print "finding total progenitor list for BH ", bhorbit.bhiords[i], "("+str(cnt)+'/'+str(len(omatch))+")"
 		proglist = BlackHoles.mergers.get_complete_prog_list(bhorbit,bhorbit.bhiords[i], tcur)
-		bhids = bhids.append(np.array(proglist))
+		bhids = np.append(bhids,np.array(proglist))
 
 	print "getting total accretion history..."
 	luminosity = np.array([])
