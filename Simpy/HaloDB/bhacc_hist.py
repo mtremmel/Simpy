@@ -104,13 +104,13 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 
 	return AccHist
 
-def total_halo_bh_acc(simname, endstep, halonum, bhorbit):
+def total_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 	import halo_db as db
 	from .. import BlackHoles
 	h = db.get_halo(simname+'/%'+str(endstep)+'/'+str(halonum))
 	tcur = h.timestep.time_gyr
 	bhids = np.array([bh.halo_number for bh in h['BH']])
-	omatch, = np.where(npin1d(bhorbit.bhiords, bhids))
+	omatch, = np.where(np.in1d(bhorbit.bhiords, bhids))
 	bhorbit.getprogbhs()
 	cnt = 0
 
@@ -124,6 +124,7 @@ def total_halo_bh_acc(simname, endstep, halonum, bhorbit):
 	luminosity = np.array([])
 	time = np.array([])
 	step = np.array([])
+	iord = np.array([])
 	for bid in bhids:
 		lumpart = bhorbit.single_BH_data(bid, 'lum')
 		timepart = bhorbit.single_BH_data(bid, 'time')
@@ -131,6 +132,8 @@ def total_halo_bh_acc(simname, endstep, halonum, bhorbit):
 		luminosity = np.append(luminosity, lumpart)
 		step = np.append(step, steppart)
 		time = np.append(time, timepart)
+		ids = np.ones(len(lumpart)).astype(np.int64)*bid
+		iord = np.append(iord, ids)
 
 	outstep = np.unique(step)
 	outtime = np.zeros(len(outstep))
