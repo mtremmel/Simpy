@@ -6,7 +6,12 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 	import halo_db as db
 	hcur = db.get_halo(simname+'/%'+str(endstep)+'/'+str(halonum))
 	h = hcur
-	if 'BH' not in h.keys():
+	nbhs = len(np.where(np.array(h.keys())=='BH')[0])
+	if nbhs > 1:
+		bhids = np.array([bh.halo_number for bh in h['BH']])
+	if nbhs == 1:
+		bhids = np.array([h['BH'].halo_number])
+	if nbhs == 0:
 		print "ERROR No BHs found in halo "+str(halonum)+" at step "+endstep+"\n"
 		return {}
 
@@ -39,10 +44,10 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 			break
 
 		prevmatch, = np.where(np.in1d(bhids, bhids_prev))
-		nomatch, = np.where(np.in1d(bhids, bhids_prev)==False)
-		onomatch, = np.where(np.in1d(bhorbit.bhiords,bhids[nomatch]))
+		noprevmatch, = np.where(np.in1d(bhids, bhids_prev)==False)
+		omatch, = np.where(np.in1d(bhorbit.bhiords, bhids))
 
-		for id in bhids[prevmatch]:
+		for di in bhids[prevmatch]:
 			lum = bhorbit.single_BH_data(id, 'lum')
 			t = bhorbit.single_BH_data(id, 'time')
 			s = bhorbit.single_BH_data(id, 'step')
@@ -52,13 +57,14 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 			step = np.append(step, s[((t>tnext)&(t<=tcur))])
 			iord = np.append(iord,ids[((t>tnext)&(t<=tcur))])
 
-		for i in onomatch:
+		for i in omatch:
 			if len(bhorbit.prog['time'][i])==0: continue
 			ok, = np.where((np.array(bhorbit.prog['time'][i]) >= tnext)&(np.array(bhorbit.prog['time'][i]) < tnext))
 			if len(ok) > 0:
 				tfirst = tcur
 				progmatch, = np.where(np.in1d(bhids_prev,bhorbit.prog['iord'][i][ok]))
-				if len(progmatch)==0: continue
+				if len(progmatch) == 0: continue
+
 				for id in bhids_prev[progmatch]:
 					lum = bhorbit.single_BH_data(id, 'lum')
 					t = bhorbit.single_BH_data(id, 'time')
@@ -72,14 +78,18 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 					time = np.append(time, t[((t>tnext)&(t<=tcur))])
 					step = np.append(step, s[((t>tnext)&(t<=tcur))])
 					iord = np.append(iord,ids[((t>tnext)&(t<=tcur))])
-				lum = bhorbit.single_BH_data(bhorbit.bhiords[i], 'lum')
-				t = bhorbit.single_BH_data(bhorbit.bhiords[i], 'time')
-				s = bhorbit.single_BH_data(bhorbit.bhiords[i], 'step')
-				ids = np.ones(len(lum)).astype(np.int64)*id
-				luminosity = np.append(luminosity, lum[((t>tfirst)&(t<=tcur))])
-				time = np.append(time, t[((t>tfirst)&(t<=tcur))])
-				step = np.append(step, s[((t>tfirst)&(t<=tcur))])
-				iord = np.append(iord,ids[((t>tfirst)&(t<=tcur))])
+
+				if bhorbit.bhiords[i] not in bhids_prev:
+					lum = bhorbit.single_BH_data(bhorbit.bhiords[i], 'lum')
+					t = bhorbit.single_BH_data(bhorbit.bhiords[i], 'time')
+					s = bhorbit.single_BH_data(bhorbit.bhiords[i], 'step')
+					ids = np.ones(len(lum)).astype(np.int64)*id
+					luminosity = np.append(luminosity, lum[((t>tfirst)&(t<=tcur))])
+					time = np.append(time, t[((t>tfirst)&(t<=tcur))])
+					step = np.append(step, s[((t>tfirst)&(t<=tcur))])
+					iord = np.append(iord,ids[((t>tfirst)&(t<=tcur))])
+
+		bhids = bhids_prev
 		h = h.previous
 
 	outstep = np.unique(step)
