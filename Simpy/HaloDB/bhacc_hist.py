@@ -32,11 +32,11 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 			bhids_prev = np.array([h.previous['BH'].halo_number])
 		if nbhs_prev == 0:
 			print "No BHs in previous timestep!"
-			for id in bhids:
-				lum = bhorbit.single_BH_data(id, 'lum')
-				t = bhorbit.single_BH_data(id, 'time')
-				s = bhorbit.single_BH_data(id, 'step')
-				ids = np.ones(len(lum)).astype(np.int64)*id
+			for bid in bhids:
+				lum = bhorbit.single_BH_data(bid, 'lum')
+				t = bhorbit.single_BH_data(bid, 'time')
+				s = bhorbit.single_BH_data(bid, 'step')
+				ids = np.ones(len(lum)).astype(np.int64)*bid
 				luminosity = np.append(luminosity, lum[(t<=tcur)])
 				time = np.append(time, t[(t<=tcur)])
 				step = np.append(step, s[(t<=tcur)])
@@ -47,11 +47,11 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 		noprevmatch, = np.where(np.in1d(bhids, bhids_prev)==False)
 		omatch, = np.where(np.in1d(bhorbit.bhiords, bhids))
 
-		for di in bhids[prevmatch]:
-			lum = bhorbit.single_BH_data(id, 'lum')
-			t = bhorbit.single_BH_data(id, 'time')
-			s = bhorbit.single_BH_data(id, 'step')
-			ids = np.ones(len(lum)).astype(np.int64)*id
+		for bid in bhids[prevmatch]:
+			lum = bhorbit.single_BH_data(bid, 'lum')
+			t = bhorbit.single_BH_data(bid, 'time')
+			s = bhorbit.single_BH_data(bid, 'step')
+			ids = np.ones(len(lum)).astype(np.int64)*bid
 			luminosity = np.append(luminosity, lum[((t>tnext)&(t<=tcur))])
 			time = np.append(time, t[((t>tnext)&(t<=tcur))])
 			step = np.append(step, s[((t>tnext)&(t<=tcur))])
@@ -65,11 +65,11 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 				progmatch, = np.where(np.in1d(bhids_prev,bhorbit.prog['iord'][i][ok]))
 				if len(progmatch) == 0: continue
 
-				for id in bhids_prev[progmatch]:
-					lum = bhorbit.single_BH_data(id, 'lum')
-					t = bhorbit.single_BH_data(id, 'time')
-					s = bhorbit.single_BH_data(id, 'step')
-					ids = np.ones(len(lum)).astype(np.int64)*id
+				for bid in bhids_prev[progmatch]:
+					lum = bhorbit.single_BH_data(bid, 'lum')
+					t = bhorbit.single_BH_data(bid, 'time')
+					s = bhorbit.single_BH_data(bid, 'step')
+					ids = np.ones(len(lum)).astype(np.int64)*bid
 					if t.max() > tcur:
 						print "WARNING! time found for eated BH that excedes current time... should not be possible"
 					if t.max() <= tfirst:
@@ -83,7 +83,7 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 					lum = bhorbit.single_BH_data(bhorbit.bhiords[i], 'lum')
 					t = bhorbit.single_BH_data(bhorbit.bhiords[i], 'time')
 					s = bhorbit.single_BH_data(bhorbit.bhiords[i], 'step')
-					ids = np.ones(len(lum)).astype(np.int64)*id
+					ids = np.ones(len(lum)).astype(np.int64)*bhorbit.bhiords[i]
 					luminosity = np.append(luminosity, lum[((t>tfirst)&(t<=tcur))])
 					time = np.append(time, t[((t>tfirst)&(t<=tcur))])
 					step = np.append(step, s[((t>tfirst)&(t<=tcur))])
