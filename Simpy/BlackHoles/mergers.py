@@ -61,7 +61,7 @@ def get_complete_prog_list(bhorbit, bhid, tmax):
         idlist.extend(idnew)
     else:
         idlist.append(idnew)
-
+    deep = 0
     while len(idnew) > 0:
         deep += 1
         idnext = []
@@ -75,7 +75,7 @@ def get_complete_prog_list(bhorbit, bhid, tmax):
             newpart = bhorbit.prog['iord'][newtarget]
             if type(newpart)==list:
                 idnext.extend(newpart)
-            else
+            else:
                 idnext.append(newpart)
         idnew = idnext
         if type(idnew)==list:
