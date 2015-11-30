@@ -52,4 +52,23 @@ def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt',
     else:
         return
 
+def get_complete_prog_list(bhorbit, bhid, tmax):
+    target, = np.where(bhorbit.bhiords == bhid)
+    bhorbit.getprogbhs()
+    idlist = []
+    idnew = bhorbit.prog['iord'][target][(bhorbit.prog['time'][target]<tmax)]
+    idlist.extend(idnew)
+    deep = 0
+    while len(idnew) > 0:
+        deep += 1
+        idnext = []
+        for bid in idnew:
+            newtarget, = np.where(bhorbit.bhiords==bid)
+            newpart = bhorbit.prog['iord'][newtarget]
+            idnext.extend(newpart)
+        idnew = idnext
+        idlist.extend(idnew)
+    print "finished with ", deep, "steps\n"
+    return idlist
+
 

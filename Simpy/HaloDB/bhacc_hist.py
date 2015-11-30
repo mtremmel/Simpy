@@ -104,6 +104,60 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 
 	return AccHist
 
+def total_halo_bh_acc(simname, endstep, halonum, bhorbit):
+	import halo_db as db
+	from .. import BlackHoles
+	h = db.get_halo(simname+'/%'+str(endstep)+'/'+str(halonum))
+	tcur = h.timestep.time_gyr
+	bhids = np.array([bh.halo_number for bh in h['BH']])
+	omatch, = np.where(npin1d(bhorbit.bhiords, bhids))
+	bhorbit.getprogbhs()
+	cnt = 0
+
+	for i in omatch:
+		cnt += 1
+		print "finding total progenitor list for BH ", bhorbit.bhiords[i], "("+str(cnt)+'/'+str(len(omatch))+")"
+		proglist = BlackHoles.mergers.get_complete_prog_list(bhorbit,bhorbit.bhiords[i], tcur)
+		bhids = bhids.append(np.array(proglist))
+
+	print "getting total accretion history..."
+	luminosity = np.array([])
+	time = np.array([])
+	step = np.array([])
+	for bid in bhids:
+		lumpart = bhorbit.single_BH_data(bid, 'lum')
+		timepart = bhorbit.single_BH_data(bid, 'time')
+		steppart = bhorbit.single_BH_data(bid, 'step')
+		luminosity = np.append(luminosity, lumpart)
+		step = np.append(step, steppart)
+		time = np.append(time, timepart)
+
+	outstep = np.unique(step)
+	outtime = np.zeros(len(outstep))
+	maxlum = np.zeros(len(outstep))
+	totlum = np.zeros(len(outstep))
+	nactive = np.zeros(len(outstep))
+	idmax = np.zeros(len(outstep))
+
+	for i in range(len(outstep)):
+		curt, = np.where(step == outstep[i])
+		outtime[i] = np.mean(time[curt])
+		maxlum[i] = luminosity[curt].max()
+		totlum[i] = luminosity[curt].sum()
+		act, = np.where(luminosity[curt]>active)
+		nactive[i] = len(act)
+		idmax[i] = iord[curt][np.argmax(luminosity[curt])]
+
+	AccHist = {'maxlum':pynbody.array.SimArray(maxlum,'erg s**-1'),
+			   'totlum':pynbody.array.SimArray(totlum,'erg s**-1'),
+			   'step':outstep,
+			   'time':pynbody.array.SimArray(outtime,'Gyr'),
+			   'nactive':nactive,
+			   'idmaxlum': idmax,
+			   }
+
+	return AccHist
+
 
 
 
