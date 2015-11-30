@@ -20,11 +20,11 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 		tnext = h.previous.timestep.time_gyr
 		print h.previous, h, tcur, tnext
 
-		nbhs_prev = len(np.where(np.array(h.keys())=='BH'))
+		nbhs_prev = len(np.where(np.array(h.previous.keys())=='BH')[0])
 		if nbhs_prev > 1:
-			bhids = np.array([bh.halo_number for bh in h['BH']])
+			bhids_prev = np.array([bh.halo_number for bh in h.previous['BH']])
 		if nbhs_prev == 1:
-			bhids = np.array([h['BH'].halo_number])
+			bhids_prev = np.array([h.previous['BH'].halo_number])
 		if nbhs_prev == 0:
 			print "No BHs in previous timestep!"
 			for id in bhids:
@@ -38,7 +38,6 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 				iord = np.append(iord,ids[(t<=tcur)])
 			break
 
-		bhids_prev = np.array([bh.halo_number for bh in h.previous['BH']])
 		prevmatch, = np.where(np.in1d(bhids, bhids_prev))
 		nomatch, = np.where(np.in1d(bhids, bhids_prev)==False)
 		onomatch, = np.where(np.in1d(bhorbit.bhiords,bhids[nomatch]))
@@ -113,7 +112,13 @@ def total_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 	from .. import BlackHoles
 	h = db.get_halo(simname+'/%'+str(endstep)+'/'+str(halonum))
 	tcur = h.timestep.time_gyr
-	bhids = np.array([bh.halo_number for bh in h['BH']])
+	nbhs = len(np.where(np.array(h.keys())=='BH')[0])
+	if nbhs > 1:
+		bhids = np.array([bh.halo_number for bh in h['BH']])
+	if nbhs == 1:
+		bhids = np.array([h['BH'].halo_number])
+	if nbhs == 0:
+		return
 	omatch, = np.where(np.in1d(bhorbit.bhiords, bhids))
 	bhorbit.getprogbhs()
 	cnt = 0
