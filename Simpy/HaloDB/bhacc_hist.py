@@ -95,12 +95,12 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 		idmax[i] = iord[curt][np.argmax(luminosity[curt])]
 
 	AccHist = {'maxlum':pynbody.array.SimArray(maxlum,'erg s**-1'),
-			   'totlum':pynbody.array.SimArray(totlum,'erg s**-1'),
-			   'step':outstep,
-			   'time':pynbody.array.SimArray(outtime,'Gyr'),
-			   'nactive':nactive,
-			   'idmaxlum': idmax,
-			   }
+			'totlum':pynbody.array.SimArray(totlum,'erg s**-1'),
+			'step':outstep,
+			'time':pynbody.array.SimArray(outtime,'Gyr'),
+			'nactive':nactive,
+			'idmaxlum': idmax,
+			}
 
 	return AccHist
 
@@ -149,12 +149,12 @@ def total_halo_bh_acc(simname, endstep, halonum, bhorbit):
 		idmax[i] = iord[curt][np.argmax(luminosity[curt])]
 
 	AccHist = {'maxlum':pynbody.array.SimArray(maxlum,'erg s**-1'),
-			   'totlum':pynbody.array.SimArray(totlum,'erg s**-1'),
-			   'step':outstep,
-			   'time':pynbody.array.SimArray(outtime,'Gyr'),
-			   'nactive':nactive,
-			   'idmaxlum': idmax,
-			   }
+			'totlum':pynbody.array.SimArray(totlum,'erg s**-1'),
+			'step':outstep,
+			'time':pynbody.array.SimArray(outtime,'Gyr'),
+			'nactive':nactive,
+			'idmaxlum': idmax,
+			}
 
 	return AccHist
 
