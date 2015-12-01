@@ -145,6 +145,8 @@ def total_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 	step = np.array([])
 	iord = np.array([])
 	for bid in bhids:
+		if len(np.where(np.in1d(bhorbit.bhiords,bid))[0]) == 0:
+			continue
 		lumpart = bhorbit.single_BH_data(bid, 'lum')
 		timepart = bhorbit.single_BH_data(bid, 'time')
 		steppart = bhorbit.single_BH_data(bid, 'step')
