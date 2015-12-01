@@ -182,6 +182,10 @@ def total_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 
 	return AccHist
 
+class BHAccHist(object):
+	def __init__(self, simname, endstep, halonum, bhorbit, active=1e42):
+		BHAccHist.main = track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=active)
+		BHAccHist.total = total_halo_bh_acc(simname, endstep, halonum, bhorbit, active=active)
 
 
 
