@@ -86,7 +86,7 @@ class ColorHist(object):
         plotting.plt.legend(loc='upper left',fontsize=30)
         return
 
-    def plt_UVJ_quench_region(lw=1.5, shade=True):
+    def plt_UVJ_quench_region(self, lw=1.5, shade=True):
         plotting.plt.plot([1.5,1.5], [1.9,2.7], 'k--', linewidth=lw)
         plotting.plt.plot([1.0,1.5], [1.3,1.9], 'k--', linewidth=lw)
         plotting.plt.plot([-0.5,1.0], [1.3,1.3], 'k--', linewidth=lw)
