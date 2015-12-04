@@ -69,7 +69,7 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42, type='Cen
 			ok, = np.where((np.array(bhorbit.prog['time'][i]) >= tnext)&(np.array(bhorbit.prog['time'][i]) < tnext))
 			if len(ok) > 0:
 				tfirst = tcur
-				progmatch, = np.where(np.in1d(bhids_prev,bhorbit.prog['iord'][i][ok]))
+				progmatch, = np.where(np.in1d(bhids_prev,np.array(bhorbit.prog['iord'][i])[ok]))
 				if len(progmatch) == 0: continue
 
 				for bid in bhids_prev[progmatch]:
