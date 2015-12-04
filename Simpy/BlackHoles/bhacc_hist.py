@@ -208,7 +208,7 @@ class BHAccHist(object):
 		if halo not in ['Central','All']:
 			print "WARNING halo input not understood (Central or All). Assuming it is Central"
 			halo = 'Central'
-		if qty not in ['totlum','maxlum', 'nactive']
+		if qty not in ['totlum','maxlum', 'nactive']:
 			print "WARNING type input not understood(totlum or maxlum or nactive). Assuming totlum."
 			type = 'totlum'
 
