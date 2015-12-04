@@ -140,7 +140,7 @@ def total_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42, type='Cen
 	if nbhs > 1:
 		bhids = np.array([bh.halo_number for bh in h[dictstr]])
 	if nbhs == 1:
-		bhids = np.array([h['BH'].halo_number])
+		bhids = np.array([h[dictstr].halo_number])
 	if nbhs == 0:
 		return
 	omatch, = np.where(np.in1d(bhorbit.bhiords, bhids))

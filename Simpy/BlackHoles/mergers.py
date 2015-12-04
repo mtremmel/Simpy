@@ -75,6 +75,7 @@ def get_complete_prog_list(bhorbit, bhid, tmax):
                 continue
             newtarget = newtarget[0]
             newpart = bhorbit.prog['iord'][newtarget]
+            print bid, newtarget, newpart
             if type(newpart)==list:
                 idnext.extend(newpart)
             else:
