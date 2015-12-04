@@ -57,9 +57,9 @@ def get_complete_prog_list(bhorbit, bhid, tmax):
     bhorbit.getprogbhs()
     idlist = np.array([])
     if len(bhorbit.prog['iord'][target])==0:
-        return []
+        return np.array([])
     idnew = np.array(bhorbit.prog['iord'][target])[(np.array(bhorbit.prog['time'][target])<tmax)]
-    idnew = np.append(idlist,idnew)
+    idlist = np.append(idlist,idnew)
 
     deep = 0
     while len(idnew) > 0:
