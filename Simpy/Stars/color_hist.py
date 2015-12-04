@@ -48,7 +48,7 @@ class ColorHist(object):
             color += dustcolor
         self.colors[c1+c2] = color
 
-    def plt_colorcolor(self, c1, c2, c3, c4, dust=True, data=True, cbar=True, cmap="Blues", marksize=100, mark='o', label=None):
+    def plt_colorcolor(self, c1, c2, c3, c4, dust=True, data=True, cbar=True, cmap="Blues", marksize=100, mark='o', label=None, overplot=False):
         if c1+c2 not in self.colors.keys():
             self.get_color(c1, c2, dust=dust)
         if c3+c4 not in self.colors.keys():
@@ -60,7 +60,7 @@ class ColorHist(object):
         redcNorm = pltcolors.Normalize(1./self.z.max(), 1./self.z.min())
 
         plotting.plt.scatter(self.colors[c1+c2], self.colors[c3+c4], c=1./self.z, norm=redcNorm, cmap=cmap, s=marksize, marker=mark, label=label, overplot=False)
-        if data=True:
+        if data==True:
             plotting.plt.errorbar(CANDELS_MW['VJ'], CANDELS_MW['UV'],
                                   xerr=[CANDELS_MW['VJ-'],CANDELS_MW['VJ+']], yerr=[CANDELS_MW['UV-'],CANDELS_MW['UV+']],
                                   fmt='o-', color='grey', markersize=0, elinewidth=.75, linewidth=2)
@@ -91,8 +91,8 @@ class ColorHist(object):
         plotting.plt.plot([1.0,1.5], [1.3,1.9], 'k--', linewidth=lw)
         plotting.plt.plot([-0.5,1.0], [1.3,1.3], 'k--', linewidth=lw)
         if shade is True:
-            plotting.plt.fill_between([-0.5,1.0], [1.3,1.3], [2.5,2.5], color=red, alpha=0.1)
-            plotting.plt.fill_between([1.005,1.5], [1.3,1.9], [2.5,2.5], color=red, alpha=0.1)
+            plotting.plt.fill_between([-0.5,1.0], [1.3,1.3], [2.5,2.5], color='red', alpha=0.1)
+            plotting.plt.fill_between([1.005,1.5], [1.3,1.9], [2.5,2.5], color='red', alpha=0.1)
 
         return
 
