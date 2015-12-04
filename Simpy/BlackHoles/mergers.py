@@ -74,7 +74,6 @@ def get_complete_prog_list(bhorbit, bhid, tmax):
                 continue
             newtarget = newtarget[0]
             newpart = np.array(bhorbit.prog['iord'][newtarget])
-            print bid, newtarget, newpart
             idnext = np.append(idnext,newpart)
         idnew = idnext
         idlist = np.append(idlist,idnew)
