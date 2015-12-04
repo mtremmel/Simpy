@@ -55,17 +55,16 @@ def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt',
 def get_complete_prog_list(bhorbit, bhid, tmax):
     target, = np.where(bhorbit.bhiords == bhid)
     bhorbit.getprogbhs()
-    idlist = []
+    idlist = np.array([])
     if len(bhorbit.prog['iord'][target])==0:
         return []
-    idnew = bhorbit.prog['iord'][target][(bhorbit.prog['time'][target]<tmax)]
-    if type(idnew)!=list:
-        idnew = [idnew]
-    idlist.extend(idnew)
+    idnew = np.array(bhorbit.prog['iord'][target])[(np.array(bhorbit.prog['time'][target])<tmax)]
+    idnew = np.append(idlist,idnew)
+
     deep = 0
     while len(idnew) > 0:
         deep += 1
-        idnext = []
+        idnext = np.array([])
         for bid in idnew:
             newtarget, = np.where(bhorbit.bhiords==bid)
             if len(newtarget)>1:
@@ -74,16 +73,11 @@ def get_complete_prog_list(bhorbit, bhid, tmax):
                 print str(bid)+" not found in orbit object! moving on..."
                 continue
             newtarget = newtarget[0]
-            newpart = bhorbit.prog['iord'][newtarget]
+            newpart = np.array(bhorbit.prog['iord'][newtarget])
             print bid, newtarget, newpart
-            if type(newpart)==list:
-                idnext.extend(newpart)
-            else:
-                idnext.append(newpart)
+            idnext = np.append(idnext,newpart)
         idnew = idnext
-        if type(idnew)!=list:
-            idnew = [idnew]
-        idlist.extend(idnew)
+        idlist = np.append(idlist,idnew)
     print "finished with ", deep, "steps\n"
     return idlist
 
