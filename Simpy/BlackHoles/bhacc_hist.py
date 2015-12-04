@@ -198,8 +198,43 @@ def total_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42, type='Cen
 
 class BHAccHist(object):
 	def __init__(self, simname, endstep, halonum, bhorbit, active=1e42):
-		BHAccHist.main = track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=active)
-		BHAccHist.total = total_halo_bh_acc(simname, endstep, halonum, bhorbit, active=active)
+		self.track_central = track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=active, type='Central')
+		self.track_all = track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=active, type='All')
+		self.total_central = total_halo_bh_acc(simname, endstep, halonum, bhorbit, active=active, type='Central')
+		self.total_all = total_halo_bh_acc(simname, endstep, halonum, bhorbit, active=active, type='All')
+
+	def plot_bh_hist(self, track=True, halo='Central', qty = 'totlum', linestyle='-', lw=3, label=None, color='blue'):
+		from .. import plotting
+		if halo is not in ['Central','All']:
+			print "WARNING halo input not understood (Central or All). Assuming it is Central"
+			halo = 'Central'
+		if qty is not in ['totlum','maxlum', 'nactive']
+			print "WARNING type input not understood(totlum or maxlum or nactive). Assuming totlum."
+			type = 'totlum'
+
+		if track is True:
+			if halo=='Central':
+				plotting.plt.plot(self.track_central['time'], self.track_central[qty],
+								  linestyle=linestyle, lw=lw, label=label, color=color)
+			if halo=='All':
+				plotting.plt.plot(self.track_all['time'], self.track_all[qty],
+								  linestyle=linestyle, lw=lw, label=label, color=color)
+
+		if track is False:
+			if halo=='Central':
+				plotting.plt.plot(self.total_central['time'], self.total_central[qty],
+								  linestyle=linestyle, lw=lw, label=label, color=color)
+			if halo=='All':
+				plotting.plt.plot(self.total_all['time'], self.total_all[qty],
+								  linestyle=linestyle, lw=lw, label=label, color=color)
+
+		plotting.plt.legend()
+		if qty == 'nactive':
+			plotting.plt.ylabel('N(>1e43 ergs/s)')
+		else:
+			plotting.plt.ylabel('Luminosity (ergs/s)')
+
+		plotting.plt.xlabel('Time (Gyr)')
 
 
 
