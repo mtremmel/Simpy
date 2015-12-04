@@ -205,10 +205,10 @@ class BHAccHist(object):
 
 	def plot_bh_hist(self, track=True, halo='Central', qty = 'totlum', linestyle='-', lw=3, label=None, color='blue'):
 		from .. import plotting
-		if halo is not in ['Central','All']:
+		if halo not in ['Central','All']:
 			print "WARNING halo input not understood (Central or All). Assuming it is Central"
 			halo = 'Central'
-		if qty is not in ['totlum','maxlum', 'nactive']
+		if qty not in ['totlum','maxlum', 'nactive']
 			print "WARNING type input not understood(totlum or maxlum or nactive). Assuming totlum."
 			type = 'totlum'
 
