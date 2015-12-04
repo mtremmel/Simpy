@@ -66,7 +66,7 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42, type='Cen
 
 		for i in omatch:
 			if len(bhorbit.prog['time'][i])==0: continue
-			ok, = np.where((np.array(bhorbit.prog['time'][i]) >= tnext)&(np.array(bhorbit.prog['time'][i]) < tnext))
+			ok, = np.where((np.array(bhorbit.prog['time'][i]) >= tnext)&(np.array(bhorbit.prog['time'][i]) <= tcur))
 			if len(ok) > 0:
 				tfirst = tcur
 				progmatch, = np.where(np.in1d(bhids_prev,np.array(bhorbit.prog['iord'][i])[ok]))
@@ -78,7 +78,7 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42, type='Cen
 					s = bhorbit.single_BH_data(bid, 'step')
 					ids = np.ones(len(lum)).astype(np.int64)*bid
 					if t.max() > tcur:
-						print "WARNING! time found for eated BH that excedes current time... should not be possible"
+						print "WARNING! time found for eaten BH that excedes current time... should not be possible"
 					if t.max() <= tfirst:
 						tfirst = t.max()
 					luminosity = np.append(luminosity, lum[((t>tnext)&(t<=tcur))])
