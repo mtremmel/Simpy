@@ -2,15 +2,22 @@ import numpy as np
 import pynbody
 
 
-def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
+def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42, type='Central'):
 	import halo_db as db
+	if type not in ['Central', 'All']:
+		print "WARNING type argument not understood (Central or All). Assuming type to be All"
+		type = 'All'
 	hcur = db.get_halo(simname+'/%'+str(endstep)+'/'+str(halonum))
 	h = hcur
-	nbhs = len(np.where(np.array(h.keys())=='BH')[0])
+	if type == 'Central':
+		dictstr = 'BH_central'
+	else:
+		dictstr = 'BH'
+	nbhs = len(np.where(np.array(h.keys())==dictstr)[0])
 	if nbhs > 1:
-		bhids = np.array([bh.halo_number for bh in h['BH']])
+		bhids = np.array([bh.halo_number for bh in h[dictstr]])
 	if nbhs == 1:
-		bhids = np.array([h['BH'].halo_number])
+		bhids = np.array([h[dictstr].halo_number])
 	if nbhs == 0:
 		print "ERROR No BHs found in halo "+str(halonum)+" at step "+endstep+"\n"
 		return {}
@@ -25,11 +32,11 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 		tnext = h.previous.timestep.time_gyr
 		print h.previous, h, tcur, tnext
 
-		nbhs_prev = len(np.where(np.array(h.previous.keys())=='BH')[0])
+		nbhs_prev = len(np.where(np.array(h.previous.keys())==dictstr)[0])
 		if nbhs_prev > 1:
-			bhids_prev = np.array([bh.halo_number for bh in h.previous['BH']])
+			bhids_prev = np.array([bh.halo_number for bh in h.previous[dictstr]])
 		if nbhs_prev == 1:
-			bhids_prev = np.array([h.previous['BH'].halo_number])
+			bhids_prev = np.array([h.previous[dictstr].halo_number])
 		if nbhs_prev == 0:
 			print "No BHs in previous timestep!"
 			for bid in bhids:
@@ -117,14 +124,21 @@ def track_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
 
 	return AccHist
 
-def total_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42):
+def total_halo_bh_acc(simname, endstep, halonum, bhorbit, active=1e42, type='Central'):
 	import halo_db as db
 	from .. import BlackHoles
+	if type not in ['Central', 'All']:
+		print "WARNING type argument not understood (Central or All). Assuming type to be All"
+		type = 'All'
 	h = db.get_halo(simname+'/%'+str(endstep)+'/'+str(halonum))
 	tcur = h.timestep.time_gyr
-	nbhs = len(np.where(np.array(h.keys())=='BH')[0])
+	if type == 'Central':
+		dictstr = 'BH_central'
+	else:
+		dictstr = 'BH'
+	nbhs = len(np.where(np.array(h.keys())==dictstr)[0])
 	if nbhs > 1:
-		bhids = np.array([bh.halo_number for bh in h['BH']])
+		bhids = np.array([bh.halo_number for bh in h[dictstr]])
 	if nbhs == 1:
 		bhids = np.array([h['BH'].halo_number])
 	if nbhs == 0:
