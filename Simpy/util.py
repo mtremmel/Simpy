@@ -7,9 +7,9 @@ lbol_sun = 3.9e33
 loglbol_sun = np.log10(lbol_sun)
 
 def cutdict(target, goodinds):
-	for key in target.keys():
-		target[key] = target[key][goodinds]
-	return
+    for key in target.keys():
+        target[key] = target[key][goodinds]
+    return
 
 def partial_derivative(func, var=0, point=[]):
     args = point[:]
@@ -19,37 +19,44 @@ def partial_derivative(func, var=0, point=[]):
     return scipy.misc.derivative(wraps, point[var], dx = 1e-8)
 
 def init_iord_to_fpos(snap):
-	iord_to_fpos = np.empty(snap['iord'].max()+1,dtype=np.int64)
-	iord_to_fpos[snap['iord']] = np.arange(len(snap))
-	return iord_to_fpos
+    iord_to_fpos = np.empty(snap['iord'].max()+1,dtype=np.int64)
+    iord_to_fpos[snap['iord']] = np.arange(len(snap))
+    return iord_to_fpos
 
 
 def histogram(a,inbins,weights=None):
-		if (np.size(np.shape(inbins))!=2) | (np.shape(inbins)[1] != 2):
-				print "bins have wrong shape! shoudl be: [[a,b],[b,c],[c,d]...]"
-				return
-		edges = np.array(inbins.ravel())
-		edges.sort()
-		edges = np.unique(edges)
-		n, edges= np.histogram(a,bins=edges,weights=weights)
-		hist = np.zeros(len(inbins))
-		binInds = np.searchsorted(edges,inbins)
+    if (np.size(np.shape(inbins))!=2) | (np.shape(inbins)[1] != 2):
+            print "bins have wrong shape! shoudl be: [[a,b],[b,c],[c,d]...]"
+            return
+    edges = np.array(inbins.ravel())
+    edges.sort()
+    edges = np.unique(edges)
+    n, edges= np.histogram(a,bins=edges,weights=weights)
+    hist = np.zeros(len(inbins))
+    binInds = np.searchsorted(edges,inbins)
 
-		for i in range(len(inbins)):
-				hist[i] = np.sum(n[binInds[i,0]:binInds[i,1]])
+    for i in range(len(inbins)):
+            hist[i] = np.sum(n[binInds[i,0]:binInds[i,1]])
 
-		return hist
+    return hist
 
 def timeweightedAve(x,dt):
-		T = np.sum(dt)
-		mindt = dt[(dt>0)].min()
-		xsum = np.sum(x*dt)
-		ave = xsum/T
-		variance = np.average((x-ave)**2, weights=dt/mindt)
-		return ave, np.sqrt(variance), xsum
+    T = np.sum(dt)
+    mindt = dt[(dt>0)].min()
+    xsum = np.sum(x*dt)
+    ave = xsum/T
+    variance = np.average((x-ave)**2, weights=dt/mindt)
+    return ave, np.sqrt(variance), xsum
 
 #convert monochromatic AB absolute magnitude to log(luminosity [ergs/s])
 def mcABconv(mag,nu):
-        C = 20.638
-        return -(2./5.)*mag + C + np.log10(nu)
+    C = 20.638
+    return -(2./5.)*mag + C + np.log10(nu)
+
+def smoothdata(rawdat,nsteps=20):
+    nind = len(rawdat) - len(rawdat)%nsteps
+    use = np.arange(nind)
+    rawdat = rawdat[use].reshape((nind/nsteps,nsteps))
+    meandat = rawdat.mean(axis=1)
+    return meandat
 
