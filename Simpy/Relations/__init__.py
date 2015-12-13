@@ -1,1 +1,1 @@
-from . import halos
+from . import halos, galaxies
