@@ -6,7 +6,7 @@ def property_array(simname, step, haloids, keylist):
 	uhids, ind = np.unique(haloids[idsort],return_index=True)
 	outputlist = {}
 	for key in keylist:
-		outputlist[key] = np.array(len(haloids))
+		outputlist[key] = np.ones(len(haloids)) * -1
 	for ii in range(len(uhids)):
 		id = uhids[ii]
 		h = db.get_halo(simname+'/%'+str(step)+'/'+str(id))
@@ -15,6 +15,8 @@ def property_array(simname, step, haloids, keylist):
 		else:
 			ss = indsort[ind[ii]:]
 		for key in keylist:
+			if key not in h.keys():
+				continue
 			outputlist[key][ss] = h[key]
 
 	return tuple([outputlist[key] for key in outputlist.keys()])
