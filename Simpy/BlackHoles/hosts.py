@@ -1,4 +1,4 @@
-from .. import Files, readcol
+from .. import Files, readcol, dbutil
 import numpy as np
 import pynbody
 
@@ -6,8 +6,8 @@ default_prop_list = ['Mvir', 'Mstar', 'Rvir', 'Mgas', 'MHIGas', 'MColdGas']
 
 class BHhalocat(object):
 
-    def __init__(self, simname, bhorbit, boxsize='25 Mpc', hostproperties=default_prop_list):
-        self.simname = simname
+    def __init__(self, bhorbit, boxsize='25 Mpc', hostproperties=default_prop_list):
+        self.simname = bhorbit.simname
         Files.cklists(simname)
         f = open('steps.list', 'r')
         steps = np.array(f.readlines()).astype(np.int64)
@@ -75,43 +75,21 @@ class BHhalocat(object):
             self.add_host_property(hostproperties)
 
     def add_host_property(self,keylist):
-        import halo_db as db
         for key in keylist:
             self.halo_properties[key] = []
             self.other_halo_properties[key] = []
+
         for ii in range(len(self.steps)):
-            for key in keylist:
-                self.halo_properties[key].append(-1*np.ones(len(self.bh['halo'][ii])))
-                self.other_halo_properties[key].append(-1*np.ones(len(self.bh['other_halo'][ii])))
-            ord_ = np.argsort(self.bh['halo'][ii])
-            o_ord_ = np.argsort(self.bh['other_halo'][ii])
+            step = self.steps[ii]
+            data = dbutil.property_array(self.simname, step, self.bh['halos'][ii], keylist)
+            data_other = dbutil.property_array(self.simname, step, self.bh['other_halos'][ii], keylist)
 
-            uhalos, ind = np.unique(self.bh['halo'][ii][ord_], return_index=True)
-            o_uhalos, o_ind = np.unique(self.bh['other_halo'][ii][o_ord_], return_index=True)
+            for jj in range(len(data)):
+                self.halo_properties[keylist[jj]].append(data[jj])
 
-            for jj in range(len(uhalos)):
-                hid = uhalos[jj]
-                h = db.get_halo(self.simname+'/%'+str(self.steps[ii])+'/'+str(hid))
-                for key in keylist:
-                    if key not in h.keys():
-                        continue
-                    if jj + 1 < len(ind):
-                        ss = ord_[ind[jj]:ind[jj + 1]]
-                    else:
-                        ss = ord_[ind[jj]:]
-                    self.halo_properties[key][ii][ss] = h[key]
+            for jj in range(len(data_other)):
+                self.other_halo_properties[keylist[jj]].append(data_other[jj])
 
-            for jj in range(len(o_uhalos)):
-                hid = o_uhalos[jj]
-                h = db.get_halo(self.simname+'/%'+str(self.steps[ii])+'/'+str(hid))
-                for key in keylist:
-                    if key not in h.keys():
-                        continue
-                    if jj + 1 < len(ind):
-                        ss = o_ord_[o_ind[jj]:o_ind[jj + 1]]
-                    else:
-                        ss = o_ord_[o_ind[jj]:]
-                    self.other_halo_properties[key][ii][ss] = h[key]
 
     def get_mergers(self):
         time, step, ID, IDeat, ratio, kick = readcol(self.simname + '.mergers', twod=False)
@@ -147,7 +125,6 @@ class BHhalocat(object):
             match = np.where(np.in1d(self.bh['bhid'][stepind],self.mergers['ID'][ss][idsort]))[0]
 
             self.bhmergers['host'][ss][idsort] = self.bh['halo'][stepind][match]
-
 
 
 
