@@ -11,9 +11,9 @@ def property_array(simname, step, haloids, keylist):
 		id = uhids[ii]
 		h = db.get_halo(simname+'/%'+str(step)+'/'+str(id))
 		if ii +1 < len(uhids):
-			ss = indsort[ind[ii]:ind[ii+1]]
+			ss = idsort[ind[ii]:ind[ii+1]]
 		else:
-			ss = indsort[ind[ii]:]
+			ss = idsort[ind[ii]:]
 		for key in keylist:
 			if key not in h.keys():
 				continue
