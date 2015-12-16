@@ -71,6 +71,7 @@ class BHhalocat(object):
             self.bh['dist'].append(pynbody.array.SimArray(dist, 'kpc'))
 
             dbstep = db.get_timestep(self.simname+'/%.'+step)
+            a = 1/(1+dbstep.redshift)
             nearhalo = np.ones(len(bhids))*-1
             distnear = np.ones(len(bhids))*-1
             print "finding nearby halos..."
@@ -80,8 +81,8 @@ class BHhalocat(object):
                 if halo.halo_number > hostnum.max():
                     break
                 relpos = pos - halo['SSC']
-                bad, = np.where(np.abs(relpos) > self.boxsize/2.)
-                relpos[bad] = -1.0 * (relpos[bad]/np.abs(relpos[bad])) * (self.boxsize - np.abs(relpos[bad]))
+                bad, = np.where(np.abs(relpos) > self.boxsize.in_units('kpc',a=a)/2.)
+                relpos[bad] = -1.0 * (relpos[bad]/np.abs(relpos[bad])) * (self.boxsize.in_units('kpc',a=a) - np.abs(relpos[bad]))
                 reldist = np.sqrt(np.sum(relpos**2, axis=1))
                 near = np.where((reldist < halo['Rvir']) & ((hostnum > halo.halo_num) | (hostnum == -1)))[0]
                 closer = np.where((distnear[near] > 0) & (distnear[near] < reldist[near]))[0]
