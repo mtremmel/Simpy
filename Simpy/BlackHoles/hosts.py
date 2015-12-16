@@ -81,7 +81,7 @@ class BHhalocat(object):
                 if halo.halo_number > hostnum.max():
                     break
                 relpos = pos - halo['SSC']
-                bad, = np.where(np.abs(relpos) > self.boxsize.in_units('kpc',a=a)/2.)
+                bad = np.where(np.abs(relpos) > self.boxsize.in_units('kpc',a=a)/2.)
                 relpos[bad] = -1.0 * (relpos[bad]/np.abs(relpos[bad])) * (self.boxsize.in_units('kpc',a=a) - np.abs(relpos[bad]))
                 reldist = np.sqrt(np.sum(relpos**2, axis=1))
                 near = np.where((reldist < halo['Rvir']) & ((hostnum > halo.halo_num) | (hostnum == -1)))[0]
