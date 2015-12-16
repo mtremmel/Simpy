@@ -66,7 +66,7 @@ class BHhalocat(object):
             self.bh['pos'].append(pynbody.array.SimArray(pos, 'kpc'))
             self.bh['dist'].append(pynbody.array.SimArray(dist, 'kpc'))
 
-            dbstep = db.get_step(self.simname+'/%'+str(step))
+            dbstep = db.get_timestep(self.simname+'/%'+str(step))
             nearhalo = np.ones(len(bhids)*-1)
             distnear = np.ones(len(bhids)*-1)
             print "finding nearby halos..."
