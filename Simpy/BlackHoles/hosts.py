@@ -45,9 +45,19 @@ class BHhalocat(object):
             print "querying database..."
             for id in bhids:
                 bh_db = db.get_halo(self.simname+'/%'+str(step)+'/1.'+str(id))
-                hostnum.append(bh_db.host_halo.halo_number)
-                pos.append(bh_db['BH_central_offset'] + bh_db.host_halo['SSC'])
-                dist.append(bh_db['BH_central_distance'])
+                hostok = True
+                try:
+                    hid = bh_db.host_halo.halo_number
+                except:
+                    hid = -1
+                    hostok = False
+                hostnum.append(hid)
+                if hostok:
+                    pos.append(bh_db['BH_central_offset'] + bh_db.host_halo['SSC'])
+                    dist.append(bh_db['BH_central_distance'])
+                else:
+                    pos.append(np.array([0,0,0]))
+                    dist.append(0)
 
             hostnum = np.array(hostnum)
             pos = np.vstack(tuple(pos))
@@ -69,7 +79,7 @@ class BHhalocat(object):
                 bad, = np.where(np.abs(relpos) > self.boxsize/2.)
                 relpos[bad] = -1.0 * (relpos[bad]/np.abs(relpos[bad])) * (self.boxsize - np.abs(relpos[bad]))
                 reldist = np.sqrt(np.sum(relpos**2, axis=1))
-                near = np.where((reldist < halo['Rvir']) & (hostnum > halo.halo_num))[0]
+                near = np.where((reldist < halo['Rvir']) & ((hostnum > halo.halo_num) | (hostnum == -1)))[0]
                 closer = np.where((distnear[near] > 0) & (distnear[near] < reldist[near]))[0]
                 np.delete(near, closer)
                 nearhalo[near] = halo.halo_number

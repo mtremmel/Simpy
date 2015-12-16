@@ -9,6 +9,8 @@ def property_array(simname, step, haloids, keylist):
 		outputlist[key] = np.ones(len(haloids)) * -1
 	for ii in range(len(uhids)):
 		id = uhids[ii]
+		if id < 0:
+			continue
 		h = db.get_halo(simname+'/%'+str(step)+'/'+str(id))
 		if ii +1 < len(uhids):
 			ss = idsort[ind[ii]:ind[ii+1]]
