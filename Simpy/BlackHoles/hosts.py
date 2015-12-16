@@ -84,7 +84,7 @@ class BHhalocat(object):
                 bad = np.where(np.abs(relpos) > self.boxsize.in_units('kpc',a=a)/2.)
                 relpos[bad] = -1.0 * (relpos[bad]/np.abs(relpos[bad])) * (self.boxsize.in_units('kpc',a=a) - np.abs(relpos[bad]))
                 reldist = np.sqrt(np.sum(relpos**2, axis=1))
-                near = np.where((reldist < halo['Rvir']) & ((hostnum > halo.halo_num) | (hostnum == -1)))[0]
+                near = np.where((reldist < halo['Rvir']) & ((hostnum > halo.halo_number) | (hostnum == -1)))[0]
                 closer = np.where((distnear[near] > 0) & (distnear[near] < reldist[near]))[0]
                 np.delete(near, closer)
                 nearhalo[near] = halo.halo_number
