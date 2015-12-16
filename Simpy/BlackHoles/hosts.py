@@ -11,6 +11,8 @@ class BHhalocat(object):
         Files.cklists(self.simname)
         f = open('steps.list', 'r')
         steps_str = np.array(f.readlines())
+        for ii in range(len(steps_str)):
+            steps_str[ii] = steps_str[ii].strip('\n')
         steps = steps_str.astype(np.int64)
 
         self.steps = steps_str
