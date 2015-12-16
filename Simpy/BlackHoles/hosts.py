@@ -25,10 +25,13 @@ class BHhalocat(object):
 
         for step in self.steps:
             print "getting black hole data for step ", step
-            bhids = bhorbit.single_step_data(step, 'iord')
+            try:
+                bhids = bhorbit.single_step_data(step, 'iord')
+            except IndexError:
+                bhids = np.array([])
             if len(bhids) == 0:
                 for key in self.bh:
-                    self.bh['key'] = np.array([])
+                    self.bh['key'].append(np.array([]))
                 continue
             self.bh['bhid'].append(bhids)
             self.bh['mass'].append(bhorbit.single_step_data(step, 'mass'))
