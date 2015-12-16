@@ -94,8 +94,14 @@ class BHhalocat(object):
         alldata = []
         id = []
         step = []
+        if key not in self.halo_properties.keys() and key not in self.bh.keys():
+            print "Cannot find given data key in either bh or halo_properties"
+            return
         for i in range(len(self.steps)):
-            alldata.extend(self.bh[key][i])
+            if key in self.bh.keys():
+                alldata.extend(self.bh[key][i])
+            if key in self.halo_properties.keys():
+                alldata.extend(self.halo_properties[key])
             id.extend(self.bh['bhid'])
             step.extend(self.bh['step'])
         alldata = np.array(alldata)
