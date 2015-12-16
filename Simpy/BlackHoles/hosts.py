@@ -31,7 +31,7 @@ class BHhalocat(object):
                 bhids = np.array([])
             if len(bhids) == 0:
                 for key in self.bh:
-                    self.bh['key'].append(np.array([]))
+                    self.bh[key].append(np.array([]))
                 continue
             self.bh['bhid'].append(bhids)
             self.bh['mass'].append(bhorbit.single_step_data(step, 'mass'))
