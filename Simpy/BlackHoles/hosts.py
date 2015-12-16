@@ -90,6 +90,24 @@ class BHhalocat(object):
             for jj in range(len(data_other)):
                 self.other_halo_properties[keylist[jj]].append(data_other[jj])
 
+    def trace_bh(self, bhid, key, return_steps=False):
+        alldata = []
+        id = []
+        step = []
+        for i in range(len(self.steps)):
+            alldata.extend(self.bh[key][i])
+            id.extend(self.bh['bhid'])
+            step.extend(self.bh['step'])
+        alldata = np.array(alldata)
+        id = np.array(id)
+        step = np.array(step)
+        target = np.where(id==bhid)[0]
+        target_data = alldata[target]
+        ord = np.argsort(step)
+        if return_steps is True:
+            return target_data[ord[::-1]], step[ord[::-1]]
+        else:
+            return target_data[ord[::-1]]
 
     def get_mergers(self):
         time, step, ID, IDeat, ratio, kick = readcol(self.simname + '.mergers', twod=False)
@@ -106,23 +124,23 @@ class BHhalocat(object):
         self.bhmergers['step_before'] = np.array([])
         self.bhmergers['step_after'] = np.array([])
 
-        for i in range(len(self.mergers['time'])):
-            self.bhmergers['step_before'] = np.append(self.mergers['step_before'],
-                                                    self.step[(self.time <= self.mergers['time'][i])][-1])
-            self.bhmergers['step_after'] = np.append(self.mergers['step_after'],
-                                                   self.step[(self.time >= self.mergers['time'][i])][0])
+        for i in range(len(self.bhmergers['time'])):
+            self.bhmergers['step_before'] = np.append(self.bhmergers['step_before'],
+                                                    self.steps[(self.time <= self.bhmergers['time'][i])][-1])
+            self.bhmergers['step_after'] = np.append(self.bhmergers['step_after'],
+                                                   self.steps[(self.time >= self.bhmergers['time'][i])][0])
 
 
-        sord = np.argsort(self.mergers['step_after'])
-        steps, ind = np.unique(self.meregers['step_after'][sord],return_index=True)
-        self.mergers['hosts'] = np.ones(len(self.mergers['ID']))*-1
+        sord = np.argsort(self.bhmergers['step_after'])
+        steps, ind = np.unique(self.bhmergers['step_after'][sord],return_index=True)
+        self.bhmergers['hosts'] = np.ones(len(self.bhmergers['ID']))*-1
         for ii in range(len(steps)):
             step = steps[ii]
             ss = sord[ind[ii]:ind[ii]+1]
-            idsort = np.argsort(self.mergers['ID'][ss])
+            idsort = np.argsort(self.bhmergers['ID'][ss])
             stepind = np.where(self.steps==step)[0]
             stepind = stepind[0]
-            match = np.where(np.in1d(self.bh['bhid'][stepind],self.mergers['ID'][ss][idsort]))[0]
+            match = np.where(np.in1d(self.bh['bhid'][stepind],self.bhmergers['ID'][ss][idsort]))[0]
 
             self.bhmergers['host'][ss][idsort] = self.bh['halo'][stepind][match]
 
