@@ -67,8 +67,8 @@ class BHhalocat(object):
             self.bh['dist'].append(pynbody.array.SimArray(dist, 'kpc'))
 
             dbstep = db.get_timestep(self.simname+'/%'+str(step))
-            nearhalo = np.ones(len(bhids)*-1)
-            distnear = np.ones(len(bhids)*-1)
+            nearhalo = np.ones(len(bhids))*-1
+            distnear = np.ones(len(bhids))*-1
             print "finding nearby halos..."
             for halo in dbstep.halos:
                 if 'Rvir' not in halo.keys() or 'SSC' not in halo.keys():
