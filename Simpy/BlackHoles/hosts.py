@@ -2,13 +2,13 @@ from .. import Files, readcol, dbutil
 import numpy as np
 import pynbody
 
-default_prop_list = ['Mvir', 'Mstar', 'Rvir', 'Mgas', 'MHIGas', 'MColdGas']
+default_prop_list = ['Mvir', 'Mstar', 'Rvir', 'Mgas', 'MHIGas', 'MColdGas', 'SFR']
 
 class BHhalocat(object):
 
     def __init__(self, bhorbit, boxsize='25 Mpc', hostproperties=default_prop_list):
         self.simname = bhorbit.simname
-        Files.cklists(simname)
+        Files.cklists(self.simname)
         f = open('steps.list', 'r')
         steps = np.array(f.readlines()).astype(np.int64)
         self.steps = steps
@@ -24,20 +24,22 @@ class BHhalocat(object):
         self.bhmergers = {}
 
         for step in self.steps:
+            print "getting black hole data for step ", step
             bhids = bhorbit.single_step_data(step, 'iord')
             if len(bhids) == 0:
                 for key in self.bh:
                     self.bh['key'] = np.array([])
                 continue
             self.bh['bhid'].append(bhids)
-            self.bh['mass'].append(bhorbit.single_step_data(step,'mass'))
-            self.bh['mdot'].append(bhorbit.single_step_data(step,'mdotmean'))
-            self.bh['lum'].append(bhorbit.single_step_data(step,'lum'))
+            self.bh['mass'].append(bhorbit.single_step_data(step, 'mass'))
+            self.bh['mdot'].append(bhorbit.single_step_data(step, 'mdotmean'))
+            self.bh['lum'].append(bhorbit.single_step_data(step, 'lum'))
 
             hostnum = []
             pos = []
             dist = []
 
+            print "querying database..."
             for id in bhids:
                 bh_db = db.get_halo(self.simname+'/%'+str(step)+'/1.'+str(id))
                 hostnum.append(bh_db.host_halo.halo_number)
@@ -48,12 +50,13 @@ class BHhalocat(object):
             pos = np.vstack(tuple(pos))
             dist = np.array(dist)
             self.bh['halo'].append(hostnum)
-            self.bh['pos'].append(pynbody.array.SimArray(pos,'kpc'))
-            self.bh['dist'].append(pynbody.array.SimArray(dist,'kpc'))
+            self.bh['pos'].append(pynbody.array.SimArray(pos, 'kpc'))
+            self.bh['dist'].append(pynbody.array.SimArray(dist, 'kpc'))
 
             dbstep = db.get_step(self.simname+'/%'+str(step))
             nearhalo = np.ones(len(bhids)*-1)
             distnear = np.ones(len(bhids)*-1)
+            print "finding nearby halos..."
             for halo in dbstep.halos:
                 if 'Rvir' not in halo.keys() or 'SSC' not in halo.keys():
                     continue
@@ -71,6 +74,7 @@ class BHhalocat(object):
             self.bh['other_halo'].append(nearhalo)
             self.bh['other_dist'].append(distnear)
 
+        print "finding host galaxy properties"
         if hostproperties and len(hostproperties)>0:
             self.add_host_property(hostproperties)
 
@@ -80,6 +84,7 @@ class BHhalocat(object):
             self.other_halo_properties[key] = []
 
         for ii in range(len(self.steps)):
+            print "finding host galaxy properties for step ", self.steps[ii]
             step = self.steps[ii]
             data = dbutil.property_array(self.simname, step, self.bh['halos'][ii], keylist)
             data_other = dbutil.property_array(self.simname, step, self.bh['other_halos'][ii], keylist)
@@ -107,7 +112,7 @@ class BHhalocat(object):
         alldata = np.array(alldata)
         id = np.array(id)
         step = np.array(step)
-        target = np.where(id==bhid)[0]
+        target = np.where(id == bhid)[0]
         target_data = alldata[target]
         ord = np.argsort(step)
         if return_steps is True:
@@ -118,7 +123,7 @@ class BHhalocat(object):
     def get_mergers(self):
         time, step, ID, IDeat, ratio, kick = readcol(self.simname + '.mergers', twod=False)
 
-        self.bhmergers['time'] = pynbody.array.SimArray(time,'Gyr')
+        self.bhmergers['time'] = pynbody.array.SimArray(time, 'Gyr')
         self.bhmergers['ratio'] = ratio
         self.bhmergers['step'] = step
         self.bhmergers['ID'] = ID
@@ -135,7 +140,6 @@ class BHhalocat(object):
                                                     self.steps[(self.time <= self.bhmergers['time'][i])][-1])
             self.bhmergers['step_after'] = np.append(self.bhmergers['step_after'],
                                                    self.steps[(self.time >= self.bhmergers['time'][i])][0])
-
 
         sord = np.argsort(self.bhmergers['step_after'])
         steps, ind = np.unique(self.bhmergers['step_after'][sord],return_index=True)
