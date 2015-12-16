@@ -10,8 +10,10 @@ class BHhalocat(object):
         self.simname = bhorbit.simname
         Files.cklists(self.simname)
         f = open('steps.list', 'r')
-        steps = np.array(f.readlines()).astype(np.int64)
-        self.steps = steps
+        steps_str = np.array(f.readlines())
+        steps = steps_str.astype(np.int64)
+
+        self.steps = steps_str
         self.time = np.zeros(len(steps))
         self.host_properties = {}
         self.boxsize = pynbody.units.Unit(boxsize+' a')
@@ -26,7 +28,7 @@ class BHhalocat(object):
         for step in self.steps:
             print "getting black hole data for step ", step
             try:
-                bhids = bhorbit.single_step_data(step, 'iord')
+                bhids = bhorbit.single_step_data(step.astype(np.int64), 'iord')
             except IndexError:
                 bhids = np.array([])
             if len(bhids) == 0:
@@ -34,9 +36,9 @@ class BHhalocat(object):
                     self.bh[key].append(np.array([]))
                 continue
             self.bh['bhid'].append(bhids)
-            self.bh['mass'].append(bhorbit.single_step_data(step, 'mass'))
-            self.bh['mdot'].append(bhorbit.single_step_data(step, 'mdotmean'))
-            self.bh['lum'].append(bhorbit.single_step_data(step, 'lum'))
+            self.bh['mass'].append(bhorbit.single_step_data(step.astype(np.int64), 'mass'))
+            self.bh['mdot'].append(bhorbit.single_step_data(step.astype(np.int64), 'mdotmean'))
+            self.bh['lum'].append(bhorbit.single_step_data(step.astype(np.int64), 'lum'))
 
             hostnum = []
             pos = []
@@ -44,7 +46,7 @@ class BHhalocat(object):
 
             print "querying database..."
             for id in bhids:
-                bh_db = db.get_halo(self.simname+'/%'+str(step)+'/1.'+str(id))
+                bh_db = db.get_halo(self.simname+'/%.'+step+'/1.'+str(id))
                 hostok = True
                 try:
                     hid = bh_db.host_halo.halo_number
@@ -66,7 +68,7 @@ class BHhalocat(object):
             self.bh['pos'].append(pynbody.array.SimArray(pos, 'kpc'))
             self.bh['dist'].append(pynbody.array.SimArray(dist, 'kpc'))
 
-            dbstep = db.get_timestep(self.simname+'/%'+str(step))
+            dbstep = db.get_timestep(self.simname+'/%.'+step)
             nearhalo = np.ones(len(bhids))*-1
             distnear = np.ones(len(bhids))*-1
             print "finding nearby halos..."
