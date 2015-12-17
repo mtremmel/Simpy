@@ -77,9 +77,9 @@ class ColorHist(object):
 
 
         if cbar is True and overplot is False:
-            cbar = plotting.plt.colorbar(ticks=[0.25,0.5,1,2.0])
+            cbar = plotting.plt.colorbar(ticks=[0.25,0.33,0.5,1])
             cbar.set_label('Redshift', fontsize=30)
-            cbar.set_ticklabels(['4','2','1','0.5'])
+            cbar.set_ticklabels(['3','2','1','0'])
 
         if overplot is False:
             plotting.plt.xlabel(c1+'-'+c2+' color')
