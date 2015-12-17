@@ -58,9 +58,9 @@ class ColorHist(object):
         import matplotlib.colors as pltcolors
 
         if zcolor_range is None:
-            redcNorm = pltcolors.Normalize(1./self.z.max(), 1./self.z.min())
+            redcNorm = pltcolors.Normalize(1./(self.z.max()+1), 1./(self.z.min()+1))
         else:
-            redcNorm = pltcolors.Normalize(1./zcolor_range[1], 1./zcolor_range[0])
+            redcNorm = pltcolors.Normalize(1./(1+zcolor_range[0]), 1./(1+zcolor_range[1]))
         plotting.plt.scatter(self.colors[c1+c2], self.colors[c3+c4], c=1./self.z, norm=redcNorm, cmap=cmap, s=marksize, marker=mark, label=label)
         if data==True:
             plotting.plt.errorbar(CANDELS_MW['VJ'], CANDELS_MW['UV'],
