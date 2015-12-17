@@ -28,7 +28,7 @@ class BHhalocat(object):
         self.bhmergers = {}
 
         if hostproperties and type(hostproperties) == list and len(hostproperties)>0:
-            for prop in haloproperties:
+            for prop in hostproperties:
                 self.halo_properties[prop] = []
                 self.other_halo_properties[prop] = []
 
@@ -53,7 +53,7 @@ class BHhalocat(object):
             hprops = {}
             other_hprops = {}
             if len(self.halo_properties.keys())>0:
-                for key in haloproperties:
+                for key in hostproperties:
                     hprops[key] = []
                     other_hprops[key] = []
 
