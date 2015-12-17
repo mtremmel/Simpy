@@ -1,2 +1,2 @@
 from .plots import *
-from . import get
+from . import get, color_hist, colldata, plots
