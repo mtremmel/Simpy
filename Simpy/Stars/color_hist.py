@@ -48,7 +48,7 @@ class ColorHist(object):
             color += dustcolor
         self.colors[c1+c2] = color
 
-    def plt_colorcolor(self, c1, c2, c3, c4, dust=True, data=True, cbar=True, cmap="Blues", marksize=100, mark='o', label=None, overplot=False):
+    def plt_colorcolor(self, c1, c2, c3, c4, dust=True, data=True, cbar=True, cmap="Blues", marksize=100, mark='o', label=None, overplot=False, zcolor_range=None):
         if c1+c2 not in self.colors.keys():
             self.get_color(c1, c2, dust=dust)
         if c3+c4 not in self.colors.keys():
@@ -57,9 +57,11 @@ class ColorHist(object):
 
         import matplotlib.colors as pltcolors
 
-        redcNorm = pltcolors.Normalize(1./self.z.max(), 1./self.z.min())
-
-        plotting.plt.scatter(self.colors[c1+c2], self.colors[c3+c4], c=1./self.z, norm=redcNorm, cmap=cmap, s=marksize, marker=mark, label=label, overplot=False)
+        if zcolor_range is None:
+            redcNorm = pltcolors.Normalize(1./self.z.max(), 1./self.z.min())
+        else:
+            redcNorm = pltcolors.Normalize(1./zcolor_range[1], 1./zcolor_range[0])
+        plotting.plt.scatter(self.colors[c1+c2], self.colors[c3+c4], c=1./self.z, norm=redcNorm, cmap=cmap, s=marksize, marker=mark, label=label)
         if data==True:
             plotting.plt.errorbar(CANDELS_MW['VJ'], CANDELS_MW['UV'],
                                   xerr=[CANDELS_MW['VJ-'],CANDELS_MW['VJ+']], yerr=[CANDELS_MW['UV-'],CANDELS_MW['UV+']],
