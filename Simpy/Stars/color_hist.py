@@ -30,10 +30,10 @@ class ColorHist(object):
     def __init__(self, h):
         print "getting color history from database..."
         self.U, self.V, self.B, self.K, self.J, self.I = \
-            h.earliest.property_cascade('U', 'V', 'B', 'K', 'J', 'I')
+            h.earliest.property_cascade('AB_U', 'AB_V', 'AB_B', 'AB_K', 'AB_J', 'AB_I')
         print "getting dust extinction history from database..."
         self.dustU, self.dustV, self.dustB, self.dustK, self.dustJ, self.dustI = \
-            h.earliest.property_cascade('U', 'V', 'B', 'K', 'J', 'I')
+            h.earliest.property_cascade('dustExt_U', 'dustExt_V', 'dustExt_B', 'dustExt_K', 'dustExt_J', 'dustExt_I')
         self.colors = {}
         self.z = h.earliest.property_cascade('z')
         self.t = h.earliest.property_cascade('t')
