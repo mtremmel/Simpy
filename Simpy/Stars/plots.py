@@ -2,7 +2,7 @@ import numpy as np
 from .. import plotting, cosmology
 from . import get
 
-def SFH(sim, style, lw=3,bins=50, trange=None, label=None, ret_hist=True, type='time',xlog=False,ylog=False, overplot=False):
+def SFH(sim, color, style, lw=3,bins=50, trange=None, label=None, ret_hist=True, type='time',xlog=False,ylog=False, overplot=False):
 	tform = get.tform_fromsnap(sim,'Gyr')
 	massform = sim.stars['massform'].in_units('Msol')
 
@@ -13,7 +13,7 @@ def SFH(sim, style, lw=3,bins=50, trange=None, label=None, ret_hist=True, type='
 		data = np.histogram(tform, range=trange, bins=bins,weights=massform/dt)
 		sfr = data[0]
 		tedges = data[1]
-		plotting.plt.step(tedges[0:-1],sfr,style, label=label, linewidth=lw, where='post')
+		plotting.plt.step(tedges[0:-1],sfr,color, linestyle=style, label=label, linewidth=lw, where='post')
 		if overplot is False:
 			plotting.plt.xlabel(r'Time [Gyr]', fontsize=30)
 
@@ -33,9 +33,9 @@ def SFH(sim, style, lw=3,bins=50, trange=None, label=None, ret_hist=True, type='
 		data = np.histogram(tform, range=trange, bins=tedges,weights=massform)
 		sfr = data[0]/dt
 		if xlog is False:
-			plotting.plt.step(zbins[0:-1],sfr,style, label=label, linewidth=lw, where='post')
+			plotting.plt.step(zbins[0:-1],sfr,color, linestyle=style, label=label, linewidth=lw, where='post')
 		if xlog is True:
-			plotting.plt.step(zbins[0:-1]+1,sfr,style, label=label, linewidth=lw, where='post')
+			plotting.plt.step(zbins[0:-1]+1,sfr,color, linestyle=style, label=label, linewidth=lw, where='post')
 			if overplot is False:
 				plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10],['0','1','2','3','4','5','6','7','8','9'])
 		if overplot is False:
