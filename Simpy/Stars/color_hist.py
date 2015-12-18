@@ -26,17 +26,38 @@ CANDELS_MW = { 'redshift':[0.45,  0.8,  1.0, 1.25, 1.55,1.85, 2.1, 2.5],
         'VJ-':[0.1,0.2,0.2,0.3,0.3,0.4,0.3,0.4]
         }
 
+
+def plt_colorcolor_multi(chlist,c1, c2, c3, c4, dust=True, data=True, cbar=True,
+                         cmap="Blues", marksize=100, mark='o', label=None, overplot=False, zcolor_range=None):
+    if zcolor_range is None:
+        zcolor_range = [4, 0]
+    nh = len(chlist)
+    cnt = 0
+    overplot = overplot
+    for ch in chlist:
+        if cnt < nh - 1:
+            ch.plt.colorcolor(c1, c2, c3, c4,
+                              dust=dust, data=False, cbar=False, cmap=cmap,
+                              marksize=marksize, mark=mark, label=None, overplot=overplot, zcolor_range=zcolor_range)
+        else:
+            ch.plt.colorcolor(c1, c2, c3, c4,
+                              dust=dust, data=data, cbar=cbar, cmap=cmap,
+                              marksize=marksize, mark=mark, label=label, overplot=overplot, zcolor_range=zcolor_range)
+        if overplot is False:
+            overplot = True
+        cnt += 1
+
+
 class ColorHist(object):
     def __init__(self, h):
         print "getting color history from database..."
-        self.U, self.V, self.B, self.K, self.J, self.I = \
-            h.earliest.property_cascade('AB_U', 'AB_V', 'AB_B', 'AB_K', 'AB_J', 'AB_I')
-        print "getting dust extinction history from database..."
-        self.dustU, self.dustV, self.dustB, self.dustK, self.dustJ, self.dustI = \
-            h.earliest.property_cascade('dustExt_U', 'dustExt_V', 'dustExt_B', 'dustExt_K', 'dustExt_J', 'dustExt_I')
+        self.U, self.V, self.B, self.K, self.J, self.I, \
+            self.dustU, self.dustV, self.dustB, self.dustK, self.dustJ, self.dustI,\
+            self.z, self.t =\
+            h.earliest.property_cascade('AB_U', 'AB_V', 'AB_B', 'AB_K', 'AB_J', 'AB_I',
+                                        'dustExt_U', 'dustExt_V', 'dustExt_B', 'dustExt_K', 'dustExt_J', 'dustExt_I',
+                                        'z','t')
         self.colors = {}
-        self.z = h.earliest.property_cascade('z')
-        self.t = h.earliest.property_cascade('t')
 
     def get_color(self, c1, c2, dust = True):
         mags = {'U': self.U, 'V': self.V, 'J': self.J, 'K': self.K, 'I': self.I, 'B': self.B}
@@ -48,7 +69,8 @@ class ColorHist(object):
             color += dustcolor
         self.colors[c1+c2] = color
 
-    def plt_colorcolor(self, c1, c2, c3, c4, dust=True, data=True, cbar=True, cmap="Blues", marksize=100, mark='o', label=None, overplot=False, zcolor_range=None):
+    def plt_colorcolor(self, c1, c2, c3, c4, dust=True, data=True, cbar=True,
+                       cmap="Blues", marksize=100, mark='o', label=None, overplot=False, zcolor_range=None):
         if c1+c2 not in self.colors.keys():
             self.get_color(c1, c2, dust=dust)
         if c3+c4 not in self.colors.keys():
@@ -61,7 +83,8 @@ class ColorHist(object):
             redcNorm = pltcolors.Normalize(1./(self.z.max()+1), 1./(self.z.min()+1))
         else:
             redcNorm = pltcolors.Normalize(1./(1+zcolor_range[0]), 1./(1+zcolor_range[1]))
-        plotting.plt.scatter(self.colors[c1+c2], self.colors[c3+c4], c=1./(1+self.z), norm=redcNorm, cmap=cmap, s=marksize, marker=mark, label=label)
+        plotting.plt.scatter(self.colors[c1+c2], self.colors[c3+c4],
+                             c=1./(1+self.z), norm=redcNorm, cmap=cmap, s=marksize, marker=mark, label=label)
         if data==True:
             plotting.plt.errorbar(CANDELS_MW['VJ'], CANDELS_MW['UV'],
                                   xerr=[CANDELS_MW['VJ-'],CANDELS_MW['VJ+']], yerr=[CANDELS_MW['UV-'],CANDELS_MW['UV+']],
@@ -76,7 +99,7 @@ class ColorHist(object):
                                  norm=redcNorm, cmap='Greys', s=150, marker='^',label='CANDELS M31', linewidth=1.5, color='k')
 
 
-        if cbar is True and overplot is False:
+        if cbar is True:
             cbar = plotting.plt.colorbar(ticks=[0.25, 1./3., 0.5, 1./1.5, 1])
             cbar.set_label('Redshift', fontsize=30)
             cbar.set_ticklabels(['3','2','1','0.5','0'])
