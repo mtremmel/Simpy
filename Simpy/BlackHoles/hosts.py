@@ -4,6 +4,7 @@ import pynbody
 
 default_prop_list = ['Mvir', 'Mstar', 'Rvir', 'Mgas', 'MHIGas', 'MColdGas', 'SFR']
 
+
 class BHhalocat(object):
 
     def __init__(self, bhorbit, boxsize='25 Mpc', hostproperties=default_prop_list):
@@ -95,7 +96,6 @@ class BHhalocat(object):
             a = 1/(1+dbstep.redshift)
             haloids = []
             halossc = []
-            #haloR = []
 
             print "getting step halo data..."
             for halo in dbstep.halos:
@@ -106,11 +106,10 @@ class BHhalocat(object):
                 if halo.halo_type == 1:
                     break
                 halossc.append(halo['SSC'])
-                #haloR.append(halo['Rvir'])
                 haloids.append(halo.halo_number)
                 for key in other_hprops.keys():
                     if key in halo.keys():
-                        other_hprops[key].append(bh_db.host_halo[key])
+                        other_hprops[key].append(halo[key])
                     else:
                         other_hprops[key].append(np.nan)
 
@@ -123,32 +122,22 @@ class BHhalocat(object):
                 other_hprops[key] = np.array(other_hprops[key])
 
             print "Searching for closest nearby halos..."
+
             sscl = []
-            #halol = []
             for i in range(len(self.bh['bhid'])):
                 sscl.append(halossc)
-                #halol.append(haloids)
-
             ssca = np.vstack(sscl).reshape((len(bhids), len(haloids), 3))
-            #haloa = np.vstack(halol)
 
             posl = []
-            #hostl = []
             for i in range(len(haloids)):
                 posl.append(pos)
-                #hostl.append(hostnum)
             posa = np.vstack(posl).reshape((len(bhids), len(haloids), 3))
-            #hosta = np.vstack(hostl)
 
             relpos = posa - ssca
             bad = np.where(np.abs(relpos) > self.boxsize.in_units('kpc', a=a)/2.)
             relpos[bad] = -1.0 * (relpos[bad]/np.abs(relpos[bad])) * (self.boxsize.in_units('kpc', a=a) - np.abs(relpos[bad]))
             reldist = np.sum(relpos**2, axis=2)
             dsort = reldist.argsort(axis=1)
-
-            for key in self.halo_properties.keys():
-                self.other_halo_properties[key].append(np.ones(len(bhids))*-1)
-                other_hprops[key]
 
             halonear = []
             distnear = []
@@ -169,10 +158,10 @@ class BHhalocat(object):
                     indnear.append(dsort[ii][0])
             self.bh['nearhalo'].append(np.array(halonear))
             self.bh['neardist'].append(np.array(distnear))
-            indnear  = np.array(indnear)
+            indnear = np.array(indnear)
 
             for key in other_hprops[key]:
-                self.other_halo_properties[key][(halonear > 0)] = other_hprops[key][indnear]
+                self.other_halo_properties[key].append(other_hprops[key][indnear])
 
     def add_host_property(self,keylist):
         for key in keylist:
@@ -182,14 +171,11 @@ class BHhalocat(object):
         for ii in range(len(self.steps)):
             print "finding host galaxy properties for step ", self.steps[ii]
             step = self.steps[ii]
-            data = dbutil.property_array(self.simname, step, self.bh['halos'][ii], keylist)
-            data_other = dbutil.property_array(self.simname, step, self.bh['other_halos'][ii], keylist)
+            data = dbutil.property_array(self.simname, step, np.append(self.bh['halos'][ii],self.bh['other_halos'][ii]), keylist)
 
             for jj in range(len(data)):
-                self.halo_properties[keylist[jj]].append(data[jj])
-
-            for jj in range(len(data_other)):
-                self.other_halo_properties[keylist[jj]].append(data_other[jj])
+                self.halo_properties[keylist[jj]].append(data[jj][:len(self.bh['halos'][ii])])
+                self.other_halo_properties[keylist[jj]].append(data[jj][len(self.bh['halos'][ii]):])
 
     def trace_bh(self, bhid, key, return_steps=False):
         alldata = []
@@ -201,20 +187,21 @@ class BHhalocat(object):
         for i in range(len(self.steps)):
             if key in self.bh.keys():
                 alldata.extend(self.bh[key][i])
-            if key in self.halo_properties.keys():
+            else:
                 alldata.extend(self.halo_properties[key])
-            id.extend(self.bh['bhid'])
-            step.extend(self.bh['step'])
+            id.extend(self.bh['bhid'][i])
+            step.extend(np.ones(len(self.bh['bhid'])) * self.steps[i])
         alldata = np.array(alldata)
         id = np.array(id)
         step = np.array(step)
         target = np.where(id == bhid)[0]
         target_data = alldata[target]
-        ord = np.argsort(step)
+        step_target = step[target]
+        ord = np.argsort(step_target)
         if return_steps is True:
-            return target_data[ord[::-1]], step[ord[::-1]]
+            return target_data[ord], step_target[ord]
         else:
-            return target_data[ord[::-1]]
+            return target_data[ord]
 
     def get_mergers(self):
         time, step, ID, IDeat, ratio, kick = readcol(self.simname + '.mergers', twod=False)
