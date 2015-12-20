@@ -115,7 +115,7 @@ class BHhalocat(object):
 
             if len(halossc) == 0:
                 print "No halo data found in this snapshot"
-                return
+                continue
             halossc = pynbody.array.SimArray(np.vstack(halossc),'kpc')
             haloids = np.array(haloids)
             for key in other_hprops[key]:
