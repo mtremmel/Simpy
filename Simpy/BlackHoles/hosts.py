@@ -90,7 +90,7 @@ class BHhalocat(object):
             self.bh['dist'].append(pynbody.array.SimArray(dist, 'kpc'))
 
             for key in hprops.keys():
-                self.host_properties[key].append(np.array(hprops[key]))
+                self.halo_properties[key].append(np.array(hprops[key]))
 
             dbstep = db.get_timestep(self.simname+'/%'+step)
             a = 1/(1+dbstep.redshift)
