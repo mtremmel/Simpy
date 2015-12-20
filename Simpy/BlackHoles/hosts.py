@@ -118,7 +118,7 @@ class BHhalocat(object):
                 continue
             halossc = pynbody.array.SimArray(np.vstack(halossc),'kpc')
             haloids = np.array(haloids)
-            for key in other_hprops[key]:
+            for key in other_hprops.keys():
                 other_hprops[key] = np.array(other_hprops[key])
 
             print "Searching for closest nearby halos..."
