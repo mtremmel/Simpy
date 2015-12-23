@@ -28,20 +28,22 @@ CANDELS_MW = { 'redshift':[0.45,  0.8,  1.0, 1.25, 1.55,1.85, 2.1, 2.5],
 
 
 def plt_colorcolor_multi(chlist,c1, c2, c3, c4, dust=True, data=True, cbar=True,
-                         cmap="Blues", marksize=100, mark='o', label=None, overplot=False, zcolor_range=None):
+                         cmap="Blues", color='blue',marksize=100, mark='o', label=None, overplot=False, zcolor_range=None):
     if zcolor_range is None:
         zcolor_range = [4, 0]
     nh = len(chlist)
     cnt = 0
     overplot = overplot
     for ch in chlist:
+        if cnt > 0 and overplot is False:
+            overplot = True
         if cnt < nh - 1:
             ch.plt_colorcolor(c1, c2, c3, c4,
-                              dust=dust, data=False, cbar=False, cmap=cmap,
+                              dust=dust, data=False, cbar=False, cmap=cmap, color=color,
                               marksize=marksize, mark=mark, label=None, overplot=overplot, zcolor_range=zcolor_range)
         else:
             ch.plt_colorcolor(c1, c2, c3, c4,
-                              dust=dust, data=data, cbar=cbar, cmap=cmap,
+                              dust=dust, data=data, cbar=cbar, cmap=cmap, color=color,
                               marksize=marksize, mark=mark, label=label, overplot=overplot, zcolor_range=zcolor_range)
         if overplot is False:
             overplot = True
@@ -70,7 +72,7 @@ class ColorHist(object):
         self.colors[c1+c2] = color
 
     def plt_colorcolor(self, c1, c2, c3, c4, dust=True, data=True, cbar=True,
-                       cmap="Blues", marksize=100, mark='o', label=None, overplot=False, zcolor_range=None):
+                       cmap="Blues", color='blue', marksize=100, mark='o', label=None, overplot=False, zcolor_range=None):
         if c1+c2 not in self.colors.keys():
             self.get_color(c1, c2, dust=dust)
         if c3+c4 not in self.colors.keys():
@@ -84,7 +86,7 @@ class ColorHist(object):
         else:
             redcNorm = pltcolors.Normalize(1./(1+zcolor_range[0]), 1./(1+zcolor_range[1]))
         plotting.plt.scatter(self.colors[c1+c2], self.colors[c3+c4],
-                             c=1./(1+self.z), norm=redcNorm, cmap=cmap, s=marksize, marker=mark, label=label)
+                             c=1./(1+self.z), norm=redcNorm, cmap=cmap, s=marksize, marker=mark, label=label, color=color)
         if data==True:
             plotting.plt.errorbar(CANDELS_MW['VJ'], CANDELS_MW['UV'],
                                   xerr=[CANDELS_MW['VJ-'],CANDELS_MW['VJ+']], yerr=[CANDELS_MW['UV-'],CANDELS_MW['UV+']],
