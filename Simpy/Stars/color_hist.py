@@ -36,11 +36,11 @@ def plt_colorcolor_multi(chlist,c1, c2, c3, c4, dust=True, data=True, cbar=True,
     overplot = overplot
     for ch in chlist:
         if cnt < nh - 1:
-            ch.plt.colorcolor(c1, c2, c3, c4,
+            ch.plt_colorcolor(c1, c2, c3, c4,
                               dust=dust, data=False, cbar=False, cmap=cmap,
                               marksize=marksize, mark=mark, label=None, overplot=overplot, zcolor_range=zcolor_range)
         else:
-            ch.plt.colorcolor(c1, c2, c3, c4,
+            ch.plt_colorcolor(c1, c2, c3, c4,
                               dust=dust, data=data, cbar=cbar, cmap=cmap,
                               marksize=marksize, mark=mark, label=label, overplot=overplot, zcolor_range=zcolor_range)
         if overplot is False:
