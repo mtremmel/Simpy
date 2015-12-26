@@ -124,7 +124,7 @@ class BHhalocat(object):
             print "Searching for closest nearby halos..."
 
             sscl = []
-            for i in range(len(self.bh['bhid'])):
+            for i in range(len(bhids)):
                 sscl.append(halossc)
             ssca = np.vstack(sscl).reshape((len(bhids), len(haloids), 3))
 
