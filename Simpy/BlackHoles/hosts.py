@@ -23,7 +23,8 @@ class BHhalocat(object):
 
         import halo_db as db
 
-        self.bh = {'lum':[], 'dist':[], 'pos':[], 'halo':[], 'mass':[], 'bhid':[], 'nearhalo':[],'mdot':[], 'other_dist':[], 'other_halo':[]}
+        self.bh = {'lum':[], 'dist':[], 'pos':[], 'halo':[], 'mass':[],
+                   'bhid':[], 'nearhalo':[],'mdot':[], 'neardist':[]}
         self.halo_properties = {}
         self.other_halo_properties = {}
         self.bhmergers = {}
