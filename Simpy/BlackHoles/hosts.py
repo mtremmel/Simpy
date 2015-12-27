@@ -113,7 +113,7 @@ class BHhalocat(object):
                 bad = np.where(np.abs(relpos) > self.boxsize.in_units('kpc', a=a)/2.)
                 relpos[bad] = -1.0 * (relpos[bad]/np.abs(relpos[bad])) * \
                               (self.boxsize.in_units('kpc', a=a) - np.abs(relpos[bad]))
-                reldist = np.sum(relpos**2, axis=2)
+                reldist = np.sum(relpos**2, axis=1)
                 amin = np.argmin(reldist[(hprops['N']<hostnum[i])])
                 hnear[i] = hprops['N'][(hprops['N']<hostnum[i])][amin]
                 distnear[i] = reldist[(hprops['N']<hostnum[i])][amin]
