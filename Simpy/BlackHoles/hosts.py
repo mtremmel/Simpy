@@ -2,7 +2,7 @@ from .. import Files, readcol, dbutil
 import numpy as np
 import pynbody
 
-default_prop_list = ['Mvir', 'Mstar', 'Rvir', 'Mgas', 'MHIGas', 'MColdGas', 'SFR']
+default_prop_list = ['Mvir', 'Mstar', 'Rvir', 'Mgas']
 
 
 class BHhalocat(object):
