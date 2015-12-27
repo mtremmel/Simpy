@@ -71,7 +71,7 @@ class BHhalocat(object):
             self.bh['dist'].append(dist)
             self.bh['halo'].append(hostnum)
 
-            uhost, ind = np.unique(hostnum)
+            uhost, ind = np.unique(hostnum, return_inverse=True)
             match = np.where(np.in1d(hprops['N'],uhost))[0]
             match2 = np.where(np.in1d(uhost,hprops['N']))[0]
             nomatch2 = np.where(np.in1d(uhost,hprops['N'])==False)[0]
