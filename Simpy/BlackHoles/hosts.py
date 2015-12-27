@@ -75,6 +75,8 @@ class BHhalocat(object):
             match = np.where(np.in1d(hprops['N'],uhost))[0]
             match2 = np.where(np.in1d(uhost,hprops['N']))[0]
             nomatch2 = np.where(np.in1d(uhost,hprops['N'])==False)[0]
+            print uhost
+            print match2
             for key in hprops.keys():
                 d1 = hprops[key][match]
                 if key == 'SSC':
