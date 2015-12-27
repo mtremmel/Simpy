@@ -56,6 +56,11 @@ class BHhalocat(object):
 
             if len(bhids)==0:
                 print "No BHs in halos found in this step"
+                for key in self.bh.keys():
+                    self.bh[key].append(np.array([]))
+                for key in self.halo_properties.keys():
+                    self.halo_properties[key].append(np.array([]))
+                    self.other_halo_properties[key].append(np.arra([]))
                 continue
 
             print "quering database for halo properties"
@@ -106,7 +111,7 @@ class BHhalocat(object):
                     hnear[i] = np.nan
                     distnear[i] = np.nan
                     for key in hprops.keys():
-                        self.other_halo_properties[key][i] = np.nan
+                        self.other_halo_properties[key][-1][i] = np.nan
                     continue
                 relpos = hprops['SSC'][ok] - pos[i]
                 bad = np.where(np.abs(relpos) > self.boxsize.in_units('kpc', a=a)/2.)
