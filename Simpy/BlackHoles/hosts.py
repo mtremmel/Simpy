@@ -51,7 +51,7 @@ class BHhalocat(object):
 
             print "querying database for BH data..."
             bhids, bhmass, bhmdot, offset, dist, hostnum = \
-                dbstep.gather_properties(
+                dbstep.gather_property(
                     'N', 'BH_mass', 'BH_mdot_ave', 'BH_central_offset', 'BH_central_distance', 'host')
 
             if len(bhids)==0:
@@ -59,7 +59,7 @@ class BHhalocat(object):
                 continue
 
             print "quering database for halo properties"
-            rawdat = dbstep.gather_properties(*hostproperties)
+            rawdat = dbstep.gather_property(*hostproperties)
             cnt = 0
             for key in hprops.keys():
                 hprops[key] = rawdat[cnt]
