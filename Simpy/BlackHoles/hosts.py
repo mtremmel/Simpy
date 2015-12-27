@@ -77,7 +77,10 @@ class BHhalocat(object):
             nomatch2 = np.where(np.in1d(uhost,hprops['N'])==False)[0]
             for key in hprops.keys():
                 d1 = hprops[key][match]
-                d2 = np.zeros(len(uhost))
+                if key == 'SSC':
+                    d2 = np.zeros((len(uhost),3))
+                else:
+                    d2 = np.zeros(len(uhost))
                 d2[match2] = d1
                 d2[nomatch2] = np.nan
                 self.halo_properties[key].append(d2[ind])
@@ -91,7 +94,7 @@ class BHhalocat(object):
             hnear = np.ones(len(bhids))*-1
             distnear = np.ones(len(bhids))*-1
             for key in hprops.keys():
-                self.other_halo_properties[key] = np.zeros(len(bhids))
+                self.other_halo_properties[key].append(np.zeros(len(bhids)))
 
             for i in range(len(bhids)):
                 ok = np.where(hprops['N'] != hostnum[i])[0]
