@@ -7,8 +7,8 @@ default_prop_list = ['Mvir', 'Mstar', 'Rvir', 'Mgas', 'MHIGas', 'MColdGas', 'SFR
 
 class BHhalocat(object):
 
-    def __init__(self, bhorbit, boxsize='25 Mpc', hostproperties=default_prop_list):
-        self.simname = bhorbit.simname
+    def __init__(self, simname, boxsize='25 Mpc', hostproperties=default_prop_list):
+        self.simname = simname
         Files.cklists(self.simname)
         f = open('steps.list', 'r')
         steps_str = np.array(f.readlines())
@@ -29,6 +29,11 @@ class BHhalocat(object):
         self.other_halo_properties = {}
         self.bhmergers = {}
 
+        if 'SSC' not in hostproperties:
+            hostproperties.append('SSC')
+        if 'N' not in hostproperties:
+            hostproperties.append('N')
+
         if hostproperties and type(hostproperties) == list and len(hostproperties)>0:
             for prop in hostproperties:
                 self.halo_properties[prop] = []
@@ -36,133 +41,76 @@ class BHhalocat(object):
 
         for step in self.steps:
             print "getting black hole data for step ", step
-            try:
-                bhids = bhorbit.single_step_data(step.astype(np.int64), 'iord')
-            except IndexError:
-                bhids = np.array([])
-            if len(bhids) == 0:
-                for key in self.bh:
-                    self.bh[key].append(np.array([]))
-                continue
-            self.bh['bhid'].append(bhids)
-            self.bh['mass'].append(bhorbit.single_step_data(step.astype(np.int64), 'mass'))
-            self.bh['mdot'].append(bhorbit.single_step_data(step.astype(np.int64), 'mdotmean'))
-            self.bh['lum'].append(bhorbit.single_step_data(step.astype(np.int64), 'lum'))
-
-            hostnum = []
-            pos = []
-            dist = []
-            hprops = {}
-            other_hprops = {}
-            if len(self.halo_properties.keys())>0:
-                for key in hostproperties:
-                    hprops[key] = []
-                    other_hprops[key] = []
-
-            print "querying database for BH data, host properties..."
-            for id in bhids:
-                bh_db = db.get_halo(self.simname+'/%.'+step+'/1.'+str(id))
-                hostok = True
-                try:
-                    hid = bh_db.host_halo.halo_number
-                except:
-                    hid = -1
-                    hostok = False
-                hostnum.append(hid)
-                if hostok:
-                    pos.append(bh_db['BH_central_offset'] + bh_db.host_halo['SSC'])
-                    dist.append(bh_db['BH_central_distance'])
-                    for key in hprops.keys():
-                        if key in bh_db.host_halo.keys():
-                            hprops[key].append(bh_db.host_halo[key])
-                        else:
-                            hprops[key].append(np.nan)
-                else:
-                    pos.append(np.array([0,0,0]))
-                    dist.append(0)
-                    for key in hprops.keys():
-                        hprops[key].append(np.nan)
-
-            hostnum = np.array(hostnum)
-            pos = np.vstack(tuple(pos))
-            dist = np.array(dist)
-            self.bh['halo'].append(hostnum)
-            self.bh['pos'].append(pynbody.array.SimArray(pos, 'kpc'))
-            self.bh['dist'].append(pynbody.array.SimArray(dist, 'kpc'))
-
-            for key in hprops.keys():
-                self.halo_properties[key].append(np.array(hprops[key]))
 
             dbstep = db.get_timestep(self.simname+'/%'+step)
-            a = 1/(1+dbstep.redshift)
-            haloids = []
-            halossc = []
 
-            print "getting step halo data..."
-            for halo in dbstep.halos:
-                if 'Rvir' not in halo.keys() or 'SSC' not in halo.keys():
-                    continue
-                if halo.halo_number > hostnum.max():
-                    break
-                if halo.halo_type == 1:
-                    break
-                halossc.append(halo['SSC'])
-                haloids.append(halo.halo_number)
-                for key in other_hprops.keys():
-                    if key in halo.keys():
-                        other_hprops[key].append(halo[key])
-                    else:
-                        other_hprops[key].append(np.nan)
+            hprops = {}
+            if len(self.halo_properties.keys())>0:
+                for key in hostproperties:
+                    hprops[key] = np.array([])
 
-            if len(halossc) == 0:
-                print "No halo data found in this snapshot"
+            print "querying database for BH data..."
+            bhids, bhmass, bhmdot, offset, dist, hostnum = \
+                dbstep.gather_properties(
+                    'N', 'BH_mass', 'BH_mdot_ave', 'BH_central_offset', 'BH_central_distance', 'host')
+
+            if len(bhids)==0:
+                print "No BHs in halos found in this step"
                 continue
-            halossc = pynbody.array.SimArray(np.vstack(halossc),'kpc')
-            haloids = np.array(haloids)
-            for key in other_hprops.keys():
-                other_hprops[key] = np.array(other_hprops[key])
 
-            print "Searching for closest nearby halos..."
+            print "quering database for halo properties"
+            rawdat = dbstep.gather_properties(*hostproperties)
+            cnt = 0
+            for key in hprops.keys():
+                hprops[key] = rawdat[cnt]
+                cnt += 1
 
-            sscl = []
+            self.bh['bhid'].append(bhids)
+            self.bh['mass'].append(bhmass)
+            self.bh['mdot'].append(bhmdot)
+            self.bh['dist'].append(dist)
+            self.bh['halo'].append(hostnum)
+
+            uhost, ind = np.unique(hostnum)
+            match = np.where(np.in1d(hprops['N'],uhost))[0]
+            match2 = np.where(np.in1d(uhost,hprops['N']))[0]
+            nomatch2 = np.where(np.in1d(uhost,hprops['N'])==False)[0]
+            for key in hprops.keys():
+                d1 = hprops[key][match]
+                d2 = np.zeros(len(uhost))
+                d2[match2] = d1
+                d2[nomatch2] = np.nan
+                self.halo_properties[key].append(d2[ind])
+
+            pos = offset + self.halo_properties['SSC'][-1]
+            self.bh['pos'].append(pos)
+
+            a = 1/(1+dbstep.redshift)
+
+            print "looking for closest other halos..."
+            hnear = np.ones(len(bhids))*-1
+            distnear = np.ones(len(bhids))*-1
+            for key in hprops.keys():
+                self.other_halo_properties[key] = np.zeros(len(bhids))
+
             for i in range(len(bhids)):
-                sscl.append(halossc)
-            ssca = np.vstack(sscl).reshape((len(bhids), len(haloids), 3))
+                ok = np.where(hprops['N'] != hostnum[i])[0]
+                if len(ok) == 0:
+                    hnear[i] = np.nan
+                    distnear[i] = np.nan
+                    for key in hprops.keys():
+                        self.other_halo_properties[key][i] = np.nan
+                relpos = hprops['SSC'] - pos[i]
+                bad = np.where(np.abs(relpos) > self.boxsize.in_units('kpc', a=a)/2.)
+                relpos[bad] = -1.0 * (relpos[bad]/np.abs(relpos[bad])) * \
+                              (self.boxsize.in_units('kpc', a=a) - np.abs(relpos[bad]))
+                reldist = np.sum(relpos**2, axis=2)
+                amin = np.argmin(reldist[(hprops['N']<hostnum[i])])
+                hnear[i] = hprops['N'][(hprops['N']<hostnum[i])][amin]
+                distnear[i] = reldist[(hprops['N']<hostnum[i])][amin]
+                for key in hprops.keys():
+                    self.other_halo_properties[key][i] = hprops[key][(hprops['N']<hostnum[i])][amin]
 
-            posl = []
-            for i in range(len(haloids)):
-                posl.append(pos)
-            posa = np.vstack(posl).reshape((len(bhids), len(haloids), 3))
-
-            relpos = posa - ssca
-            bad = np.where(np.abs(relpos) > self.boxsize.in_units('kpc', a=a)/2.)
-            relpos[bad] = -1.0 * (relpos[bad]/np.abs(relpos[bad])) * (self.boxsize.in_units('kpc', a=a) - np.abs(relpos[bad]))
-            reldist = np.sum(relpos**2, axis=2)
-            dsort = reldist.argsort(axis=1)
-
-            halonear = []
-            distnear = []
-            indnear = []
-            for ii in range(len(bhids)):
-                if hostnum[ii] > 0:
-                    ok = np.where(haloids[dsort[ii]] < hostnum[ii])[0]
-                    if len(ok)>0:
-                        halonear.append(haloids[dsort[ii]][ok[0]])
-                        distnear.append(reldist[ii][dsort[ii]][ok[0]])
-                        indnear.append(dsort[ii][ok[0]])
-                    else:
-                        halonear.append(-1)
-                        distnear.append(-1)
-                else:
-                    halonear.append(haloids[dsort[ii]][0])
-                    distnear.append(reldist[ii][dsort[ii]][0])
-                    indnear.append(dsort[ii][0])
-            self.bh['nearhalo'].append(np.array(halonear))
-            self.bh['neardist'].append(np.array(distnear))
-            indnear = np.array(indnear)
-
-            for key in other_hprops.keys():
-                self.other_halo_properties[key].append(other_hprops[key][indnear])
 
     def add_host_property(self,keylist):
         for key in keylist:
