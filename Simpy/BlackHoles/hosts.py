@@ -109,16 +109,17 @@ class BHhalocat(object):
                     distnear[i] = np.nan
                     for key in hprops.keys():
                         self.other_halo_properties[key][i] = np.nan
-                relpos = hprops['SSC'] - pos[i]
+                    continue
+                relpos = hprops['SSC'][ok] - pos[i]
                 bad = np.where(np.abs(relpos) > self.boxsize.in_units('kpc', a=a)/2.)
                 relpos[bad] = -1.0 * (relpos[bad]/np.abs(relpos[bad])) * \
                               (self.boxsize.in_units('kpc', a=a) - np.abs(relpos[bad]))
                 reldist = np.sum(relpos**2, axis=1)
-                amin = np.argmin(reldist[(hprops['N']<hostnum[i])])
-                hnear[i] = hprops['N'][(hprops['N']<hostnum[i])][amin]
-                distnear[i] = reldist[(hprops['N']<hostnum[i])][amin]
+                amin = np.argmin(reldist)
+                hnear[i] = hprops['N'][ok][amin]
+                distnear[i] = reldist[amin]
                 for key in hprops.keys():
-                    self.other_halo_properties[key][-1][i] = hprops[key][(hprops['N']<hostnum[i])][amin]
+                    self.other_halo_properties[key][-1][i] = hprops[key][ok][amin]
 
 
     def add_host_property(self,keylist):
