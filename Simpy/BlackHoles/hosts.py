@@ -94,7 +94,10 @@ class BHhalocat(object):
             hnear = np.ones(len(bhids))*-1
             distnear = np.ones(len(bhids))*-1
             for key in hprops.keys():
-                self.other_halo_properties[key].append(np.zeros(len(bhids)))
+                if key == 'SSC':
+                    self.other_halo_properties[key].append(np.zeros((len(bhids),3)))
+                else:
+                    self.other_halo_properties[key].append(np.zeros(len(bhids)))
 
             for i in range(len(bhids)):
                 ok = np.where(hprops['N'] != hostnum[i])[0]
