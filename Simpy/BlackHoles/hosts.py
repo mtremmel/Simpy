@@ -61,7 +61,7 @@ class BHhalocat(object):
             print "quering database for halo properties"
             rawdat = dbstep.gather_property(*hostproperties)
             cnt = 0
-            for key in hprops.keys():
+            for key in hostproperties:
                 hprops[key] = rawdat[cnt]
                 cnt += 1
 
