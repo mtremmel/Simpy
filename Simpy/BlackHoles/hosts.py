@@ -60,7 +60,7 @@ class BHhalocat(object):
                     self.bh[key].append(np.array([]))
                 for key in self.halo_properties.keys():
                     self.halo_properties[key].append(np.array([]))
-                    self.other_halo_properties[key].append(np.arra([]))
+                    self.other_halo_properties[key].append(np.array([]))
                 continue
 
             print "quering database for halo properties"
