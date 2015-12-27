@@ -118,7 +118,7 @@ class BHhalocat(object):
                 hnear[i] = hprops['N'][(hprops['N']<hostnum[i])][amin]
                 distnear[i] = reldist[(hprops['N']<hostnum[i])][amin]
                 for key in hprops.keys():
-                    self.other_halo_properties[key][i] = hprops[key][(hprops['N']<hostnum[i])][amin]
+                    self.other_halo_properties[key][-1][i] = hprops[key][(hprops['N']<hostnum[i])][amin]
 
 
     def add_host_property(self,keylist):
