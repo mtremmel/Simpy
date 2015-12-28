@@ -53,10 +53,13 @@ def mcABconv(mag,nu):
     C = 20.638
     return -(2./5.)*mag + C + np.log10(nu)
 
-def smoothdata(rawdat,nsteps=20):
+def smoothdata(rawdat,nsteps=20,ret_std=False):
     nind = len(rawdat) - len(rawdat)%nsteps
     use = np.arange(nind)
     rawdat = rawdat[use].reshape((nind/nsteps,nsteps))
     meandat = rawdat.mean(axis=1)
-    return meandat
-
+    if ret_std is False:
+        return meandat
+    else:
+        std = rawdat.std(axis=1)
+        return meandat, std
