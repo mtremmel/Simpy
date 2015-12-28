@@ -44,6 +44,18 @@ def sepOrbitbyStep(simname, minstep=0, maxstep=1000000000, MBHinit=1e6, NCHILADA
 def extract_single_BH(simname, bhiord):
     os.system("awk -F ' ' '{if($1 == " + str(bhiord) + ") print>" + simname + '.orbit.' + str(bhiord) + "}' " + simname + ".orbit")
 
+def read_full_orbit_file(filename)
+    a = None
+    try:
+        bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt, a = readcol.readcol(
+            'orbitsteps/' + str(i), twod=False)
+    except:
+        bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt = readcol.readcol(
+            'orbitsteps/' + str(i), twod=False)
+    output = {'iord':bhid, 'time':time, 'step':step, 'mass':mass, 'x':x, 'y':y,
+			  'z':z, 'vx':vx, 'vy':vy, 'vz':vz. 'pot':pot, 'mdot':mdot, 'dm':dm, 'E':E, 'dt':dt, 'a':a}
+    return output
+
 
 
 def getOrbitValbyStep(minstep=1, maxstep=4096, clean=False, filename=None, ret_output=False):
