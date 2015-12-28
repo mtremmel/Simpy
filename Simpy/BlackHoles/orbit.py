@@ -42,7 +42,7 @@ def sepOrbitbyStep(simname, minstep=0, maxstep=1000000000, MBHinit=1e6, NCHILADA
     return
 
 def extract_single_BH(simname, bhiord):
-    os.system("awk -F ' ' '{if($1 == " + str(bhiord) + ") print>" + simname + '.orbit.' + str(bhiord) + "}' " + simname + ".orbit")
+    os.system("awk -F ' ' '{if($1 == " + str(bhiord) + ") print>$1}' " + simname + ".orbit")
 
 def read_full_orbit_file(filename)
     a = None
