@@ -199,6 +199,21 @@ class BHhalocat(object):
             self.bh['lum'].append(pynbody.array.SimArray(self.bh['mdot'][i],'Msol yr**-1').in_units('g s**-1') * csq * er)
         return
 
+    def gen_all_arrays(self):
+        bhdata = {}
+        hostdata = {}
+        neardata = {}
+        for key in self.bh.keys():
+            if key == 'pos':
+                continue
+            bhdata[key] = np.concatenate(self.bh[key])
+        for key in self.halo_properties.keys():
+            if key == 'SSC':
+                continue
+            hostdata = np.concatenate(self.halo_properties[key])
+            neardata = np.concatenate(self.other_halo_properties[key])
+        return bhdata, hostdata, neardata
+
     def trace_bh(self, bhid, key, return_steps=False):
         alldata = []
         id = []
