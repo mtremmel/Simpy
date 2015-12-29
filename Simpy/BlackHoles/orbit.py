@@ -3,7 +3,7 @@ import pynbody
 
 import os
 import pickle
-from .. import readcol
+from ..readcol import readcol
 import gc
 from .. import Files
 from .. import util
@@ -44,7 +44,7 @@ def sepOrbitbyStep(simname, minstep=0, maxstep=1000000000, MBHinit=1e6, NCHILADA
 
 def extract_single_BH(simname, bhiord):
 	os.system("awk -F ' ' '{if($1 == " + str(bhiord) + ") print>$1}' " + simname + ".orbit")
-	os.system("mv " + str(bhiord) + "orbit."+str(bhiord))
+	os.system("mv " + str(bhiord) + " orbit."+str(bhiord))
 	return
 
 
