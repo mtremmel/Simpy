@@ -81,9 +81,7 @@ def read_full_orbit_file(filename, simname):
 
 def smooth_raw_orbit_data(output, key, nsteps, maxstep=4096, minstep=0):
 	ok = np.where((output['step']>=minstep)&(output['step']<maxstep))[0]
-	output = util.cutdict(output,ok)
-	ord = np.argsort(output['step'])
-	output = util.cutdict(output,ord)
+	util.cutdict(output,ok)
 	ustep, ind = np.unique(output['step'].astype(np.int),return_index=True)
 	ss = np.where(ustep%nsteps==0)
 	smoothed_dat = []
