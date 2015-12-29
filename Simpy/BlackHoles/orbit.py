@@ -66,17 +66,15 @@ def read_full_orbit_file(filename, simname):
 	units = {'x':'kpc', 'y':'kpc', 'z':'kpc', 'vx':'km s**-1', 'vy':'km s**-1', 'vz':'km s**-1',
 			 'mdot':'Msol yr**-1', 'dm':'Msol', 'dt':'Gyr', 'time':'Gyr', 'mass':'Msol'}
 
-	for key in output.keys():
+	for key in ['x', 'y', 'z', 'vx', 'vy', 'vz']:
+		print "fixing scale factor for", key
+		output[key] *= output['a']
+	for key in units.keys():
 		print "converting units for ", key
-		for key in ['x', 'y', 'z', 'vx', 'vy', 'vz']:
-			print key
-			output[key] *= output['a']
-		if key in units.keys():
-			print key
-			origunit = s.infer_original_units(units[key])
-			if key in ['x', 'y', 'z', 'vx', 'vy', 'vz']: origunit = origunit / pynbody.units.Unit('a')
-			output[key] = pynbody.array.SimArray(output[key],origunit)
-			output[key] = output[key].in_units(units[key])
+		origunit = s.infer_original_units(units[key])
+		if key in ['x', 'y', 'z', 'vx', 'vy', 'vz']: origunit = origunit / pynbody.units.Unit('a')
+		output[key] = pynbody.array.SimArray(output[key],origunit)
+		output[key] = output[key].in_units(units[key])
 	return output
 
 def smooth_raw_orbit_data(output, key, nsteps, maxstep=4096, minstep=0):
