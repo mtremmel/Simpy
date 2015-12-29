@@ -87,7 +87,7 @@ def smooth_raw_orbit_data(output, key, nsteps, maxstep=4096, minstep=0):
 	smoothed_dat = []
 	stdev = []
 	time = []
-	for i in range(len(ss)):
+	for i in range(len(ss)-1):
 		data = output[key][ind[ss[i]]:ind[ss[i+1]]]
 		dt = output['dt'][ind[ss[i]]:ind[ss[i+1]]]
 		xmean, xsd, xsum = util.timeweightedAve(data, dt)
