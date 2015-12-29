@@ -7,7 +7,7 @@ default_prop_list = ['Mvir', 'Mstar', 'Rvir', 'Mgas']
 
 class BHhalocat(object):
 
-    def __init__(self, simname, boxsize='25 Mpc', hostproperties=default_prop_list):
+    def __init__(self, simname, boxsize='25 Mpc'):
         self.simname = simname
         Files.cklists(self.simname)
         f = open('steps.list', 'r')
@@ -28,6 +28,8 @@ class BHhalocat(object):
         self.halo_properties = {}
         self.other_halo_properties = {}
         self.bhmergers = {}
+
+        hostproperties = ['Mvir', 'Mstar', 'Rvir', 'Mgas', 'SSC', 'N']
 
         if 'SSC' not in hostproperties:
             hostproperties.append('SSC')
@@ -128,18 +130,68 @@ class BHhalocat(object):
 
 
     def add_host_property(self,keylist):
+        import halo_db as db
+        prevkeys = self.halo_properties.keys()
+        newkeys = []
         for key in keylist:
+            if key in prevkeys:
+                print key, "already in halo_properties... will not update this"
+                continue
+            newkeys.append(key)
             self.halo_properties[key] = []
             self.other_halo_properties[key] = []
 
-        for ii in range(len(self.steps)):
-            print "finding host galaxy properties for step ", self.steps[ii]
-            step = self.steps[ii]
-            data = dbutil.property_array(self.simname, step, np.append(self.bh['halos'][ii],self.bh['other_halos'][ii]), keylist)
+        for i in range(len(self.steps)):
+            step = self.steps[i]
+            if len(self.bh['bhid'][i]) == 0:
+                for key in newkeys:
+                    self.halo_properties[key].append(np.array([]))
+                    self.other_halo_properties[key].append(np.array([]))
+                continue
+            print "getting galaxy data for step ", step
+            dbstep = db.get_timestep(self.simname+'/%'+step)
 
-            for jj in range(len(data)):
-                self.halo_properties[keylist[jj]].append(data[jj][:len(self.bh['halos'][ii])])
-                self.other_halo_properties[keylist[jj]].append(data[jj][len(self.bh['halos'][ii]):])
+            hprops = {}
+            keylist.append('N')
+            rawdat = dbstep.gather_property(*keylist)
+            cnt = 0
+            for key in keylist:
+                hprops[key] = rawdat[cnt]
+                cnt += 1
+
+            print "connecting properties to hosts"
+            uhost, ind = np.unique(self.bh['halo'][i], return_inverse=True)
+            match = np.where(np.in1d(hprops['N'],uhost))[0]
+            match2 = np.where(np.in1d(uhost,hprops['N']))[0]
+            nomatch2 = np.where(np.in1d(uhost,hprops['N'])==False)[0]
+
+            for key in newkeys:
+                d1 = hprops[key][match]
+                d2 = np.zeros(len(uhost))
+                d2[match2] = d1
+                d2[nomatch2] = np.nan
+                self.halo_properties[key].append(d2[ind])
+
+            print "connecting properties to nearby halos"
+            if len(np.where(self.bh['nearhalo']>=0)[0]) == 0:
+                for key in newkeys:
+                    self.other_halo_properties[key].append(np.array([]))
+                continue
+            uotherhost, otherind = np.unique(self.bh['nearhalo'][i], return_inverse=True)
+            othermatch = np.where(np.in1d(hprops['N'],uotherhost))[0]
+            othermatch2 = np.where(np.in1d(uotherhost,hprops['N']))[0]
+            othernomatch2 = np.where(np.in1d(uotherhost,hprops['N'])==False)[0]
+            if len(othermatch) == 0:
+                for key in newkeys:
+                    self.other_halo_properties[key].append(np.array([]))
+                continue
+            for key in newkeys:
+                d1 = hprops[key][othermatch]
+                d2 = np.zeros(len(uotherhost))
+                d2[othermatch2] = d1
+                d2[othernomatch2] = np.nan
+                self.other_halo_properties[key].append(d2[otherind])
+        return
 
     def trace_bh(self, bhid, key, return_steps=False):
         alldata = []
