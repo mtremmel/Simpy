@@ -84,6 +84,7 @@ def smooth_raw_orbit_data(output, key, nsteps, maxstep=4096, minstep=0):
 	util.cutdict(output,ok)
 	ustep, ind = np.unique(output['step'].astype(np.int),return_index=True)
 	ss = np.where(ustep%nsteps==0)
+	print ss
 	smoothed_dat = []
 	stdev = []
 	time = []
