@@ -67,6 +67,7 @@ def read_full_orbit_file(filename, simname):
 			 'mdot':'Msol yr**-1', 'dm':'Msol', 'dt':'Gyr', 'time':'Gyr', 'mass':'Msol'}
 
 	for key in output.keys():
+		print "converting units for ", key
 		for key in ['x', 'y', 'z', 'vx', 'vy', 'vz']:
 			output[key] *= output['a']
 		if key in units.keys():
