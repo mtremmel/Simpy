@@ -70,7 +70,9 @@ def read_full_orbit_file(filename, simname):
 		for key in ['x', 'y', 'z', 'vx', 'vy', 'vz']:
 			output[key] *= output['a']
 		if key in units.keys():
-			output[key] = pynbody.array.SimArray(output[key],s.infer_original_units(units[key]))
+			origunit = s.infer_original_units(units[key])
+			if key in ['x', 'y', 'z', 'vx', 'vy', 'vz']: origunit = origunit / pynbody.units.Unit('a')
+			output[key] = pynbody.array.SimArray(output[key],origunit)
 			output[key] = output[key].in_units(units[key])
 	return output
 
