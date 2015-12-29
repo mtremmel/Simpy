@@ -75,8 +75,8 @@ def read_full_orbit_file(filename, simname):
 		if key in ['x', 'y', 'z', 'vx', 'vy', 'vz']: origunit = origunit / pynbody.units.Unit('a')
 		output[key] = pynbody.array.SimArray(output[key],origunit)
 		output[key] = output[key].in_units(units[key])
-	ord = np.argsort(output['time'])
-	output = util.cutdict(output,ord)
+	#ord = np.argsort(output['time'])
+	#output = util.cutdict(output,ord)
 	return output
 
 def smooth_raw_orbit_data(output, key, nsteps, maxstep=4096, minstep=0):
