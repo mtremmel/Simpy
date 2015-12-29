@@ -64,3 +64,4 @@ def smoothdata(rawdat,nsteps=20,ret_std=False):
         std = rawdat.std(axis=1)
         return meandat, std
 
+

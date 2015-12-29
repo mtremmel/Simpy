@@ -191,6 +191,12 @@ class BHhalocat(object):
                 d2[othermatch2] = d1
                 d2[othernomatch2] = np.nan
                 self.other_halo_properties[key].append(d2[otherind])
+
+    def calc_lum(self,er=0.1):
+        csq = pynbody.array.SimArray((2.998e10) ** 2, 'erg g**-1')
+        self.bh['lum'] = []
+        for i in range(len(self.steps)):
+            self.bh['lum'].append(pynbody.array.SimArray(self.bh['mdot'][i],'Msol yr**-1').in_units('g s**-1') * csq * er)
         return
 
     def trace_bh(self, bhid, key, return_steps=False):
