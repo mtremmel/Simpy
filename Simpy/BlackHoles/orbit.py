@@ -48,7 +48,11 @@ def extract_single_BH(simname, bhiord):
 	return
 
 
-def read_full_orbit_file(filename):
+def read_full_orbit_file(filename, simname):
+	f = open('files.list','r')
+	files = f.readlines()
+	s = pynbody.load(files[0].strip('\n'))
+	f.close()
 	a = None
 	try:
 		bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt, a = readcol.readcol(filename, twod=False)
@@ -56,7 +60,40 @@ def read_full_orbit_file(filename):
 		bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt = readcol.readcol(filename, twod=False)
 	output = {'iord':bhid, 'time':time, 'step':step, 'mass':mass, 'x':x, 'y':y,
 			  'z':z, 'vx':vx, 'vy':vy, 'vz':vz, 'pot':pot, 'mdot':mdot, 'dm':dm, 'E':E, 'dt':dt, 'a':a}
+	if a is None:
+		a, = cosmology.getScaleFactor(pynbody.array.SimArray(time,s.infer_original_units('Gyr')),s)
+		output['a'] = a
+	units = {'x':'kpc', 'y':'kpc', 'z':'kpc', 'vx':'km s**-1', 'vy':'km s**-1', 'vz':'km s**-1',
+			 'mdot':'Msol yr**-1', 'dm':'Msol', 'dt':'Gyr', 'time':'Gyr', 'mass':'Msol'}
+
+	for key in output.keys():
+		for key in ['x', 'y', 'z', 'vx', 'vy', 'vz']:
+			output[key] *= output['a']
+		if key in units.keys():
+			output[key] = pynbody.array.SimArray(output[key],s.infer_original_units(units[key]))
+			output[key] = output[key].in_units(units[key])
 	return output
+
+def smooth_raw_orbit_data(output, key, nsteps, maxstep=4096, minstep=0):
+	ok = np.where((output['step']>=minstep)&(output['step']<maxstep))[0]
+	output = util.cutdict(output,ok)
+	ord = np.argsort(output['step'])
+	output = util.cutdict(output,ord)
+	ustep, ind = np.unique(output['step'].astype(np.int),return_index=True)
+	ss = np.where(ustep%nsteps==0)
+	smoothed_dat = []
+	stdev = []
+	time = []
+	for i in range(len(ss)):
+		data = output[key][ind[ss[i]]:ind[ss[i+1]]]
+		dt = output['dt'][ind[ss[i]]:ind[ss[i+1]]]
+		xmean, xsd, xsum = util.timeweightedAve(data, dt)
+		smoothed_dat.append(xmean)
+		stdev.append(xsd)
+		time.append((output['time'][ind[ss[i]]]+output['time'][ind[ss[i+1]]])/2.)
+	return np.array(smoothed_dat), np.array(stdev), np.array(time)
+
+
 
 
 
