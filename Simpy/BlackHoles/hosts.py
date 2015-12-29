@@ -123,6 +123,8 @@ class BHhalocat(object):
                 distnear[i] = reldist[amin]
                 for key in hprops.keys():
                     self.other_halo_properties[key][-1][i] = hprops[key][ok][amin]
+            self.bh['nearhalo'].append(hnear)
+            self.bh['neardist'].append(distnear)
 
 
     def add_host_property(self,keylist):
