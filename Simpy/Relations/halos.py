@@ -137,11 +137,11 @@ def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=N
 
 			cnt += 1
 
-	plotting.plt.plot(Mvir, Mstar, style, markersize=markersize, label=label)
+	plotting.plt.plot(np.log10(Mvir), np.log10(Mstar/Mvir), style, markersize=markersize, label=label)
 	plotting.plt.ylabel(r'M$_{*,central}$/M$_{vir}$',fontsize=30)
 	plotting.plt.xlabel(r'M$_{vir}$ [M$_{\odot}$]',fontsize=30)
-	plotting.plt.xscale('log',base=10)
-	plotting.plt.yscale('log',base=10)
+	#plotting.plt.xscale('log',base=10)
+	#plotting.plt.yscale('log',base=10)
 	plotting.plt.legend(loc='lower right',fontsize=20)
 
 
