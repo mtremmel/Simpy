@@ -18,7 +18,7 @@ class BHhalocat(object):
 
         self.steps = steps_str
         self.time = np.zeros(len(steps))
-c        self.boxsize = pynbody.units.Unit(boxsize+' a')
+        self.boxsize = pynbody.units.Unit(boxsize+' a')
 
         import halo_db as db
 
