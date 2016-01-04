@@ -82,7 +82,7 @@ def kravstov14(logM, z):
 		return -1.0*np.log10(10**(alpha*x)+1) + delta * np.log10(1+np.exp(x))**gamma/(1+np.exp(10**-x))
 
 	logMstar = loge + logM1 + f(logM - logM1) - f(0)
-	return logMstar - logM
+	return 10**(logMstar - logM)
 
 
 def getstats(simname, step):
@@ -132,8 +132,8 @@ def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=N
 				flabel = 'Kravtsov+ 14'
 
 			logmv_fit = np.arange(np.log10(minmass),np.log10(maxmass),0.1)
-			logmstar_fit = fitfunc(logmv_fit, step.redshift)
-			plotting.plt.plot(logmv_fit, logmstar_fit, fitstyle[cnt], label=flabel)
+			ratio_fit = fitfunc(logmv_fit, step.redshift)
+			plotting.plt.plot(logmv_fit, np.log10(ratio_fit), fitstyle[cnt], label=flabel)
 
 			cnt += 1
 
