@@ -104,7 +104,7 @@ def getstats(simname, step):
 	return amigastat, a**-1 -1, type
 
 
-def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None, markersize=10,label=None, correct=True):
+def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None, markersize=5,label=None, correct=True):
 	import halo_db as db
 	step = db.get_timestep(sim+'/%'+str(step))
 	Mvir, Mstar = step.gather_property('Mvir', 'Mstar')
@@ -112,6 +112,8 @@ def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=N
 	if correct is True:
 		Mstar *= 0.6
 		Mvir /= 0.8
+
+	plotting.plt.plot(np.log10(Mvir), np.log10(Mstar/Mvir), style, markersize=markersize, label=label)
 
 	if minmass is None:
 		minmass = Mvir.min()/2.
@@ -143,7 +145,7 @@ def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=N
 
 			cnt += 1
 
-	plotting.plt.plot(np.log10(Mvir), np.log10(Mstar/Mvir), style, markersize=markersize, label=label)
+	#plotting.plt.plot(np.log10(Mvir), np.log10(Mstar/Mvir), style, markersize=markersize, label=label)
 	plotting.plt.ylabel(r'M$_{*,central}$/M$_{vir}$',fontsize=30)
 	plotting.plt.xlabel(r'M$_{vir}$ [M$_{\odot}$]',fontsize=30)
 	#plotting.plt.xscale('log',base=10)
