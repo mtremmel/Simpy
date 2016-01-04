@@ -70,6 +70,20 @@ def behroozi13(logM,a):
 	ratio = 10**(lMstar - logM)
 	return ratio
 
+#Kravstov data
+def kravstov14(logM, z):
+	loge = -1.685
+	logM1 = 11.39
+	alpha = 1.74
+	delta = 4.335
+	gamma = 0.531
+
+	def f(x):
+		return -1.0*np.log10(10**(alpha*x)+1) + delta * np.log10(1+np.exp(x))**gamma/(1+np.exp(10**-x))
+
+	logMstar = loge + logM1 + f(logM - logM1) - f(0)
+	return logMstar - logM
+
 
 def getstats(simname, step):
 	print "getting halo stats..."
@@ -89,7 +103,52 @@ def getstats(simname, step):
 	gc.collect()
 	return amigastat, a**-1 -1, type
 
-def SMHM(simname, step, style, fitstyle='k-',skipgrp=None, maxgrp = None, minmass = None, plotratio=True, plotfit='mos', ploterr = True, nodata=False, lw=3, correct = True, marksize=10, label=None, overplot=False, sats='Remove'):
+
+def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None, markersize=10,label=None):
+	import halo_db as db
+	step = db.get_timestep(sim+'/%'+str(step))
+	Mvir, Mstar = step.gather_property('Mvir', 'Mstar')
+
+	if minmass is None:
+		minmass = Mvir.min()/2.
+	if maxmass is None:
+		maxmass = Mvir.max()*2.
+
+	cnt = 0
+	if fit is not None:
+		for ff in fit:
+			if ff not in ['Mos','Beh', 'Krav', 'Moster', 'Behroozi', 'Kravtsov']:
+				print "fit request ", ff, " not understood... should be in list", \
+					['Mos','Beh', 'Krav', 'Moster', 'Behroozi', 'Kravtsov']
+				continue
+			if ff in ['Mos', 'Moster']:
+				fitfunc = moster13
+				flabel = 'Moster+ 13'
+			if fit in ['Beh', 'Behroozi']:
+				fitfunc = behroozi13
+				flabel = 'Behroozi+ 13'
+			if fit in ['Krav', 'Kravtsov']:
+				fitfunc = kravstov14
+				flabel = 'Kravtsov+ 14'
+
+			logmv_fit = np.arange(np.log10(minmass),np.log10(maxmass),0.1)
+			logmstar_fit = fitfunc(logmv_fit, step.redshift)
+			plotting.plt.plot(logmv_fit, logmstar_fit, fitstyle[cnt], label=flabel)
+
+			cnt += 1
+
+	plotting.plt(Mvir, Mstar, style, markersize=markersize, label=label)
+	plotting.plt.ylabel(r'M$_{*,central}$/M$_{vir}$',fontsize=30)
+	plotting.plt.xlabel(r'M$_{vir}$ [M$_{\odot}$]',fontsize=30)
+	plotting.plt.xscale('log',base=10)
+	plotting.plt.yscale('log',base=10)
+	plotting.plt.legend(loc='lower right',fontsize=20)
+
+
+
+
+
+def SMHM_old(simname, step, style, fitstyle='k-',skipgrp=None, maxgrp = None, minmass = None, plotratio=True, plotfit='mos', ploterr = True, nodata=False, lw=3, correct = True, marksize=10, label=None, overplot=False, sats='Remove'):
 	amigastat, redshift, type = getstats(simname, step)
 	print "z = ", redshift
 	if minmass is None:

@@ -43,3 +43,4 @@ def betaSpecAM(type='stars',sAMrange=None, sAMunits='kpc km s**-1 Msol**-1'):
 	sAMarray =  pynbody.array.SimArray(10**np.arange(np.log10(sAMrange[0]),np.log10(sAMrange[1]),dlsAM), sAMunits)
 	beta = k1 * np.log10(sAMarray/1e-7) + k2
 	return sAMarray, beta
+

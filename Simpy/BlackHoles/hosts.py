@@ -199,10 +199,14 @@ class BHhalocat(object):
             self.bh['lum'].append(pynbody.array.SimArray(self.bh['mdot'][i],'Msol yr**-1').in_units('g s**-1') * csq * er)
         return
 
-    def gen_all_arrays(self):
+    def gen_arrays(self):
         bhdata = {}
         hostdata = {}
         neardata = {}
+        steps = []
+        for i in range(len(self.steps)):
+            steps.append(np.ones(len(self.bh['bhid'][i]))*self.steps[i])
+        steps = np.concatenate(steps)
         for key in self.bh.keys():
             if key == 'pos':
                 continue
@@ -212,7 +216,50 @@ class BHhalocat(object):
                 continue
             hostdata = np.concatenate(self.halo_properties[key])
             neardata = np.concatenate(self.other_halo_properties[key])
-        return bhdata, hostdata, neardata
+        return bhdata, hostdata, neardata, steps
+
+    def extract_AGN(self,threshold = 1e42, distmin = 1, distmax = 50):
+        if not self.bh['lum']:
+            self.calc_lum()
+        act_halos = {'uhid':[], 'step':[], 'nbh':[], 'type':[]}
+
+        bhdata, hostdata, neardata, steps = self.gen_arrays()
+        bright = np.where(bhdata['lum']>threshold)[0]
+
+        act_halos['step'] = steps[bright]
+
+        otherh - np.where(bhdata['nearhalo'][bright])
+
+        off = np.where(bhdata['neardist'][bright])
+
+        bright = np.where(bhdata['lum']>threshold)
+        bhalo = bhdata['halo'][bright]
+
+
+
+
+        data_multi = {'step':[], 'nbhs':[], 'halo':[], 'lummain':[], 'lumother':[],
+                'dist':[], 'distother':[], 'mass':[], 'massother':[]}
+        for i in range(len(self.steps)):
+            step = self.steps[i]
+            if len(self.bh['bhid'][i]) == 0:
+                continue
+            bright = np.where(self.bh['lum'][i] > threshold)
+
+            hosts = self.bh['halo'][i][bright]
+            hord = np.argsort(hosts)
+            hosts = hosts[ord]
+            uhosts, ind, inv, cnt = np.unique(hosts,return_count=True, return_inverse = True, return_index = True)
+
+            multi = np.where(cnt[inv] > 1)[0]
+            data_multi['step'].append(np.ones(len(multi)*step))
+
+
+
+
+
+
+
 
     def trace_bh(self, bhid, key, return_steps=False):
         alldata = []
