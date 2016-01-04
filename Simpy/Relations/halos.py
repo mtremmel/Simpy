@@ -125,13 +125,15 @@ def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=N
 				print "fit request ", ff, " not understood... should be in list", \
 					['Mos','Beh', 'Krav', 'Moster', 'Behroozi', 'Kravtsov']
 				continue
+			print "found fit relation for", ff
+
 			if ff in ['Mos', 'Moster']:
 				fitfunc = moster13
 				flabel = 'Moster+ 13'
-			if fit in ['Beh', 'Behroozi']:
+			if ff in ['Beh', 'Behroozi']:
 				fitfunc = behroozi13
 				flabel = 'Behroozi+ 13'
-			if fit in ['Krav', 'Kravtsov']:
+			if ff in ['Krav', 'Kravtsov']:
 				fitfunc = kravstov14
 				flabel = 'Kravtsov+ 14'
 
