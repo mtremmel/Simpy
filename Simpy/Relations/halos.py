@@ -79,7 +79,7 @@ def kravstov14(logM, z):
 	gamma = 0.531
 
 	def f(x):
-		return -1.0*np.log10(10**(alpha*x)+1) + delta * np.log10(1+np.exp(x))**gamma/(1+np.exp(10**-x))
+		return -1.0*np.log10(10**(alpha*x)+1) + delta * np.log10(1+np.exp(x))**gamma/(1+np.exp(10.**(-1*x)))
 
 	logMstar = loge + logM1 + f(logM - logM1) - f(0)
 	return 10**(logMstar - logM)
