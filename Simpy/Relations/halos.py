@@ -74,7 +74,7 @@ def behroozi13(logM,a):
 def kravstov14(logM, z):
 	loge = -1.685
 	logM1 = 11.39
-	alpha = 1.74
+	alpha = -1.74
 	delta = 4.335
 	gamma = 0.531
 
