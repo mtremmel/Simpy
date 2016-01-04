@@ -79,7 +79,7 @@ def kravstov14(logM, z):
 	gamma = 0.531
 
 	def f(x):
-		return np.log10(10.0**(alpha*x)+1.0) + (delta * np.log10(1.0+np.exp(x))**gamma)/(1+np.exp(10.**(-1.0*x)))
+		return -1.0 * np.log10(10.0**(alpha * x) + 1.0) + (delta * np.log10(1.0 + np.exp(x))**gamma) / (1.0 + np.exp(10.**(-1.0 * x)))
 
 	logMstar = loge + logM1 + f(logM - logM1) - f(0)
 	return 10**(logMstar - logM)
@@ -119,6 +119,7 @@ def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=N
 		maxmass = Mvir.max()*2.
 
 	cnt = 0
+	logmv_fit = np.arange(np.log10(minmass),np.log10(maxmass),0.1)
 	if fit is not None:
 		for ff in fit:
 			if ff not in ['Mos','Beh', 'Krav', 'Moster', 'Behroozi', 'Kravtsov']:
@@ -137,7 +138,6 @@ def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=N
 				fitfunc = kravstov14
 				flabel = 'Kravtsov+ 14'
 
-			logmv_fit = np.arange(np.log10(minmass),np.log10(maxmass),0.1)
 			ratio_fit = fitfunc(logmv_fit, step.redshift)
 			plotting.plt.plot(logmv_fit, np.log10(ratio_fit), fitstyle[cnt], label=flabel)
 
