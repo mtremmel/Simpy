@@ -104,7 +104,7 @@ def getstats(simname, step):
 	return amigastat, a**-1 -1, type
 
 
-def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None, markersize=5,label=None, correct=True):
+def SMHM_db(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None, markersize=5,label=None, correct=True):
 	import halo_db as db
 	step = db.get_timestep(sim+'/%'+str(step))
 	Mvir, Mstar = step.gather_property('Mvir', 'Mstar')
@@ -156,72 +156,66 @@ def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=N
 
 
 
-def SMHM_old(simname, step, style, fitstyle='k-',skipgrp=None, maxgrp = None, minmass = None, plotratio=True, plotfit='mos', ploterr = True, nodata=False, lw=3, correct = True, marksize=10, label=None, overplot=False, sats='Remove'):
-	amigastat, redshift, type = getstats(simname, step)
-	print "z = ", redshift
+def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None, markersize=5,label=None, correct=True, usedb=False, remove_sats=True, only_sats=False):
+	if usedb is True:
+		import halo_db as db
+		dbstep = db.get_timestep(sim+'/%'+step)
+		if remove_sats or only_sats:
+			Mvir, Mstar, sub = dbstep.gather_property('Mvir', 'Mstar', 'Sub')
+			if len(Mvir)==0:
+				print "Warning Sub halos not implemented yet in your database! " \
+					  "please turn off sats options or re-run with usedb False"
+				return
+		else:
+			Mvir, Mstar = dbstep.gather_property('Mvir', 'Mstar')
+		redshift = dbstep.redshift
+	else:
+		amigastat, redshift, type = getstats(sim, step)
+		Mvir = amigastat['Mvir(M_sol)']
+		Mstar = amigastat['StarMass(M_sol)']
+
+	if correct is True:
+		Mstar *= 0.6
+		Mvir /= 0.8
+
+	plotting.plt.plot(Mvir, Mstar/Mvir, style, markersize=markersize, label=label)
+
 	if minmass is None:
-		minmass = 1e8
-	minm = np.log10(minmass)
-	maxm = np.log10(amigastat['Mvir(M_sol)'].max())
+		minmass = Mvir.min()/2.
+	if maxmass is None:
+		maxmass = Mvir.max()*2.
 
-	if nodata is False:
-		if skipgrp is not None:
-			skipgrp = np.array(skipgrp)
-			ok, = np.where(np.in1d(amigastat['Grp'], skipgrp) == False)
-			util.cutdict(amigastat,ok)
-		if maxgrp is not None:
-			ok, = np.where(amigastat['Grp']<maxgrp)
-			util.cutdict(amigastat,ok)
-		if sats == 'Remove':
-			if type == 'rockstar':
-				ok, = np.where(amigastat['Satellite?'] == -1)
-			if type == 'amiga':
-				ok, = np.where(amigastat['Satellite?'] == 'no')
-			util.cutdict(amigastat,ok)
-		if sats == 'Only':
-			if type == 'rockstar':
-				ok, = np.where(amigastat['Satellite?'] != -1)
-			if type == 'amiga':
-				ok, = np.where(amigastat['Satellite?'] == 'yes')
-		ok, = np.where(amigastat['Mvir(M_sol)']>minmass)
-		util.cutdict(amigastat,ok)
+	logmv_fit = np.arange(np.log10(minmass),np.log10(maxmass),0.1)
+	if fit is not None:
+		for ff in fit:
+			if ff not in ['Mos','Beh', 'Krav', 'Moster', 'Behroozi', 'Kravtsov']:
+				print "fit request ", ff, " not understood... should be in list", \
+					['Mos','Beh', 'Krav', 'Moster', 'Behroozi', 'Kravtsov']
+				continue
+			print "found fit relation for", ff
 
-		xdata = amigastat['Mvir(M_sol)']
-		ydata = amigastat['StarMass(M_sol)']
-		if correct is True:
-			ydata *= 0.6
-			xdata /= 0.8
-		if plotratio is True:
-			ydata = ydata/xdata
-		ydata = np.log10(ydata)
-		xdata = np.log10(xdata)
-		plotting.plt.plot(xdata, ydata, style, markersize=marksize, label=label)
+			if ff in ['Mos', 'Moster']:
+				fitfunc = moster13
+				flabel = 'Moster+ 13'
+			if ff in ['Beh', 'Behroozi']:
+				fitfunc = behroozi13
+				flabel = 'Behroozi+ 13'
+			if ff in ['Krav', 'Kravtsov']:
+				fitfunc = kravstov14
+				flabel = 'Kravtsov+ 14'
 
-	if plotfit is not None:
-		zlabel = '%0.4f'%(redshift)
-		lmhaloline = np.arange(minm-1.0,maxm+0.5,0.01)
-		if plotfit != 'mos' and plotfit != 'beh':
-			print "WARNING! Input string for plotfit type is not recognized... defaulting to Moster+ 13"
-			plotfit = 'mos'
-		if plotfit == 'mos':
-			ratiofit = moster13(lmhaloline, redshift)
-			fitlabel = "Moster+ 13, z = "+zlabel
-			if ploterr is True:
-				sigma = errmoster13(lmhaloline, redshift)
-		if plotfit == 'beh':
-			ratiofit = behroozi13(lmhaloline, redshift)
-			fitlabel = "Behroozi+ 13, z = "+zlabel
-			if ploterr is True:
-				print "WARNING ploterr is set to True but behroozi was chosen. Errors not implemented in this yet."
-		plotting.plt.plot(lmhaloline, np.log10(ratiofit), fitstyle, linewidth=lw, label=fitlabel)
-		if ploterr is True:
-			ok, = np.where(np.isnan(np.log10(ratiofit-sigma))==False)
-			plotting.plt.fill_between(lmhaloline[ok],np.log10(ratiofit[ok]-sigma[ok]),np.log10(ratiofit[ok]+sigma[ok]),facecolor='grey',alpha=0.4)
+			ratio_fit = fitfunc(logmv_fit, step.redshift)
+			plotting.plt.plot(10**logmv_fit, ratio_fit, fitstyle[cnt], label=flabel)
+
+			cnt += 1
+
+	plotting.plt.ylabel(r'M$_{*,central}$/M$_{vir}$',fontsize=30)
+	plotting.plt.xlabel(r'M$_{vir}$ [M$_{\odot}$]',fontsize=30)
+	plotting.plt.legend(loc='lower right',fontsize=20)
+	plotting.plt.yscale('log',base=10)
+	plotting.plt.xscale('log',base=10)
 
 
-	plotting.plt.legend(loc='lower right', fontsize=25)
-	plotting.plt.ylabel(r'M$_{*}$/M$_{vir}$',fontsize=30)
-	plotting.plt.xlabel(r'M$_{vir}$',fontsize=30)
 
 
 
