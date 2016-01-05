@@ -1,5 +1,5 @@
 import numpy as np
-from .. import readcol
+from ..readcol import readcol
 from .. import util
 from .. import plotting
 import pynbody
@@ -88,12 +88,12 @@ def kravstov14(logM, z):
 def getstats(simname, step):
 	print "getting halo stats..."
 	if os.path.exists(simname + '.' + step + '.amiga.stat'):
-		amigastat = readcol.readcol(simname + '.' + step + '.amiga.stat', asdict=True)
+		amigastat = readcol(simname + '.' + step + '.amiga.stat', asdict=True)
 		type = 'amiga'
 	else:
 			print "amiga file failed, looking for rockstar"
 			if os.path.exists(simname + '.' + step + '.rockstar.stat'):
-				amigastat = readcol.readcol(simname + '.' + step + '.rockstar.stat', asdict=True)
+				amigastat = readcol(simname + '.' + step + '.rockstar.stat', asdict=True)
 				type = 'rockstar'
 			else:
 				print "ERROR cannot find recognized stat file (amiga.stat or rockstar.stat)"
