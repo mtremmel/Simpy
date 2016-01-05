@@ -199,6 +199,7 @@ def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=N
 		maxmass = Mvir.max()*2.
 
 	logmv_fit = np.arange(np.log10(minmass),np.log10(maxmass),0.1)
+	cnt = 0
 	if fit is not None:
 		for ff in fit:
 			if ff not in ['Mos','Beh', 'Krav', 'Moster', 'Behroozi', 'Kravtsov']:
