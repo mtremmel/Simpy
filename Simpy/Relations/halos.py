@@ -146,7 +146,7 @@ def SMHM_db(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmas
 			cnt += 1
 
 	#plotting.plt.plot(np.log10(Mvir), np.log10(Mstar/Mvir), style, markersize=markersize, label=label)
-	plotting.plt.ylabel(r'M$_{*,central}$/M$_{vir}$',fontsize=40)
+	plotting.plt.ylabel(r'M$_{*,cen}$/M$_{vir}$',fontsize=40)
 	plotting.plt.xlabel(r'M$_{vir}$ [M$_{\odot}$]',fontsize=40)
 	#plotting.plt.xscale('log',base=10)
 	#plotting.plt.yscale('log',base=10)
