@@ -219,7 +219,7 @@ def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=N
 				flabel = 'Kravtsov+ 14'
 
 			ratio_fit = fitfunc(logmv_fit, redshift)
-			plotting.plt.plot(10**logmv_fit, ratio_fit, fitstyle[cnt], label=flabel)
+			plotting.plt.plot(10**logmv_fit, ratio_fit, fitstyle[cnt], label=flabel, lw=3)
 
 			cnt += 1
 
