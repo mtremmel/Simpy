@@ -210,10 +210,10 @@ def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=N
 
 			if ff in ['Mos', 'Moster']:
 				fitfunc = moster13
-				flabel = 'Moster+ 13, z='+str(redshift)
+				flabel = 'Moster+ 13, z = %0.2e' % (redshift)
 			if ff in ['Beh', 'Behroozi']:
 				fitfunc = behroozi13
-				flabel = 'Behroozi+ 13, z='+str(redshift)
+				flabel = 'Behroozi+ 13, z = %0.2e' % (redshift)
 			if ff in ['Krav', 'Kravtsov']:
 				fitfunc = kravstov14
 				flabel = 'Kravtsov+ 14'
