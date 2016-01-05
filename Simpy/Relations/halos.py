@@ -209,15 +209,15 @@ def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=N
 
 			if ff in ['Mos', 'Moster']:
 				fitfunc = moster13
-				flabel = 'Moster+ 13'
+				flabel = 'Moster+ 13, z='+str(redshift)
 			if ff in ['Beh', 'Behroozi']:
 				fitfunc = behroozi13
-				flabel = 'Behroozi+ 13'
+				flabel = 'Behroozi+ 13, z='+str(redshift)
 			if ff in ['Krav', 'Kravtsov']:
 				fitfunc = kravstov14
 				flabel = 'Kravtsov+ 14'
 
-			ratio_fit = fitfunc(logmv_fit, step.redshift)
+			ratio_fit = fitfunc(logmv_fit, redshift)
 			plotting.plt.plot(10**logmv_fit, ratio_fit, fitstyle[cnt], label=flabel)
 
 			cnt += 1
