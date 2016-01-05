@@ -150,7 +150,7 @@ def SMHM_db(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmas
 	plotting.plt.xlabel(r'M$_{vir}$ [M$_{\odot}$]',fontsize=40)
 	#plotting.plt.xscale('log',base=10)
 	#plotting.plt.yscale('log',base=10)
-	plotting.plt.legend(loc='lower right',fontsize=20)
+	plotting.plt.legend(loc='lower right',fontsize=30)
 
 
 
