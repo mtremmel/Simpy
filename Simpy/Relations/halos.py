@@ -228,6 +228,7 @@ def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=N
 	plotting.plt.legend(loc='lower right',fontsize=20)
 	plotting.plt.yscale('log',base=10)
 	plotting.plt.xscale('log',base=10)
+	plotting.plt.xlim(minmass, maxmass)
 
 
 
