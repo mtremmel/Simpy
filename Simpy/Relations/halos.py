@@ -173,19 +173,17 @@ def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=N
 		amigastat, redshift, type = getstats(sim, step)
 		Mvir = amigastat['Mvir(M_sol)']
 		Mstar = amigastat['StarMass(M_sol)']
-		if remove_sats:
+		if remove_sats is True:
 			if type == 'rockstar':
 				ok, = np.where(amigastat['Satellite?'] == -1)
 			if type == 'amiga':
 				ok, = np.where(amigastat['Satellite?'] == 'no')
-			Mvir = Mvir[ok]
-			Mstar = Mstar[ok]
-		if only_sats:
+		if only_sats is True:
 			if type == 'rockstar':
 				ok, = np.where(amigastat['Satellite?'] != -1)
 			if type == 'amiga':
 				ok, = np.where(amigastat['Satellite?'] == 'yes')
-		if only_sats or remove_sats:
+		if only_sats is True or remove_sats is True:
 			Mvir = Mvir[ok]
 			Mstar = Mstar[ok]
 
