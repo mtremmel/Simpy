@@ -1,6 +1,6 @@
 import numpy as np
 import pynbody
-from . import util
+from . import util, Files
 import os
 import gc
 
@@ -15,7 +15,8 @@ def rockstar_iord_to_fpos(snapn):
 	f.close()
 	return iord_to_fpos[orig]
 
-def convert_all_rockstar():
+def convert_all_rockstar(simname):
+	Files.cklists(simname)
 	f = open('files.list','r')
 	files = f.readlines()
 	f.close()
