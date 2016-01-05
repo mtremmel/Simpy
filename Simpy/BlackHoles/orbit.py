@@ -121,11 +121,11 @@ def getOrbitValbyStep(minstep=1, maxstep=4096, clean=False, filename=None, ret_o
 		if os.path.exists('orbitsteps/' + str(i)):
 			print "getting data for step ", i
 			try:
-				bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt, a = readcol.readcol(
+				bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt, a = readcol(
 				'orbitsteps/' + str(i), twod=False)
 			except:
 				oldform = True
-				bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt = readcol.readcol(
+				bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt = readcol(
 				'orbitsteps/' + str(i), twod=False)
 			if clean == True: os.system('rm orbitsteps/' + str(i))
 		else:
@@ -249,7 +249,7 @@ class Orbit(object):
 
 		# read raw data from shortened orbit file
 		print "reading in data. . ."
-		bhid, time, step, mass, x, y, z, vx, vy, vz, mdot, mdotmean, mdotsig, scalefac, dM = readcol.readcol(ofile,
+		bhid, time, step, mass, x, y, z, vx, vy, vz, mdot, mdotmean, mdotsig, scalefac, dM = readcol(ofile,
 																										 twod=False,
 																										 nanval=0.0)
 		self.data = {'iord': bhid, 'time': time, 'step': step, 'mass': mass, 'x': x, 'y': y, 'z': z, 'vx': vx, 'vy': vy,
@@ -421,7 +421,7 @@ class Orbit(object):
 			simind += len(sim.dm) + len(sim.gas)
 			del sim['iord']
 			gc.collect()
-			grp = readcol.readcol(grpfile, skipline=1)
+			grp = readcol(grpfile, skipline=1)
 			self.bhhalos['Grp'][orbind][:, i] = grp[simind]
 			del grp, simind, orbind
 			gc.collect()
