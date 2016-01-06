@@ -75,10 +75,8 @@ def cosmicSFH(sim, style, lw=3, bins=50, zrange=None, label=None, ret_hist=True,
 	sfr = data[0]/dt
 	zbins = zbins[tsorted]
 
-	if xlog is False:
-		plotting.plt.step(zbins[0:-1],sfr/volume,style, label=label, linewidth=lw, where='post')
-	else:
-		plotting.plt.step(zbins[0:-1]+1,sfr/volume,style, label=label, linewidth=lw, where='post')
+	plotting.plt.step(zbins[0:-1],sfr/volume,style, label=label, linewidth=lw, where='post')
+	if xlog is True:
 		plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10],['0','1','2','3','4','5','6','7','8','9'])
 		plotting.plt.xscale('log',base=10)
 	if ylog is True:
