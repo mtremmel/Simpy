@@ -501,7 +501,7 @@ class Orbit(object):
 			if type == 'time':
 				plotting.plt.xlabel('Time (Gyr)',fontsize=30)
 			plotting.plt.ylabel(r'log($\rho_{acc}$ [M$_{\odot}$ Mpc$^{-3}$])',fontsize=30)
-		if label is not None or plotdata is True: plotting.plt.legend()
+		if label is not None or plotdata is True: plotting.plt.legend(fontsize=20)
 		return
 
 	def plt_lumfun(self, style, minM = 1e6, maxM = None, minL = 1e42, maxL = None, volume=25**3,overplot=False,label=None,bins=50, redshift=1, plotdata=True, dotitle=True,lw=2):
