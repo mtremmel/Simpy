@@ -90,8 +90,9 @@ def cosmicSFH(sim, style, lw=3, bins=50, zrange=None, label=None, ret_hist=True,
 		zfits = np.arange(1,11,0.01)
 		fitB,sigB = dat.CSFRFit(zfits,type='beh')
 		fitH,sigH = dat.CSFRFit(zfits,type='hop')
-		plotting.plt.plot(zfits,fitB,'k-',label='Behroozi+ 13')
-		plotting.plt.plot(zfits,fitH,'k--',label='Hopkins+ 06')
+		if xlog is True:
+			plotting.plt.plot(zfits+1,fitB,'k-',label='Behroozi+ 13')
+			plotting.plt.plot(zfits+1,fitH,'k--',label='Hopkins+ 06')
 		plotting.plt.fill_between(zfits,10**(np.log10(fitB)-sigB),10**(np.log10(fitB)+sigB),linewidth=1.5,facecolor='grey',alpha=0.2)
 		plotting.plt.fill_between(zfits,10**(np.log10(fitH)-sigH),10**(np.log10(fitH)+sigH),linewidth=1.5,facecolor='grey',alpha=0.2)
 
@@ -106,3 +107,4 @@ def cosmicSFH(sim, style, lw=3, bins=50, zrange=None, label=None, ret_hist=True,
 		plotting.plt.ylabel(r'$\rho_{SFR}$ [M$_{\odot}$ yr$^{-1}$ Mpc$^{-1}$]',fontsize=30)
 		plotting.plt.xlabel(r'Redshift',fontsize=30)
 	plotting.plt.legend(loc='lower left',fontsize=20)
+	plotting.plt.xlim(zrange[0],zrange[1])
