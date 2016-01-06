@@ -458,13 +458,13 @@ class Orbit(object):
 		if maxM is not None or minM is not None:
 			if maxM is None: maxM = self.data['mass'].max()*10
 			if minM is None: minM = 0
-			okM, = np.where((self.data['mass'][ord] > minM)&(self.data['mass'][ord] <= maxM))
-			ord = ord[okM]
+		okM, = np.where((self.data['mass'][ord] > minM)&(self.data['mass'][ord] <= maxM))
+		ord = ord[okM]
 		if minL is None or maxL is None:
 			if maxL is None: maxL = self.data['lum'].max()*10
 			if minL is None: minL = 0
-			okL, = np.where((self.data['lum'][ord] > minL)&(self.data['lum'][ord] <= maxL))
-			ord = ord[okL]
+		okL, = np.where((self.data['lum'][ord] > minL)&(self.data['lum'][ord] <= maxL))
+		ord = ord[okL]
 
 		macc = np.cumsum(self.data['dM'][ord])
 
