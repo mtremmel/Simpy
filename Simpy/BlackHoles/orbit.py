@@ -474,16 +474,20 @@ class Orbit(object):
 				plotting.plt.plot(z[ord],macc/volume,style, linewidth=lw, label=label)
 			else:
 				plotting.plt.plot(z[ord]+1,macc/volume,style, linewidth=lw, label=label)
-				if overplot is False:
-					plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10],['0','1','2','3','4','5','6','7','8','9'])
 
 			if plotdata is True:
 				import colldata as dat
 				err = dat.shankar09H - dat.shankar09
-				plotting.plt.errorbar([1.03],[dat.shankar09],yerr=[err],color='black',fmt='D',label="Shankar+ 09")
-				plotting.plt.errorbar([dat.Salvaterra12z+1],[dat.Salvaterra12],color='black',fmt='x',xerr=[dat.Salvaterra12zH-dat.Salvaterra12z],yerr=0.5*dat.Salvaterra12,uplims=[True],label='Salvaterra+ 12')
-				plotting.plt.errorbar(dat.Treister13z,dat.Treister13,color='black',fmt='o',xerr=dat.Treister13zErr,yerr=0.5*dat.Treister13,uplims=[True,True,True], label='Treister+ 13')
-				plotting.plt.errorbar(dat.Hopkins07zp1,10**dat.Hopkins07,color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
+				if xlog is True:
+					plotting.plt.errorbar([1.03],[dat.shankar09],yerr=[err],color='black',fmt='D',label="Shankar+ 09")
+					plotting.plt.errorbar([dat.Salvaterra12z+1],[dat.Salvaterra12],color='black',fmt='x',xerr=[dat.Salvaterra12zH-dat.Salvaterra12z],yerr=0.5*dat.Salvaterra12,uplims=[True],label='Salvaterra+ 12')
+					plotting.plt.errorbar(dat.Treister13z+1,dat.Treister13,color='black',fmt='o',xerr=dat.Treister13zErr,yerr=0.5*dat.Treister13,uplims=[True,True,True], label='Treister+ 13')
+					plotting.plt.errorbar(dat.Hopkins07zp1,10**dat.Hopkins07,color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
+				else:
+					plotting.plt.errorbar([0.03],[dat.shankar09],yerr=[err],color='black',fmt='D',label="Shankar+ 09")
+					plotting.plt.errorbar([dat.Salvaterra12z],[dat.Salvaterra12],color='black',fmt='x',xerr=[dat.Salvaterra12zH-dat.Salvaterra12z],yerr=0.5*dat.Salvaterra12,uplims=[True],label='Salvaterra+ 12')
+					plotting.plt.errorbar(dat.Treister13z,dat.Treister13,color='black',fmt='o',xerr=dat.Treister13zErr,yerr=0.5*dat.Treister13,uplims=[True,True,True], label='Treister+ 13')
+					plotting.plt.errorbar(dat.Hopkins07zp1-1,10**dat.Hopkins07,color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
 
 		if type == 'time' and plotdata is True:
 			print "WARNING! Data only valid for redshift plotting. Ignoring keyword for time plot"
