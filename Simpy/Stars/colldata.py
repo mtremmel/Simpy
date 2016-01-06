@@ -33,9 +33,9 @@ def CSFRFit(z, type='beh'):
 	if type == 'hop':
 		# Hopkins 06
 		z0 = 0.840
-	C = 0.143
-	A = -1.311
-	B = 0.085
+		C = 0.143
+		A = -1.311
+		B = 0.085
 	sigma = np.zeros(len(z))
 	sigma[(z <= 0.9)] = 0.13
 	sigma[((0.9 < z) & (z <= 1.5))] = 0.17
