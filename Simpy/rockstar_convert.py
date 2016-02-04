@@ -22,7 +22,7 @@ def convert_all_rockstar(simname):
 	f.close()
 	for ff in steps:
 		snapn = ff.strip('\n')
-		snap = simname+snapn
+		snap = simname+'.'+snapn
 		print snap
 		if not os.path.exists(snap+'.rockstar.halo_particles'):
 			print "snapshot does not have halo_particles file... ignoring this snapshot..."
