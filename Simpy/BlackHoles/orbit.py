@@ -54,10 +54,12 @@ def read_full_orbit_file(filename, simname):
 	s = pynbody.load(files[0].strip('\n'))
 	f.close()
 	a = None
+
 	try:
 		bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt, a = readcol(filename, twod=False)
 	except:
 		bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt = readcol(filename, twod=False)
+
 	output = {'iord':bhid, 'time':time, 'step':step, 'mass':mass, 'x':x, 'y':y,
 			  'z':z, 'vx':vx, 'vy':vy, 'vz':vz, 'pot':pot, 'mdot':mdot, 'dm':dm, 'E':E, 'dt':dt, 'a':a}
 	if a is None:
@@ -69,21 +71,24 @@ def read_full_orbit_file(filename, simname):
 	for key in ['x', 'y', 'z', 'vx', 'vy', 'vz']:
 		print "fixing scale factor for", key
 		output[key] *= output['a']
+
 	for key in units.keys():
 		print "converting units for ", key
 		origunit = s.infer_original_units(units[key])
 		if key in ['x', 'y', 'z', 'vx', 'vy', 'vz']: origunit = origunit / pynbody.units.Unit('a')
 		output[key] = pynbody.array.SimArray(output[key],origunit)
 		output[key] = output[key].in_units(units[key])
-	ord = np.argsort(output['time'])
-	util.cutdict(output,ord)
+
+	order = np.argsort(output['time'])
+	util.cutdict(output,order)
 	return output
+
 
 def smooth_raw_orbit_data(output, key, nsteps, maxstep=4096, minstep=0):
 	ok = np.where((output['step']>=minstep)&(output['step']<maxstep))[0]
 	util.cutdict(output,ok)
 	ustep, ind = np.unique(output['step'].astype(np.int),return_index=True)
-	ss = np.where(ustep%nsteps==0)[0]
+	ss = np.where(ustep%nsteps == 0)[0]
 
 	smoothed_dat = []
 	stdev = []
@@ -98,59 +103,63 @@ def smooth_raw_orbit_data(output, key, nsteps, maxstep=4096, minstep=0):
 	return np.array(smoothed_dat), np.array(stdev), np.array(time)
 
 
-
-
-
-def getOrbitValbyStep(minstep=1, maxstep=4096, clean=False, filename=None, ret_output=False):
+def getOrbitValbyStep(simname, minstep=1, maxstep=4096, MBHinit=1e6, clean=False, filename=None, ret_output=False, newdata=False):
 	'''
+	Extract raw data from the orbit files, after separating the data out by step to save memory
+	Average BH data over each simulation step to make it easier to handle.
+
 	simname = name of simulation (i.e. simname.004096)
 	minstep, maxstep = min, max steps the code will expect to have in the orbit file.
-	clean = True/False, clean up the extra files made from the oritinal orbit file (this is done to spare memory, but they take up lots of space...
-		'''
+	clean = True/False, clean up the extra files made from the oritinal orbit file
+	filename = if you want to save extracted data to a file. Generally not necessary unless running in parts
+	ret_output = True/False return the extracted data
+	MBHinit = the initial BH mass (as specified in param file)
+	'''
 	output = {'iord': [], 'time': [], 'step': [], 'mass': [], 'x': [], 'y': [], 'z': [], 'vx': [], 'vy': [], 'vz': [],
-			  'mdot': [], 'mdotmean': [], 'mdotsig': [], 'a': [], 'dM': []}
+			'mdot': [], 'mdotmean': [], 'mdotsig': [], 'a': [], 'dM': []}
 	oldform = False
 	f = open('files.list','r')
 	files = f.readlines()
 	s = pynbody.load(files[0].strip('\n'))
 	f.close()
-	if not os.path.exists('orbitsteps/'):
-		print "ERROR! can't find orbitsteps... run sepOrbitbyStep first!"
+	if not os.path.exists('orbitsteps/') or newdata is True:
+		print "Running code to extract data by step from raw orbit file. . ."
+		sepOrbitbyStep(simname, minstep=minstep, maxstep=maxstep, MBHinit=MBHinit)
 		return
 	for i in range(minstep, maxstep + 1):
 		if os.path.exists('orbitsteps/' + str(i)):
 			print "getting data for step ", i
 			try:
-				bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt, a = readcol(
-				'orbitsteps/' + str(i), twod=False)
+				bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt, a = \
+					readcol('orbitsteps/' + str(i), twod=False)
 			except:
 				oldform = True
-				bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt = readcol(
-				'orbitsteps/' + str(i), twod=False)
-			if clean == True: os.system('rm orbitsteps/' + str(i))
+				bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt = \
+					readcol('orbitsteps/' + str(i), twod=False)
+			if clean:
+				os.system('rm orbitsteps/' + str(i))
 		else:
 			continue
-		ord = np.argsort(bhid)
-		bhid = bhid[ord].astype(np.int64)
-		time = time[ord]
-		step = step[ord]
-		mass = mass[ord]
-		x = x[ord]
-		y = y[ord]
-		z = z[ord]
-		vx = vx[ord]
-		vy = vy[ord]
-		vz = vz[ord]
-		mdot = mdot[ord]
-		dt = dt[ord]
+		order = np.argsort(bhid)
+		bhid = bhid[order].astype(np.int64)
+		time = time[order]
+		step = step[order]
+		mass = mass[order]
+		x = x[order]
+		y = y[order]
+		z = z[order]
+		vx = vx[order]
+		vy = vy[order]
+		vz = vz[order]
+		mdot = mdot[order]
+		dt = dt[order]
 		if oldform is False:
-			a = a[ord]
+			a = a[order]
 		else:
-			a,redsh= cosmology.getScaleFactor(pynbody.array.SimArray(time,s.infer_original_units('Gyr')),s)
-			del(redsh)
+			a,redsh= cosmology.getScaleFactor(pynbody.array.SimArray(time,s.infer_original_units('Gyr')), s)
+			del redsh
 			gc.collect()
-		# bad, = np.where((mass - mdot*dt < MBHinit)|(mass<MBHinit))
-		# mdot[bad] = 0
+
 		ubhid, uind = np.unique(bhid, return_index=True)
 		for ii in range(len(ubhid)):
 			if ii < len(ubhid) - 1:
@@ -184,28 +193,51 @@ def getOrbitValbyStep(minstep=1, maxstep=4096, clean=False, filename=None, ret_o
 		return output
 
 
-def truncOrbitFile(simname, minstep=1, maxstep=4096, ret_output=False):
-	output = getOrbitValbyStep(minstep=minstep, maxstep=maxstep, ret_output=True)
+def truncOrbitFile(simname, minstep=1, maxstep=4096, ret_output=False, MBHinit=1e6, overwrite=False, newdata=False):
+	'''
+	Extract raw data from the orbit files, after separating the data out by step to save memory
+	Average BH data over each simulation step to make it easier to handle, create new "shortened" orbit file
+	Required to create the BHOrbit class object
+
+	simname = name of simulation (i.e. simname.004096)
+	minstep, maxstep = min, max steps the code will expect to have in the orbit file.
+	ret_output = True/False return the extracted data
+	MBHinit = the initial BH mass (as specified in param file)
+	overwrite = True/False overwrite shortened.orbit file if it exists. Useful for adding timesteps to an already existing file
+	'''
+	output = getOrbitValbyStep(simname, minstep=minstep, maxstep=maxstep, ret_output=True, MBHinit=MBHinit, newdata=newdata)
 	outorder = ['iord', 'time', 'step', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'mdot', 'mdotmean', 'mdotsig', 'a', 'dM']
 	tofile = []
 	for key in outorder:
 		tofile.append(output[key])
-	if ret_output == False:
-		del (output)
+	if not ret_output:
+		del output
 		gc.collect()
 	tofile = tuple(tofile)
 	outputname = simname + '.shortened.orbit'
+	if os.path.exists(outputname) and overwrite is False:
+		outf = open(outputname,'a')
+	else:
+		outf = open(outputname,'w')
 	print "saving to file..."
-	np.savetxt(outputname, np.column_stack(tofile),
-			   fmt=['%d', '%f', '%d', '%e', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f','%e'])
-	del (tofile)
+	np.savetxt(outf, np.column_stack(tofile),
+			fmt=['%d', '%f', '%d', '%e', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f','%e'])
+	del tofile
 	gc.collect()
 	if ret_output:
 		return output
 	return
 
 
-def sticthOrbitSteps(simname, nfiles, ret_output=False, overwrite=False, nstart=1):
+def sticthOrbitSteps(simname, nfiles, overwrite=False, nstart=1):
+	'''
+	Useful for large simulations. Take multiple pickle files created with getOrbitValByStep function and create
+	single shortened.orbit file.
+	:param simname: name of simulation
+	:param nfiles: number of separate files you wish to stitch (simname.shortened.orbitX)
+	:param overwrite: whether you wish to overwrite the file
+	:param nstart: what number file to start with
+	'''
 
 	outorder = ['iord', 'time', 'step', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'mdot', 'mdotmean', 'mdotsig', 'a','dM']
 	outputname = simname + '.shortened.orbit'
@@ -229,7 +261,7 @@ def sticthOrbitSteps(simname, nfiles, ret_output=False, overwrite=False, nstart=
 		gc.collect()
 		tofile = tuple(tofile)
 		np.savetxt(outf, np.column_stack(tofile),
-			   fmt=['%d', '%f', '%d', '%e', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f','%e'])
+			fmt=['%d', '%f', '%d', '%e', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f','%e'])
 		del(tofile)
 		gc.collect()
 	outf.close()
@@ -298,12 +330,10 @@ class Orbit(object):
 			self.save(filename=savefile)
 		return
 
-
 	def _calc_lum(self, er=0.1):
 		csq = pynbody.array.SimArray((2.998e10) ** 2, 'erg g**-1')
 		self.data['lum'] = self.data['mdotmean'].in_units('g s**-1') * csq * er
 		return
-
 
 	def _get_slice_ind(self, key, orderby='time'):
 		'''
@@ -338,7 +368,6 @@ class Orbit(object):
 		f.close()
 		return
 
-
 	def single_BH_data(self, iord, key):
 		o, = np.where(self.bhiords == iord)
 		slice_ = self.id_slice[o[0]]
@@ -355,13 +384,10 @@ class Orbit(object):
 		#meantime = time.mean(axis=1)
 		return meandat
 
-
-
 	def single_step_data(self, step, key):
 		o, = np.where(self.steps == step)
 		slice_ = self.step_slice[o[0]]
 		return self.data[key][slice_]
-
 
 	def get_all_BH_tform(self, sl):
 		# sl = pynbody.tipsy.StarLog(self.simname+'.starlog')
@@ -371,7 +397,6 @@ class Orbit(object):
 		if self.tform.min() < 0: print "WARNING! Positive tforms were found for BHs!"
 		del sl
 		gc.collect()
-
 
 	def getprogbhs(self):
 		time, step, ID, IDeat, ratio, kick = readcol(self.simname + '.mergers', twod=False)
@@ -394,7 +419,6 @@ class Orbit(object):
 			self.prog['ratio'][eaterind[i]].extend(ratio[ind[i]:ind[i + 1]])
 			if kick.max() > 0:
 				self.prog['kick'][eaterind[i]].extend(kick[ind[i]:ind[i + 1]])
-
 
 	def gethalos(self):
 		f = open('files.list', 'r')
@@ -426,21 +450,22 @@ class Orbit(object):
 			del grp, simind, orbind
 			gc.collect()
 
-
-#Plotting functions
-
+# Plotting functions
 
 	def plt_single_BH_data(self, iord, keyx, unitx, keyy, unity, style, lw=1, msize=10, ylog=True, xlog=False,
-						   label=None, overplot=False, smooth=False, nsmooth=10):
+						label=None, overplot=False, smooth=False, nsmooth=10):
 		from .. import plotting
+
 		if smooth is False:
 			ydat = self.single_BH_data(iord, keyy)
 			xdat = self.single_BH_data(iord, keyx)
 		else:
 			ydat = self.single_BH_data_smooth(iord, keyy, nsteps=nsmooth)
 			xdat = self.single_BH_data_smooth(iord, keyx, nsteps=nsmooth)
+
 		plotting.plt.plot(xdat.in_units(unitx), ydat.in_units(unity), style, label=label, linewidth=lw,
-						  markersize=msize)
+						markersize=msize)
+
 		if xlog is True and overplot is False:
 			plotting.plt.xscale('log', base=10)
 		if ylog is True and overplot is False:
@@ -448,7 +473,6 @@ class Orbit(object):
 		if label:
 			plotting.plt.legend()
 		return
-
 
 	def plt_acc_hist(self, style, minM = 1e6, maxM = None, minL = 1e42, maxL = None, type='redshift',xlog=False,ylog=False, label=None, lw=1.5, volume=25**3, plotdata=True, overplot=False):
 		from .. import plotting
@@ -480,14 +504,25 @@ class Orbit(object):
 				err = dat.shankar09H - dat.shankar09
 				if xlog is True:
 					plotting.plt.errorbar([1.03],[dat.shankar09],yerr=[err],color='black',fmt='D',label="Shankar+ 09")
-					plotting.plt.errorbar([dat.Salvaterra12z+1],[dat.Salvaterra12],color='black',fmt='x',xerr=[dat.Salvaterra12zH-dat.Salvaterra12z],yerr=0.5*dat.Salvaterra12,uplims=[True],label='Salvaterra+ 12')
-					plotting.plt.errorbar(dat.Treister13z+1,dat.Treister13,color='black',fmt='o',xerr=dat.Treister13zErr,yerr=0.5*dat.Treister13,uplims=[True,True,True], label='Treister+ 13')
-					plotting.plt.errorbar(dat.Hopkins07zp1,10**dat.Hopkins07,color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
+					plotting.plt.errorbar([dat.Salvaterra12z+1],[dat.Salvaterra12],
+										color='black',fmt='x',xerr=[dat.Salvaterra12zH-dat.Salvaterra12z],
+										yerr=0.5*dat.Salvaterra12,uplims=[True],label='Salvaterra+ 12')
+					plotting.plt.errorbar(dat.Treister13z+1,dat.Treister13,
+										color='black',fmt='o',xerr=dat.Treister13zErr,
+										yerr=0.5*dat.Treister13,uplims=[True,True,True], label='Treister+ 13')
+					plotting.plt.errorbar(dat.Hopkins07zp1,10**dat.Hopkins07,
+										color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
 				else:
-					plotting.plt.errorbar([0.03],[dat.shankar09],yerr=[err],color='black',fmt='D',label="Shankar+ 09")
-					plotting.plt.errorbar([dat.Salvaterra12z],[dat.Salvaterra12],color='black',fmt='x',xerr=[dat.Salvaterra12zH-dat.Salvaterra12z],yerr=0.5*dat.Salvaterra12,uplims=[True],label='Salvaterra+ 12')
-					plotting.plt.errorbar(dat.Treister13z,dat.Treister13,color='black',fmt='o',xerr=dat.Treister13zErr,yerr=0.5*dat.Treister13,uplims=[True,True,True], label='Treister+ 13')
-					plotting.plt.errorbar(dat.Hopkins07zp1-1,10**dat.Hopkins07,color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
+					plotting.plt.errorbar([0.03],[dat.shankar09],yerr=[err],
+										color='black',fmt='D',label="Shankar+ 09")
+					plotting.plt.errorbar([dat.Salvaterra12z],[dat.Salvaterra12],
+										color='black',fmt='x',xerr=[dat.Salvaterra12zH-dat.Salvaterra12z],
+										yerr=0.5*dat.Salvaterra12,uplims=[True],label='Salvaterra+ 12')
+					plotting.plt.errorbar(dat.Treister13z,dat.Treister13,
+										color='black',fmt='o',xerr=dat.Treister13zErr,
+										yerr=0.5*dat.Treister13,uplims=[True,True,True], label='Treister+ 13')
+					plotting.plt.errorbar(dat.Hopkins07zp1-1,10**dat.Hopkins07,
+										color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
 
 		if type == 'time' and plotdata is True:
 			print "WARNING! Data only valid for redshift plotting. Ignoring keyword for time plot"
@@ -504,10 +539,12 @@ class Orbit(object):
 		if label is not None or plotdata is True: plotting.plt.legend(fontsize=20)
 		return
 
-	def plt_lumfun(self, style, minM = 1e6, maxM = None, minL = 1e42, maxL = None, volume=25**3,overplot=False,label=None,bins=50, redshift=1, plotdata=True, dotitle=True,lw=2):
+	def plt_lumfun(self, style, minM = 1e6, maxM = None, minL = 1e42, maxL = None,
+				volume=25**3, overplot=False,label=None, bins=50, redshift=1, plotdata=True, dotitle=True,lw=2):
 		from .. import plotting
 		from .. import cosmology
 		import colldata as dat
+
 		f = open('files.list', 'r')
 		simfiles = f.readlines()
 		f.close()
@@ -532,16 +569,21 @@ class Orbit(object):
 		lbins = data[1]
 		plotting.plt.step(lbins[0:-1],np.log10(phi),style, label=label, linewidth=lw, where='post')
 		if plotdata is True:
-			#Hopkins 07 data
+			# Hopkins 07 data
 			tardat, = np.where(dat.hop_bhlf_obs['redshift']==dat.hop_bhlf_z[zz])
 			plotting.plt.errorbar(dat.hop_bhlf_obs['lbol'][tardat] + util.loglbol_sun, dat.hop_bhlf_obs['dphi'][tardat],yerr=dat.hop_bhlf_obs['sig'][tardat],fmt='o',color='grey',ecolor='grey',label='Hopkins+ 2007 (Compilation)')
-			if dat.hop_bhlf_z[zz]==6:
-				#For z = 6, Barger+ 03 data
-				plotting.plt.errorbar([dat.bar_bhlfz6_L],[dat.bar_bhlfz6_phi],xerr=dat.bar_bhlfz6_Lerr,yerr=dat.bar_bhlfz6_phierr,fmt='^',color='k',label='Barger+2003')
-				#...and Fiore+ 12
-				plotting.plt.errorbar([dat.fio_bhlf_L6F],[dat.fio_bhlf_phi6F],xerr=[[dat.fio_bhlf_L6Fm],[dat.fio_bhlf_L6Fp]],yerr=[[dat.fio_bhlf_errphi6Fm],[dat.fio_bhlf_errphi6Fp]],fmt='s',color='k',label='Fiore+ 2012')
-			if dat.hop_bhlf_z[zz]==5:
-				l1450 = np.log10(4.4)+util.mcABconv(dat.mcg_bhlf_obs['M1450'],util.c/(0.145e-4))
+			if dat.hop_bhlf_z[zz] == 6:
+				# For z = 6, Barger+ 03 data
+				plotting.plt.errorbar([dat.bar_bhlfz6_L],[dat.bar_bhlfz6_phi],
+									xerr=dat.bar_bhlfz6_Lerr,yerr=dat.bar_bhlfz6_phierr,
+									fmt='^',color='k',label='Barger+2003')
+				# and Fiore+ 12 data
+				plotting.plt.errorbar([dat.fio_bhlf_L6F],[dat.fio_bhlf_phi6F],
+									xerr=[[dat.fio_bhlf_L6Fm],[dat.fio_bhlf_L6Fp]],
+									yerr=[[dat.fio_bhlf_errphi6Fm],[dat.fio_bhlf_errphi6Fp]],
+									fmt='s',color='k',label='Fiore+ 2012')
+			if dat.hop_bhlf_z[zz] == 5:
+				l1450 = np.log10(4.4)+util.mcABconv(dat.mcg_bhlf_obs['M1450'],util.c/0.145e-4)
 				dphi = 10**dat.mcg_bhlf_obs['logphi']
 				dphip = (2./5.) * (dphi + dat.mcg_bhlf_obs['sig'])
 				dphim = (2./5.) * (dphi - dat.mcg_bhlf_obs['sig'])
