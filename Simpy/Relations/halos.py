@@ -155,7 +155,7 @@ def SMHM_db(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmas
 	plotting.plt.legend(loc='lower right',fontsize=30)
 
 
-def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None,
+def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None,
 		 markersize=5,label=None, correct=True, usedb=False, remove_sats=True, only_sats=False, error=True):
 	if usedb is True:
 		import halo_db as db
@@ -191,7 +191,7 @@ def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=N
 		Mstar *= 0.6
 		Mvir /= 0.8
 
-	plotting.plt.plot(Mvir, Mstar/Mvir, style, markersize=markersize, label=label)
+	plotting.plt.plot(Mvir, Mstar/Mvir, style, color=color, markersize=markersize, label=label)
 
 	if minmass is None:
 		minmass = Mvir.min()/2.
