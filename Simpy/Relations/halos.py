@@ -71,7 +71,7 @@ def behroozi13(logM,a):
 	return ratio
 
 #Kravstov data
-def kravstov14(logM, z):
+def kravstov14(logM, z = 0.1):
 	loge = -1.685
 	logM1 = 11.39
 	alpha = -1.74
@@ -104,7 +104,8 @@ def getstats(simname, step):
 	return amigastat, a**-1 -1, type
 
 
-def SMHM_db(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None, markersize=5,label=None, correct=True):
+def SMHM_db(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None,
+			maxmass=None, markersize=5,label=None, correct=True, error=True):
 	import halo_db as db
 	step = db.get_timestep(sim+'/%'+str(step))
 	Mvir, Mstar = step.gather_property('Mvir', 'Mstar')
@@ -142,14 +143,15 @@ def SMHM_db(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmas
 
 			ratio_fit = fitfunc(logmv_fit, step.redshift)
 			plotting.plt.plot(logmv_fit, np.log10(ratio_fit), fitstyle[cnt], label=flabel)
+			if ff in ['Mos','Moster'] and error is True:
+				sigma = errmoster13(logmv_fit, step.redshift)
+				plotting.plt.fill_between(logmv_fit,np.log10(ratio_fit-sigma),np.log10(ratio_fit+sigma),
+										facecolor='grey',alpha=0.5)
 
 			cnt += 1
 
-	#plotting.plt.plot(np.log10(Mvir), np.log10(Mstar/Mvir), style, markersize=markersize, label=label)
 	plotting.plt.ylabel(r'M$_{*,cen}$/M$_{vir}$',fontsize=40)
 	plotting.plt.xlabel(r'M$_{vir}$ [M$_{\odot}$]',fontsize=40)
-	#plotting.plt.xscale('log',base=10)
-	#plotting.plt.yscale('log',base=10)
 	plotting.plt.legend(loc='lower right',fontsize=30)
 
 
