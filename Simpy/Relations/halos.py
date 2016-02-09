@@ -191,8 +191,6 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
 		Mstar *= 0.6
 		Mvir /= 0.8
 
-	plotting.plt.plot(Mvir, Mstar/Mvir, style, color=color, markersize=markersize, label=label)
-
 	if minmass is None:
 		minmass = Mvir.min()/2.
 	if maxmass is None:
@@ -226,6 +224,8 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
 									facecolor='grey',alpha=0.5)
 
 			cnt += 1
+
+	plotting.plt.plot(Mvir, Mstar/Mvir, style, color=color, markersize=markersize, label=label)
 
 	plotting.plt.ylabel(r'M$_{*,central}$/M$_{vir}$')
 	plotting.plt.xlabel(r'M$_{vir}$ [M$_{\odot}$]')
