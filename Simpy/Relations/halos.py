@@ -155,10 +155,8 @@ def SMHM_db(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmas
 	plotting.plt.legend(loc='lower right',fontsize=30)
 
 
-
-
-
-def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None, markersize=5,label=None, correct=True, usedb=False, remove_sats=True, only_sats=False):
+def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None,
+		 markersize=5,label=None, correct=True, usedb=False, remove_sats=True, only_sats=False, error=True):
 	if usedb is True:
 		import halo_db as db
 		dbstep = db.get_timestep(sim+'/%'+step)
@@ -222,6 +220,10 @@ def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=N
 
 			ratio_fit = fitfunc(logmv_fit, redshift)
 			plotting.plt.plot(10**logmv_fit, ratio_fit, fitstyle[cnt], label=flabel, lw=5)
+			if ff in ['Mos', 'Moster'] and error is True:
+				sigma = errmoster13(logmv_fit, step.redshift)
+				plotting.plt.fill_between(logmv_fit,np.log10(ratio_fit-sigma),np.log10(ratio_fit+sigma),
+										facecolor='grey',alpha=0.5)
 
 			cnt += 1
 
