@@ -227,9 +227,9 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
 
 			cnt += 1
 
-	plotting.plt.ylabel(r'M$_{*,central}$/M$_{vir}$',fontsize=30)
-	plotting.plt.xlabel(r'M$_{vir}$ [M$_{\odot}$]',fontsize=30)
-	plotting.plt.legend(loc='lower right',fontsize=20)
+	plotting.plt.ylabel(r'M$_{*,central}$/M$_{vir}$')
+	plotting.plt.xlabel(r'M$_{vir}$ [M$_{\odot}$]')
+	plotting.plt.legend(loc='lower right',fontsize=25)
 	plotting.plt.yscale('log',base=10)
 	plotting.plt.xscale('log',base=10)
 	plotting.plt.xlim(minmass, maxmass)
