@@ -226,7 +226,7 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
 
 	plotting.plt.plot(Mvir, Mstar/Mvir, style, color=color, markersize=markersize, label=label)
 
-	plotting.plt.ylabel(r'M$_{*,central}$/M$_{vir}$')
+	plotting.plt.ylabel(r'M$_{*}$/M$_{vir}$')
 	plotting.plt.xlabel(r'M$_{vir}$ [M$_{\odot}$]')
 	plotting.plt.legend(loc='lower right',fontsize=25)
 	plotting.plt.yscale('log',base=10)
