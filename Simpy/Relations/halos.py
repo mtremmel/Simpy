@@ -184,8 +184,8 @@ def SMHM(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=N
 			if type == 'amiga':
 				ok, = np.where(amigastat['Satellite?'] == 'yes')
 		if only_sats is True or remove_sats is True:
-			Mvir = Mvir[ok]
-			Mstar = Mstar[ok]
+			Mvir = Mvir[ok].astype(np.float)
+			Mstar = Mstar[ok].astype(np.float)
 
 	if correct is True:
 		Mstar *= 0.6
