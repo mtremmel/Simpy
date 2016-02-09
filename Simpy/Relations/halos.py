@@ -220,8 +220,7 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
 			plotting.plt.plot(10**logmv_fit, ratio_fit, fitstyle[cnt], label=flabel, lw=5)
 			if ff in ['Mos', 'Moster'] and error is True:
 				sigma = errmoster13(logmv_fit, redshift)
-				plotting.plt.fill_between(logmv_fit,ratio_fit-sigma,ratio_fit+sigma,
-									facecolor='grey',alpha=0.5)
+				plotting.plt.fill_between(10**logmv_fit,ratio_fit-sigma,ratio_fit+sigma, facecolor='grey',alpha=0.5)
 
 			cnt += 1
 
