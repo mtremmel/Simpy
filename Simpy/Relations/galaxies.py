@@ -44,3 +44,9 @@ def betaSpecAM(type='stars',sAMrange=None, sAMunits='kpc km s**-1 Msol**-1'):
 	beta = k1 * np.log10(sAMarray/1e-7) + k2
 	return sAMarray, beta
 
+def HIFrac(logmstar):
+	#Based on SHIELD and ALFALFA data
+
+	a = 5.0408
+	b = 0.5404
+	return a - b * logmstar
