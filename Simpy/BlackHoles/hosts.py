@@ -36,8 +36,8 @@ class StepData(object):
 
         bhids, bhmass, bhmdot, offset, dist, hostnum, Mvir, Mstar, Rvir, Mgas, SSC = \
                 dbstep.gather_property('N', 'BH_mass', 'BH_mdot_ave', 'BH_central_offset', 'BH_central_distance',
-                                       'host', 'bh_host(Mvir)', 'bh_host(Mstar)', 'bh_host(Rvir)',
-                                       'bh_host(Mgas)','bh_host(SSC)')
+                                       'host', ':bh_host(Mvir)', ':bh_host(Mstar)', ':bh_host(Rvir)',
+                                       ':bh_host(Mgas)',':bh_host(SSC)')
 
         if len(bhids)==0:
             print "No BHs Found in This Step"
