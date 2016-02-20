@@ -34,8 +34,10 @@ class StepData(object):
 
         print "Gathering BH data..."
 
-        bhids, bhmass, bhmdot, offset, dist, hostnum = \
-                dbstep.gather_property('N', 'BH_mass', 'BH_mdot_ave', 'BH_central_offset', 'BH_central_distance', 'host')
+        bhids, bhmass, bhmdot, offset, dist, hostnum, Mvir, Mstar, Rvir, Mgas, SSC = \
+                dbstep.gather_property('N', 'BH_mass', 'BH_mdot_ave', 'BH_central_offset', 'BH_central_distance',
+                                       'host', 'bh_host(Mvir)', 'bh_host(Mstar)', 'bh_host(Rvir)',
+                                       'bh_host(Mgas)','bh_host(SSC)')
 
         if len(bhids)==0:
             print "No BHs Found in This Step"
@@ -47,12 +49,8 @@ class StepData(object):
         self.bh = {'lum':calc_lum(bhmdot), 'dist':dist, 'pos':offset, 'host':hostnum, 'mass':bhmass,
                    'bhid':bhids, 'mdot':bhmdot}
 
-        print "getting galaxy data..."
+        self.halo_properties = {'Mvir':Mvir, 'Mstar':Mstar, 'Rvir':Rvir, 'Mgas':Mgas, 'SSC':SSC, 'N':hostnum}
 
-        Mvir, Mstar, Rvir, Mgas, SSC, hid = dbstep.gather_property(
-            'bh_host(Mvir)', 'bh_host(Mstar)', 'bh_host(Rvir)', 'bh_host(Mgas)','bh_host(SSC)', 'host')
-
-        self.halo_properties = {'Mvir':Mvir, 'Mstar':Mstar, 'Rvir':Rvir, 'Mgas':Mgas, 'SSC':SSC, 'N':hid}
         print "slicing data..."
         self.host_ids, self._halo_slices, self._host_indices = self._get_halo_slices()
         self._find_nearby(dbstep)
