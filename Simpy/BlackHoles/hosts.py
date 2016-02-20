@@ -106,11 +106,12 @@ class StepData(object):
     def _get_halo_slices(self):
         ord_ = np.argsort(self.halo_properties['N'])
         uvalues, ind = np.unique(self.halo_properties['N'][ord_], return_index=True)
+        print uvalues
         slice_ = []
         for i in range(len(uvalues) - 1):
             ss = ord_[ind[i]:ind[i + 1]]
             slice_.append(ss)
-            ss = ord_[ind[i + 1]:]
+        ss = ord_[ind[i + 1]:]
         slice_.append(ss)
         return uvalues, slice_, ord_[ind]
 
