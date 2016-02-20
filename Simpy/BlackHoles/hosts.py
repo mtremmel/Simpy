@@ -1,6 +1,7 @@
 from .. import Files, readcol, dbutil
 import numpy as np
 import pynbody
+import os
 
 
 def calc_lum(mdot,er=0.1):
@@ -118,7 +119,9 @@ class BHhalocat(object):
 
     def __init__(self, simname, boxsize='25 Mpc'):
         self.simname = simname
-        Files.cklists(self.simname)
+        if not os.path.exists('steps.list'):
+            print "ERROR cannot find steps.list file"
+            return
         f = open('steps.list', 'r')
         steps_str = np.array(f.readlines())
         for ii in range(len(steps_str)):
