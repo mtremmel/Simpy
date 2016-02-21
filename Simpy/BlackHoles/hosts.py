@@ -34,50 +34,52 @@ class StepData(object):
 
         print "Gathering BH data..."
 
-        bhids, bhmass, bhmdot, offset, dist, hostnum, Mvir, Mstar, Rvir, Mgas, SSC = \
-                dbstep.gather_property('N', 'BH_mass', 'BH_mdot_ave', 'BH_central_offset', 'BH_central_distance',
-                                       'host', ':bh_host(Mvir)', ':bh_host(Mstar)', ':bh_host(Rvir)',
-                                       ':bh_host(Mgas)',':bh_host(SSC)')
+        bhids, bhmass, bhmdot, offset, dist, hostnum = \
+                dbstep.gather_property('N', 'BH_mass', 'BH_mdot_ave', 'BH_central_offset', 'BH_central_distance','host')
 
-        if len(bhids)==0:
+        print "slicing data..."
+        self.host_ids, self._halo_slices,self._host_indices = self._get_halo_slices()
+
+        print "Gathering halo data"
+        Mvir, Mstar, Rvir, Mgas, SSC, hid = dbstep.gather_property('Mvir', 'Mstar', 'Rvir', 'Mgas', 'SSC', 'N')
+
+        nbhs = len(bhids)
+        nhalos = len(self.host_ids)
+
+        if nbhs==0:
             print "No BHs Found in This Step"
             self.bh = {'lum':[], 'dist':[], 'pos':[], 'halo':[], 'mass':[],
                    'bhid':[], 'nearhalo':[],'mdot':[], 'neardist':[]}
             self.halo_properties = {'Mvir':[], 'Mstar':[], 'Rvir':[], 'Mgas':[], 'SSC':[], 'N':[]}
             return
 
+
         self.bh = {'lum':calc_lum(bhmdot), 'dist':dist, 'pos':offset, 'host':hostnum, 'mass':bhmass,
                    'bhid':bhids, 'mdot':bhmdot}
 
-        self.halo_properties = {'Mvir':Mvir, 'Mstar':Mstar, 'Rvir':Rvir, 'Mgas':Mgas, 'SSC':SSC, 'N':hostnum}
+        self.halo_properties = {'Mvir':np.zeros(nbhs), 'Mstar':np.zeros(nbhs), 'Rvir':np.zeros(nbhs), 'Mgas':np.zeros(nbhs),
+                                'SSC':np.zeros(nbhs), 'N':np.zeros(nbhs)}
 
-        print "slicing data..."
-        self.host_ids, self._halo_slices, self._host_indices = self._get_halo_slices()
-        self._find_nearby(dbstep)
+        print "matching halo data to BHs"
+        for i in range(nhalos):
+            target = np.where(hid==self.host_ids[i])[0]
+            self.halo_properties['Mvir'][self._halo_slices[i]] = Mvir[target]
+            self.halo_properties['Mstar'][self._halo_slices[i]] = Mstar[target]
+            self.halo_properties['Mgas'][self._halo_slices[i]] = Mgas[target]
+            self.halo_properties['Rvir'][self._halo_slices[i]] = Rvir[target]
+            self.halo_properties['N'][self._halo_slices[i]] = hid[target]
+            self.halo_properties['SSC'][self._halo_slices[i]] = SSC[target]
 
-    def host_properties(self,key):
-        return self.halo_properties[key][self._host_indices]
 
-    def host_bhs(self, N, key):
-        target = np.where(self.host_ids==N)[0]
-        return self.bh[key][self._host_indices[target]]
-
-    def _find_nearby(self, dbstep,):
-        print "finding closest non-host halo for each BH..."
-        nbhs = len(self.bh['bhids'])
-        nhalos = len(self.host_ids)
-
-        Mvir, Mstar, Rvir, Mgas, SSC, hid = dbstep.gather_property('Mvir', 'Mstar', 'Rvir', 'Mgas','SSC','N')
-
+        print "finding nearby halos"
         self.nearby_halo_properties = \
             {'Mvir':np.zeros(nbhs), 'Mstar':np.zeros(nbhs), 'Rvir':np.zeros(nbhs),
              'Mgas':np.zeros(nbhs), 'SSC':np.zeros(nbhs), 'N':np.zeros(nbhs)}
-
         self.bh['nearhalo'] = np.zeros(nbhs)
         self.bh['nearpos'] = np.zeros((nbhs,3))
 
-        hpos = self.host_properties('SSC')
-        hN = self.host_properties('N')
+        hpos = self.host_prop('SSC')
+        hN = self.host_prop('N')
 
         for i in range(nhalos):
             relpos = SSC - hpos[i]
@@ -101,9 +103,16 @@ class StepData(object):
 
         self.bh['neardist'] = np.sqrt(np.sum(self.bh['nearpos']**2,axis=1))
 
+    def host_prop(self,key):
+        return self.halo_properties[key][self._host_indices]
+
+    def host_bhs(self, N, key):
+        target = np.where(self.host_ids==N)[0]
+        return self.bh[key][self._halo_slices[target]]
+
     def _get_halo_slices(self):
-        ord_ = np.argsort(self.halo_properties['N'])
-        uvalues, ind = np.unique(self.halo_properties['N'][ord_], return_index=True)
+        ord_ = np.argsort(self.bh['host'])
+        uvalues, ind = np.unique(self.bh['host'][ord_], return_index=True)
         print uvalues
         slice_ = []
         for i in range(len(uvalues) - 1):
