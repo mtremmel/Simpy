@@ -40,6 +40,9 @@ def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt',
     output['ratio'] = mratio
     output['kick'] = kick
 
+    output['ID'][(output['ID']<0)] = 2*2147483648 + output['ID'][(output['ID']<0)]
+    output['IDeat'][(output['IDeat']<0)] = 2*2147483648 + output['IDeat'][(output['IDeat']<0)]
+
     outkeys = ['time', 'step', 'ID', 'IDeat', 'ratio', 'kick']
     tofile = []
     for key in outkeys:
