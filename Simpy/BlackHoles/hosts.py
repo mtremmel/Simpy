@@ -38,7 +38,6 @@ class StepData(object):
                 dbstep.gather_property('N', 'BH_mass', 'BH_mdot_ave', 'BH_central_offset', 'BH_central_distance','host')
 
         nbhs = len(bhids)
-        nhalos = len(self.host_ids)
 
         if nbhs==0:
             print "No BHs Found in This Step"
@@ -53,6 +52,8 @@ class StepData(object):
 
         print "slicing data..."
         self.host_ids, self._halo_slices,self._host_indices = self._get_halo_slices()
+
+        nhalos = len(self.host_ids)
 
         print "Gathering halo data"
         Mvir, Mstar, Rvir, Mgas, SSC, hid = dbstep.gather_property('Mvir', 'Mstar', 'Rvir', 'Mgas', 'SSC', 'N')
