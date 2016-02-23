@@ -23,12 +23,18 @@ class StepList(object):
             raise KeyError
         else:
             target = np.where(self._steplist.astype(np.int)==int(step))[0]
-        return self.data[self._steplist[target]]
+        return self.data[self._steplist[target[0]]]
 
     def add_halo_property(self, db, *plist):
         for step in self._steplist:
             dbstep = db.get_timestep(simname+'/%'+step)
             self.data[step].add_halo_property(dbstep, *plist)
+
+    def addstep(self,step, db, boxsize):
+        dbstep = db.get_timestep(simname+'/%'+step)
+        self.data[step] = StepData(step,dbstep,boxsize)
+        self._steplist = np.append(self.steplist,step)
+
 
 class StepData(object):
     def __init__(self, step, dbstep, boxsize):
@@ -160,7 +166,7 @@ class StepData(object):
                 self.nearby_halo_properties[plist[j]][self._near_slices[i]] = data[j][target]
 
 
-    #def get_mergers(self, ID1, ID2, ratio, time, step):
+    def get_BH_merger_halos(self, ID1, ID2, ratio, time, step):
 
 
 
@@ -205,8 +211,7 @@ class BHhalocat(object):
                 continue
             self.steps = np.append(self.steps,step)
             print "gathering data for step ", step
-            dbstep = db.get_timestep(self.simname+'/%'+step)
-            self.data.data[step] = StepData(step, dbstep, self.boxsize)
+            self.data.addstep(step, db, self.boxsize)
 
     def add_halo_property(self,*plist):
         import halo_db as db
