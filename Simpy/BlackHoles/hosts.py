@@ -181,7 +181,7 @@ class StepData(object):
         self.mergers = {'bhid': ID1, 'eaten_bhid': ID2, 'ratio': ratio, 'time': time,
                         'step': step, 'halo': -1*np.ones(len(ID1)), 'eaten_halo': -1*np.ones(len(ID1)),
                         'mass1': np.zeros(len(ID1)), 'mass2': np.zeros(len(ID1)),
-                        'lum1': np.zeros(len(ID1)), 'lum2': np.zeros(len(ID1)), 'kick':kick
+                        'lum1': np.zeros(len(ID1)), 'lum2': np.zeros(len(ID1)), 'kick':kick}
 
         for i in range(len(ID1)):
             o1 = np.where(self.bh['bhid']==ID1[i])[0][0]
