@@ -19,7 +19,7 @@ class StepList(object):
             self.data[step] = StepData(step,dbstep,boxsize)
 
     def __getitem__(self,step):
-        if step not in self._steplist:
+        if int(step) not in self._steplist.astype(np.int):
             raise KeyError
         return self.data[step]
 
