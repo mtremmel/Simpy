@@ -13,6 +13,7 @@ class StepList(object):
     def __init__(self, steplist, db, boxsize, simname):
         self._steplist = steplist
         self.data = {}
+        self.simname = simname
         for step in steplist:
             print "gathering data for step ", step
             dbstep = db.get_timestep(simname+'/%'+step)
@@ -27,11 +28,11 @@ class StepList(object):
 
     def add_halo_property(self, db, *plist):
         for step in self._steplist:
-            dbstep = db.get_timestep(simname+'/%'+step)
+            dbstep = db.get_timestep(self.simname+'/%'+step)
             self.data[step].add_halo_property(dbstep, *plist)
 
     def addstep(self,step, db, boxsize):
-        dbstep = db.get_timestep(simname+'/%'+step)
+        dbstep = db.get_timestep(self.simname+'/%'+step)
         self.data[step] = StepData(step,dbstep,boxsize)
         self._steplist = np.append(self.steplist,step)
 
@@ -166,7 +167,7 @@ class StepData(object):
                 self.nearby_halo_properties[plist[j]][self._near_slices[i]] = data[j][target]
 
 
-    def get_BH_merger_halos(self, ID1, ID2, ratio, time, step):
+    #def get_BH_merger_halos(self, ID1, ID2, ratio, time, step):
 
 
 
