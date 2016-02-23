@@ -125,9 +125,9 @@ class StepData(object):
                 self.nearby_halo_properties['SSC'][self._halo_slices[i]] = SSC[amin]
                 self.bh['nearhalo'][self._halo_slices[i]] = hid[amin]
                 for j in range(3):
-                    print self.bh['pos'][self._halo_slices[i]][:,j], self.halo_properties['SSC'][self._halo_slices[i]][:,j], SSC[amin][j]
+                    #print self.bh['pos'][self._halo_slices[i]][:,j], self.halo_properties['SSC'][self._halo_slices[i]][:,j], SSC[amin][j]
                     self.bh['nearpos'][self._halo_slices[i]][:,j] = \
-                        self.bh['pos'][self._halo_slices[i]][:,j] + self.halo_properties['SSC'][self._halo_slices[i]][:,j] - SSC[amin][j]
+                        self.bh['pos'][self._halo_slices[i]][:,j] + hpos[i][j] - SSC[amin][j]
 
         self.bh['neardist'] = np.sqrt(np.sum(self.bh['nearpos']**2,axis=1))
 
