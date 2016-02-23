@@ -157,11 +157,15 @@ class StepData(object):
     def add_halo_property(self, dbstep, *plist):
         nbh = len(self.bh['bhid'])
         plist = list(plist)
-        plist.append('N')
-        plist = tuple(plist)
-        data = dbstep.gather_property(*plist)
+        finallist = []
         for key in plist:
-            self.halo_properties[key] = np.zeros(nbh)
+            if key not in self.halo_properties.keys():
+                self.halo_properties[key] = np.zeros(nbh)
+                self.nearby_halo_properties[key] = np.zeros(nbh)
+                finallist.append(key)
+        finallist.append('N')
+        finallist = tuple(finallist)
+        data = dbstep.gather_property(*finallist)
 
         for i in range(len(self.host_ids)):
             if self.host_ids[i] not in data[-1]:
