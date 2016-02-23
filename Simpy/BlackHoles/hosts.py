@@ -116,6 +116,7 @@ class StepData(object):
             ok, = np.where(hid < hN[i])
             if len(ok) > 0:
                 amin = ok[np.argmin(reldist[ok])]
+				print amin, reldist[ok][amin]
 
                 self.nearby_halo_properties['Mvir'][self._halo_slices[i]] = Mvir[amin]
                 self.nearby_halo_properties['Mstar'][self._halo_slices[i]] = Mstar[amin]
