@@ -165,7 +165,7 @@ class StepData(object):
         for i in range(len(self.near_ids)):
             if self.near_ids[i] not in data[-1]:
                 continue
-            target = np.where(data['-1']==self.near_ids[i])
+            target = np.where(data[-1]==self.near_ids[i])
             for j in range(len(plist)-1):
                 self.nearby_halo_properties[plist[j]][self._near_slices[i]] = data[j][target]
 
