@@ -102,9 +102,9 @@ class StepData(object):
                 self.bh['nearhalo'][self._halo_slices[i]] = hid[amin]
                 for j in range(3):
                     print j
+                    print SSC[amin]
                     print self.bh['nearpos'][self._halo_slices[i]][:,j]
                     print self.halo_properties['SSC'][self._halo_slices[i]][:,j]
-                    print SSC[amin]
                     self.bh['nearpos'][self._halo_slices[i]][:,j] = \
                         self.bh['pos'][self._halo_slices[i]][:,j] + self.halo_properties['SSC'][self._halo_slices[i]][:,j] - SSC[amin]
 
