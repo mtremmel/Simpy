@@ -163,6 +163,8 @@ class StepData(object):
                 self.halo_properties[key] = np.zeros(nbh)
                 self.nearby_halo_properties[key] = np.zeros(nbh)
                 finallist.append(key)
+        if len(finallist)==0:
+            return
         finallist.append('N')
         finallist = tuple(finallist)
         data = dbstep.gather_property(*finallist)
