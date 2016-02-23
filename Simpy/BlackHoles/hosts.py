@@ -25,6 +25,10 @@ class StepList(object):
             target = np.where(self._steplist.astype(np.int)==int(step))[0]
         return self.data[self._steplist[target]]
 
+    def add_halo_property(self, db, *plist):
+        for step in self._steplist:
+            dbstep = db.get_timestep(simname+'/%'+step)
+            self.data[step].add_halo_property(dbstep, *plist)
 
 class StepData(object):
     def __init__(self, step, dbstep, boxsize):
@@ -108,6 +112,8 @@ class StepData(object):
 
         self.bh['neardist'] = np.sqrt(np.sum(self.bh['nearpos']**2,axis=1))
 
+        self.near_ids, self._near_slices,self._near_indices = self._get_halo_slices(near=True)
+
     def host_prop(self,key):
         return self.halo_properties[key][self._host_indices]
 
@@ -115,9 +121,13 @@ class StepData(object):
         target = np.where(self.host_ids==N)[0]
         return self.bh[key][self._halo_slices[target]]
 
-    def _get_halo_slices(self):
-        ord_ = np.argsort(self.bh['host'])
-        uvalues, ind = np.unique(self.bh['host'][ord_], return_index=True)
+    def _get_halo_slices(self, near=False):
+        if near is True:
+            key = 'nearhalo'
+        else:
+            key = 'host'
+        ord_ = np.argsort(self.bh[key])
+        uvalues, ind = np.unique(self.bh[key][ord_], return_index=True)
         slice_ = []
         for i in range(len(uvalues) - 1):
             ss = ord_[ind[i]:ind[i + 1]]
@@ -125,6 +135,30 @@ class StepData(object):
         ss = ord_[ind[i + 1]:]
         slice_.append(ss)
         return uvalues, slice_, ord_[ind]
+
+    def add_halo_property(self, dbstep, *plist):
+        nbh = len(self.bh['bhid'])
+        plist = list(plist)
+        plist.append('N')
+        plist = tuple(plist)
+        data = dbstep.gather_property(plist)
+        for key in plist:
+            self.halo_properties[key] = np.zeros(nbh)
+
+        for i in range(len(self.host_ids)):
+            if self.host_ids[i] not in data[-1]:
+                continue
+            target = np.where(data['-1']==self.host_ids[i])
+            for j in range(len(plist)-1):
+                self.halo_properties[plist[j]][self._halo_slices[i]] = data[j][target]
+
+        for i in range(len(self.near_ids)):
+            if self.near_ids[i] not in data[-1]:
+                continue
+            target = np.where(data['-1']==self.near_ids[i])
+            for j in range(len(plist)-1):
+                self.nearby_halo_properties[plist[j]][self._near_slices[i]] = data[j][target]
+
 
     #def get_mergers(self, ID1, ID2, ratio, time, step):
 
@@ -158,12 +192,22 @@ class BHhalocat(object):
         if type(N)==str:
             return self.data[N]
 
-    def addsteps(self):
+    def addsteps(self, *newsteps):
         import halo_db as db
-        f = open('steps.list', 'r')
-        steps_str = np.array(f.readlines())
-        self._steplist = steplist
-        for step in steplist:
+        if len(newsteps)==0:
+            print "checking for new steps in file steps.list"
+            f = open('steps.list', 'r')
+            steps_str = np.array(f.readlines())
+        else:
+            steps_str = newsteps
+        for step in steps_str:
+            if step in self.steps:
+                continue
+            self.steps = np.append(self.steps,step)
             print "gathering data for step ", step
-            dbstep = db.get_timestep(simname+'/%'+step)
-            self.data.data[step] = StepData(step,dbstep,boxsize)
+            dbstep = db.get_timestep(self.simname+'/%'+step)
+            self.data.data[step] = StepData(step, dbstep, self.boxsize)
+
+    def add_halo_property(self,*plist):
+        import halo_db as db
+        self.data.add_halo_property(db, *plist)
