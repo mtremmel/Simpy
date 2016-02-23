@@ -34,7 +34,7 @@ class StepList(object):
     def addstep(self,step, db, boxsize):
         dbstep = db.get_timestep(self.simname+'/%'+step)
         self.data[step] = StepData(step,dbstep,boxsize)
-        self._steplist = np.append(self.steplist,step)
+        self._steplist = np.append(self._steplist,step)
 
 
 class StepData(object):
@@ -44,6 +44,9 @@ class StepData(object):
         self.a = 1./(1.+self.redshift)
         self.id = step
         self.boxsize = boxsize
+        self.mergers = {}
+        self._merger_halo_indices = []
+        self._eaten_halo_indices = []
 
         print "Gathering BH data..."
 
@@ -54,7 +57,7 @@ class StepData(object):
 
         if nbhs==0:
             print "No BHs Found in This Step"
-            self.bh = {'lum':[], 'dist':[], 'pos':[], 'halo':[], 'mass':[],
+            self.bh = {'lum':[], 'dist':[], 'pos':[], 'host':[], 'mass':[],
                    'bhid':[], 'nearhalo':[],'mdot':[], 'neardist':[]}
             self.halo_properties = {'Mvir':[], 'Mstar':[], 'Rvir':[], 'Mgas':[], 'SSC':[], 'N':[]}
             return
@@ -148,7 +151,7 @@ class StepData(object):
         plist = list(plist)
         plist.append('N')
         plist = tuple(plist)
-        data = dbstep.gather_property(plist)
+        data = dbstep.gather_property(*plist)
         for key in plist:
             self.halo_properties[key] = np.zeros(nbh)
 
@@ -166,9 +169,24 @@ class StepData(object):
             for j in range(len(plist)-1):
                 self.nearby_halo_properties[plist[j]][self._near_slices[i]] = data[j][target]
 
+    def get_BH_merger_halos(self, ID1, ID2, ratio, time, step):
+        self.mergers = {'bhid': ID1, 'eaten_bhid': ID2, 'ratio': ratio, 'time': time,
+                        'step': step, 'halo': -1*np.ones(len(ID1)), 'eaten_halo': -1*np.ones(len(ID1))}
 
-    #def get_BH_merger_halos(self, ID1, ID2, ratio, time, step):
+        for i in range(len(ID1)):
+            h1 = self.bh['host'][(self.bh['bhid']==ID1[i])]
+            self.mergers['halo'][i] = h1
+            h2 = self.bh['host'][(self.bh['bhid']==ID2[i])]
+            self.mergers['eaten_halo'][i] = h2
+            h1index = np.where(self.host_ids==h1)[0][0]
+            h2index = np.where(self.host_ids==h2)[0][0]
+            self._merger_halo_indices.append(h1index)
+            self._eaten_halo_indices.append(h2index)
 
+    def BH_merger_halo_props(self,key):
+        main = self.host_prop(key)[self._merger_halo_indices]
+        other = self.host_prop(key)[self._eaten_halo_indices]
+        return np.concatenate([[main],[other]]).T
 
 
 
