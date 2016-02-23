@@ -99,7 +99,7 @@ class StepData(object):
         print "finding nearby halos"
         self.nearby_halo_properties = \
             {'Mvir':np.zeros(nbhs), 'Mstar':np.zeros(nbhs), 'Rvir':np.zeros(nbhs),
-             'Mgas':np.zeros(nbhs), 'SSC':np.zeros(nbhs), 'N':np.zeros(nbhs)}
+             'Mgas':np.zeros(nbhs), 'SSC':np.zeros((nbhs,3)), 'N':np.zeros(nbhs)}
         self.bh['nearhalo'] = np.zeros(nbhs)
         self.bh['nearpos'] = np.zeros((nbhs,3))
 
