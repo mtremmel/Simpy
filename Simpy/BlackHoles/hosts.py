@@ -90,16 +90,17 @@ class StepData(object):
             reldist = np.sqrt(np.sum(relpos**2, axis=1))
 
             ok, = np.where(hid < hN[i])
-            amin = ok[np.argmin(reldist[ok])]
+            if len(ok) > 0:
+                amin = ok[np.argmin(reldist[ok])]
 
-            self.nearby_halo_properties['Mvir'][self._halo_slices[i]] = Mvir[amin]
-            self.nearby_halo_properties['Mstar'][self._halo_slices[i]] = Mstar[amin]
-            self.nearby_halo_properties['Rvir'][self._halo_slices[i]] = Rvir[amin]
-            self.nearby_halo_properties['N'][self._halo_slices[i]] = hid[amin]
-            self.nearby_halo_properties['Mgas'][self._halo_slices[i]] = Mgas[amin]
-            self.nearby_halo_properties['SSC'][self._halo_slices[i]] = SSC[amin]
-            self.bh['nearhalo'][self._halo_slices[i]] = hid[amin]
-            self.bh['nearpos'][self._halo_slices[i]] = \
+                self.nearby_halo_properties['Mvir'][self._halo_slices[i]] = Mvir[amin]
+                self.nearby_halo_properties['Mstar'][self._halo_slices[i]] = Mstar[amin]
+                self.nearby_halo_properties['Rvir'][self._halo_slices[i]] = Rvir[amin]
+                self.nearby_halo_properties['N'][self._halo_slices[i]] = hid[amin]
+                self.nearby_halo_properties['Mgas'][self._halo_slices[i]] = Mgas[amin]
+                self.nearby_halo_properties['SSC'][self._halo_slices[i]] = SSC[amin]
+                self.bh['nearhalo'][self._halo_slices[i]] = hid[amin]
+                self.bh['nearpos'][self._halo_slices[i]] = \
                 self.bh['pos'][self._halo_slices[i]] + self.halo_properties['SSC'][self._halo_slices[i]] - SSC[amin]
 
         self.bh['neardist'] = np.sqrt(np.sum(self.bh['nearpos']**2,axis=1))
@@ -114,7 +115,6 @@ class StepData(object):
     def _get_halo_slices(self):
         ord_ = np.argsort(self.bh['host'])
         uvalues, ind = np.unique(self.bh['host'][ord_], return_index=True)
-        print uvalues
         slice_ = []
         for i in range(len(uvalues) - 1):
             ss = ord_[ind[i]:ind[i + 1]]
