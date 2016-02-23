@@ -163,4 +163,7 @@ class BHhalocat(object):
         return self.data[target]
 
     def __getitem__(self,N):
-        return self.data[self.steps[N]]
+        if type(N)==int:
+            return self.data[self.steps[N]]
+        if type(N)==str:
+            return self.getstep(N)
