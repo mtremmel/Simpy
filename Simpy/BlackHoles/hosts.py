@@ -150,19 +150,11 @@ class BHhalocat(object):
 
         self.data = StepList(self.steps, db, self.boxsize, self.simname)
 
-    def getstep(self,step):
-        step = int(step)
-        if step not in self.steps.astype(np.int):
-            print "Cannot Find this Step"
-            return None
-        target = np.where(self.steps.astype(np.int)==step)[0]
-        return self.data[target]
-
     def __getitem__(self,N):
         if type(N)==int:
             return self.data[self.steps[N]]
         if type(N)==str:
-            return self.getstep(N)
+            return self.data[N]
 
     def addsteps(self):
         import halo_db as db
