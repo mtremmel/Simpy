@@ -21,7 +21,9 @@ class StepList(object):
     def __getitem__(self,step):
         if int(step) not in self._steplist.astype(np.int):
             raise KeyError
-        return self.data[step]
+        else:
+            target = np.where(self._steplist.astype(np.int)==int(step))[0]
+        return self.data[self._steplist[target]]
 
 
 class StepData(object):
