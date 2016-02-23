@@ -167,3 +167,13 @@ class BHhalocat(object):
             return self.data[self.steps[N]]
         if type(N)==str:
             return self.getstep(N)
+
+    def addsteps(self):
+        import halo_db as db
+        f = open('steps.list', 'r')
+        steps_str = np.array(f.readlines())
+        self._steplist = steplist
+        for step in steplist:
+            print "gathering data for step ", step
+            dbstep = db.get_timestep(simname+'/%'+step)
+            self.data.data[step] = StepData(step,dbstep,boxsize)
