@@ -59,7 +59,7 @@ class StepData(object):
         Mvir, Mstar, Rvir, Mgas, SSC, hid = dbstep.gather_property('Mvir', 'Mstar', 'Rvir', 'Mgas', 'SSC', 'N')
 
         self.halo_properties = {'Mvir':np.zeros(nbhs), 'Mstar':np.zeros(nbhs), 'Rvir':np.zeros(nbhs), 'Mgas':np.zeros(nbhs),
-                                'SSC':np.zeros(nbhs), 'N':np.zeros(nbhs)}
+                                'SSC':np.zeros((nbhs,3)), 'N':np.zeros(nbhs)}
 
         print "matching halo data to BHs"
         for i in range(nhalos):
@@ -106,7 +106,7 @@ class StepData(object):
                     print self.bh['nearpos'][self._halo_slices[i]][:,j]
                     print self.halo_properties['SSC'][self._halo_slices[i]][:,j]
                     self.bh['nearpos'][self._halo_slices[i]][:,j] = \
-                        self.bh['pos'][self._halo_slices[i]][:,j] + self.halo_properties['SSC'][self._halo_slices[i]][:,j] - SSC[amin]
+                        self.bh['pos'][self._halo_slices[i]][:,j] + self.halo_properties['SSC'][self._halo_slices[i]][:,j] - SSC[amin][j]
 
         self.bh['neardist'] = np.sqrt(np.sum(self.bh['nearpos']**2,axis=1))
 
