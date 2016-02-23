@@ -37,6 +37,9 @@ class StepData(object):
         bhids, bhmass, bhmdot, offset, dist, hostnum = \
                 dbstep.gather_property('N', 'BH_mass', 'BH_mdot_ave', 'BH_central_offset', 'BH_central_distance','host')
 
+        nbhs = len(bhids)
+        nhalos = len(self.host_ids)
+
         if nbhs==0:
             print "No BHs Found in This Step"
             self.bh = {'lum':[], 'dist':[], 'pos':[], 'halo':[], 'mass':[],
@@ -53,10 +56,6 @@ class StepData(object):
 
         print "Gathering halo data"
         Mvir, Mstar, Rvir, Mgas, SSC, hid = dbstep.gather_property('Mvir', 'Mstar', 'Rvir', 'Mgas', 'SSC', 'N')
-
-        nbhs = len(bhids)
-        nhalos = len(self.host_ids)
-
 
         self.halo_properties = {'Mvir':np.zeros(nbhs), 'Mstar':np.zeros(nbhs), 'Rvir':np.zeros(nbhs), 'Mgas':np.zeros(nbhs),
                                 'SSC':np.zeros(nbhs), 'N':np.zeros(nbhs)}
