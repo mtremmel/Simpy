@@ -128,7 +128,7 @@ class StepData(object):
         slice_.append(ss)
         return uvalues, slice_, ord_[ind]
 
-    def get_mergers(self, ID1, ID2, ratio, time, step):
+    #def get_mergers(self, ID1, ID2, ratio, time, step):
 
 
 
