@@ -5,8 +5,8 @@ import os
 
 
 def calc_lum(mdot,er=0.1):
-        csq = pynbody.array.SimArray((2.998e10) ** 2, 'erg g**-1')
-        return pynbody.array.SimArray(mdot,'Msol yr**-1').in_units('g s**-1') * csq * er
+    csq = pynbody.array.SimArray((2.998e10) ** 2, 'erg g**-1')
+    return pynbody.array.SimArray(mdot,'Msol yr**-1').in_units('g s**-1') * csq * er
 
 
 class StepList(object):
@@ -125,6 +125,7 @@ class StepData(object):
                 self.nearby_halo_properties['SSC'][self._halo_slices[i]] = SSC[amin]
                 self.bh['nearhalo'][self._halo_slices[i]] = hid[amin]
                 for j in range(3):
+					print self.bh['pos'][self._halo_slices[i]][:,j], self.halo_properties['SSC'][self._halo_slices[i]][:,j], SSC[amin][j]
                     self.bh['nearpos'][self._halo_slices[i]][:,j] = \
                         self.bh['pos'][self._halo_slices[i]][:,j] + self.halo_properties['SSC'][self._halo_slices[i]][:,j] - SSC[amin][j]
 
