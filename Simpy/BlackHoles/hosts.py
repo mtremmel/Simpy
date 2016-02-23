@@ -171,15 +171,15 @@ class StepData(object):
             if self.host_ids[i] not in data[-1]:
                 continue
             target = np.where(data[-1]==self.host_ids[i])
-            for j in range(len(plist)-1):
-                self.halo_properties[plist[j]][self._halo_slices[i]] = data[j][target]
+            for j in range(len(finallist)-1):
+                self.halo_properties[finallist[j]][self._halo_slices[i]] = data[j][target]
 
         for i in range(len(self.near_ids)):
             if self.near_ids[i] not in data[-1]:
                 continue
             target = np.where(data[-1]==self.near_ids[i])
-            for j in range(len(plist)-1):
-                self.nearby_halo_properties[plist[j]][self._near_slices[i]] = data[j][target]
+            for j in range(len(finallist)-1):
+                self.nearby_halo_properties[finallist[j]][self._near_slices[i]] = data[j][target]
 
     def get_BH_mergers(self, time, step, ID1, ID2, ratio, kick):
         self.mergers = {'bhid': ID1, 'eaten_bhid': ID2, 'ratio': ratio, 'time': time,
