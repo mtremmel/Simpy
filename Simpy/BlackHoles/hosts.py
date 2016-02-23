@@ -36,6 +36,14 @@ class StepList(object):
         self.data[step] = StepData(step,dbstep,boxsize)
         self._steplist = np.append(self._steplist,step)
 
+    def get_BH_mergers(self, time, step, ID, IDeat, ratio, kick):
+        for i in range(len(self._steplist)):
+            curstep = int(self._steplist[i])
+            nextstep = int(self._steplist[i+1])
+            target = np.where((step > curstep)&(step<nextstep))
+            self.data[self._steplist[i]].get_BH_mergers(time[target],step[target],ID[target], IDeat[target],
+                                                        ratio[target], kick[target])
+
 
 class StepData(object):
     def __init__(self, step, dbstep, boxsize):
@@ -158,7 +166,7 @@ class StepData(object):
         for i in range(len(self.host_ids)):
             if self.host_ids[i] not in data[-1]:
                 continue
-            target = np.where(data['-1']==self.host_ids[i])
+            target = np.where(data[-1]==self.host_ids[i])
             for j in range(len(plist)-1):
                 self.halo_properties[plist[j]][self._halo_slices[i]] = data[j][target]
 
@@ -169,15 +177,30 @@ class StepData(object):
             for j in range(len(plist)-1):
                 self.nearby_halo_properties[plist[j]][self._near_slices[i]] = data[j][target]
 
-    def get_BH_merger_halos(self, ID1, ID2, ratio, time, step):
+    def get_BH_mergers(self, time, step, ID1, ID2, ratio, kick):
         self.mergers = {'bhid': ID1, 'eaten_bhid': ID2, 'ratio': ratio, 'time': time,
-                        'step': step, 'halo': -1*np.ones(len(ID1)), 'eaten_halo': -1*np.ones(len(ID1))}
+                        'step': step, 'halo': -1*np.ones(len(ID1)), 'eaten_halo': -1*np.ones(len(ID1)),
+                        'mass1': np.zeros(len(ID1)), 'mass2': np.zeros(len(ID1)),
+                        'lum1': np.zeros(len(ID1)), 'lum2': np.zeros(len(ID1)), 'kick':kick
 
         for i in range(len(ID1)):
-            h1 = self.bh['host'][(self.bh['bhid']==ID1[i])]
+            o1 = np.where(self.bh['bhid']==ID1[i])[0][0]
+            o2 = np.where(self.bh['bhid']==ID2[i])[0][0]
+
+            h1 = self.bh['host'][o1]
             self.mergers['halo'][i] = h1
-            h2 = self.bh['host'][(self.bh['bhid']==ID2[i])]
+            h2 = self.bh['host'][o2]
             self.mergers['eaten_halo'][i] = h2
+            m1 = self.bh['mass'][o1]
+            m2 = self.bh['mass'][o2]
+            self.mergers['mass1'][i] = m1
+            self.mergers['mass2'][i] = m2
+            md1 = self.bh['mdot'][o1]
+            md2 = self.bh['mdot'][o2]
+            self.mergers['lum1'][i] = calc_lum(md1)
+            self.mergers['lum2'][i] = calc_lum(md2)
+
+
             h1index = np.where(self.host_ids==h1)[0][0]
             h2index = np.where(self.host_ids==h2)[0][0]
             self._merger_halo_indices.append(h1index)
@@ -235,3 +258,7 @@ class BHhalocat(object):
     def add_halo_property(self,*plist):
         import halo_db as db
         self.data.add_halo_property(db, *plist)
+
+    def get_mergers(self,simname):
+        time, step, ID, IDeat, ratio, kick = readcol(simname+'.mergers')
+        self.data.get_BH_mergers(time, step, ID, IDeat, ratio, kick)
