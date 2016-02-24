@@ -1,4 +1,4 @@
-from .. import Files, readcol, dbutil
+from .. import Files, dbutil, readcol
 import numpy as np
 import pynbody
 import os
@@ -266,5 +266,5 @@ class BHhalocat(object):
         self.data.add_halo_property(db, *plist)
 
     def get_mergers(self,simname):
-        time, step, ID, IDeat, ratio, kick = readcol(simname+'.mergers')
+        time, step, ID, IDeat, ratio, kick = readcol.readcol(simname+'.mergers')
         self.data.get_BH_mergers(time, step, ID, IDeat, ratio, kick)
