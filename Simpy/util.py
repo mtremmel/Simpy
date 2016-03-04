@@ -19,8 +19,8 @@ def partial_derivative(func, var=0, point=[]):
     return scipy.misc.derivative(wraps, point[var], dx = 1e-8)
 
 def init_iord_to_fpos(snap):
-    iord_to_fpos = np.empty(snap['iord'].max()+1,dtype=np.int64)
-    iord_to_fpos[snap['iord']] = np.arange(len(snap))
+    iord_to_fpos = np.empty(snap['iord'].max()+1,dtype=np.dtype('int64'))
+    iord_to_fpos[snap['iord']] = np.linspace(0,len(snap)-1,len(snap)).astype(np.int64)
     return iord_to_fpos
 
 
