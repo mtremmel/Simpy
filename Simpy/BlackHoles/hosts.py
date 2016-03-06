@@ -1,7 +1,8 @@
-from .. import Files, dbutil, readcol
+from .. import readcol
 import numpy as np
 import pynbody
 import os
+import pickle
 
 
 def calc_lum(mdot,er=0.1):
@@ -221,7 +222,8 @@ class StepData(object):
 
 class BHhalocat(object):
 
-    def __init__(self, simname, boxsize='25 Mpc'):
+    def __init__(self, simname, boxsize='25 Mpc', filename=None):
+        self.filename = filename
         self.simname = simname
         if not os.path.exists('steps.list'):
             print "ERROR cannot find steps.list file"
@@ -240,15 +242,37 @@ class BHhalocat(object):
 
         self.data = StepList(self.steps, db, self.boxsize, self.simname)
 
+        if filename:
+            if os.path.exists(filename):
+                print "ERROR ", filename, " already exists. NOT SAVING OBJECT TO FILE"
+            else:
+                fout = open(filename,'wb')
+                pickle.dump(self,fout)
+                fout.close()
+
+
     def __getitem__(self,N):
         if type(N)==int:
             return self.data[self.steps[N]]
         if type(N)==str:
             return self.data[N]
 
+    def save(self,newname=None):
+        if newname:
+            if os.path.exists(newname):
+                print "ERROR ", newname, " already exists. NOT SAVING OBJECT TO FILE"
+                return
+            else:
+                self.filename=newname
+                if os.path.exists(self.filename):
+                    os.system('rm self.filename')
+        fout = open(self.filename,'wb')
+        pickle.dump(self, fout)
+        fout.close()
+
     def addsteps(self, *newsteps):
         import halo_db as db
-        if len(newsteps)==0:
+        if len(newsteps) == 0:
             print "checking for new steps in file steps.list"
             f = open('steps.list', 'r')
             steps_str = np.array(f.readlines())
