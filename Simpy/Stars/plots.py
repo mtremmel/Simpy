@@ -77,8 +77,8 @@ def cosmicSFH(sim, style, lw=3, bins=50, zrange=None, label=None, ret_hist=True,
 
 	plotting.plt.step(zbins[0:-1],sfr/volume,style, label=label, linewidth=lw, where='post')
 	if xlog is True:
-		plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10,11],['0','1','2','3','4','5','6','7','8','9','10'])
 		plotting.plt.xscale('log',base=10)
+		plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10,11],['0','1','2','3','4','5','6','7','8','9','10'])
 	if ylog is True:
 		plotting.plt.yscale('log',base=10)
 
@@ -105,8 +105,7 @@ def cosmicSFH(sim, style, lw=3, bins=50, zrange=None, label=None, ret_hist=True,
 
 			plotting.plt.scatter(dat.duncan_z, 10**dat.duncan_sf, color='k', marker='D', label='Duncan+ 14', s=40)
 			plotting.plt.errorbar(dat.kist_zhigh, dat.kist_sfr, fmt='o',yerr=[dat.kist_sfrminus, dat.kist_sfrplus], xerr=[dat.kist_zhighminus, dat.kist_zhighplus], ls='None', linewidth=1.5, color='k', label='Kistler+ 13')
-	if ylog is True:
-		plotting.plt.yscale('log',base=10)
+
 	if overplot is False and plotdata is True:
 		plotting.plt.ylabel(r'$\rho_{SFR}$ [M$_{\odot}$ yr$^{-1}$ Mpc$^{-1}$]',fontsize=30)
 		plotting.plt.xlabel(r'Redshift',fontsize=30)
