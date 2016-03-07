@@ -531,7 +531,9 @@ class Orbit(object):
 		if type== 'time':
 			plotting.plt.plot(self.data['time'].in_units('Gyr'),macc/volume,style, linewidth=lw, label=label)
 		if overplot is False:
-			if xlog is True: plotting.plt.xscale('log',base=10)
+			if xlog is True:
+				plotting.plt.xscale('log',base=10)
+				plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10,11],['0','1','2','3','4','5','6','7','8','9','10'])
 			if ylog is True: plotting.plt.yscale('log',base=10)
 			if type == 'redshift':
 				plotting.plt.xlabel('z',fontsize=30)
