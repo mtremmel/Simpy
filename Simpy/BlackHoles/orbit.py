@@ -502,6 +502,7 @@ class Orbit(object):
 			if plotdata is True:
 				import colldata as dat
 				err = dat.shankar09H - dat.shankar09
+				plotting.plt.plot(dat.Uneda14z,dat.Uneda14rho,color='black',fmt='^',label='Uneda+ 14')
 				if xlog is True:
 					plotting.plt.errorbar([1.03],[dat.shankar09],yerr=[err],color='black',fmt='D',label="Shankar+ 09")
 					plotting.plt.errorbar([dat.Salvaterra12z+1],[dat.Salvaterra12],
