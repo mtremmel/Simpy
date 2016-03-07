@@ -61,22 +61,20 @@ def cosmicSFH(sim, style, lw=3, bins=50, zrange=None, label=None, ret_hist=True,
 	massform = sim.stars['massform'].in_units('Msol')
 	if zrange is None:
 		zrange = [0,25]
-	if xlog is False:
-		dz = (zrange[1]-zrange[0])/float(bins)
-		zbins = np.arange(zrange[0],zrange[1]+dz,dz)
-	else:
-		dz = (np.log10(zrange[1]+1)-np.log10(zrange[0]+1))/float(bins)
-		zbins = 10**np.arange(np.log10(zrange[0]+1),np.log10(zrange[1]+1)+dz,dz)
+	dz = (zrange[1]-zrange[0])/float(bins)
+	zbins = np.arange(zrange[0],zrange[1]+dz,dz)
 	tedges = np.array([cosmology.getTime(z,sim) for z in zbins])
 	tsorted = np.argsort(tedges)
 	tedges = tedges[tsorted]
+
 	dt = np.abs((tedges[0:-1] - tedges[1:]) * 1e9)
 	data = np.histogram(tform, bins=tedges, weights=massform)
 	sfr = data[0]/dt
 	zbins = zbins[tsorted]
-
-	plotting.plt.step(zbins[0:-1],sfr/volume,style, label=label, linewidth=lw, where='post')
-	if xlog is True:
+	if xlog is False:
+		plotting.plt.step(zbins[0:-1],sfr/volume,style, label=label, linewidth=lw, where='post')
+	else:
+		plotting.plt.step(zbins[0:-1]+1,sfr/volume,style, label=label, linewidth=lw, where='post')
 		plotting.plt.xscale('log',base=10)
 		plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10,11],['0','1','2','3','4','5','6','7','8','9','10'])
 	if ylog is True:
@@ -85,7 +83,7 @@ def cosmicSFH(sim, style, lw=3, bins=50, zrange=None, label=None, ret_hist=True,
 	if plotdata is True:
 		import colldata as dat
 
-		zfits = np.arange(1,11,0.01)
+		zfits = np.arange(0,11,0.01)
 		fitB,sigB = dat.CSFRFit(zfits,type='beh')
 		fitH,sigH = dat.CSFRFit(zfits,type='hop')
 		if xlog is True:
