@@ -503,7 +503,7 @@ class Orbit(object):
 				import colldata as dat
 				err = dat.shankar09H - dat.shankar09
 				if xlog is True:
-					plotting.plt.plot(dat.Uneda14z,dat.Uneda14rho,'k^',label='Uneda+ 14')
+					plotting.plt.plot(dat.Uneda14z,dat.Uneda14rho,'k^',label='Ueda+ 14')
 					plotting.plt.errorbar([1.03],[dat.shankar09],yerr=[err],color='black',fmt='D',label="Shankar+ 09")
 					plotting.plt.errorbar([dat.Salvaterra12z+1],[dat.Salvaterra12],
 										color='black',fmt='x',xerr=[dat.Salvaterra12zH-dat.Salvaterra12z],
@@ -514,7 +514,7 @@ class Orbit(object):
 					plotting.plt.errorbar(dat.Hopkins07zp1,10**dat.Hopkins07,
 										color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
 				else:
-					plotting.plt.plot(dat.Uneda14z-1,dat.Uneda14rho,'k^',label='Uneda+ 14')
+					plotting.plt.plot(dat.Uneda14z-1,dat.Uneda14rho,'k^',label='Ueda+ 14')
 					plotting.plt.errorbar([0.03],[dat.shankar09],yerr=[err],
 										color='black',fmt='D',label="Shankar+ 09")
 					plotting.plt.errorbar([dat.Salvaterra12z],[dat.Salvaterra12],
