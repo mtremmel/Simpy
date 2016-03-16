@@ -88,6 +88,7 @@ def cosmicSFH_by_step(dbsim, style, range=None, label=None, volume=25**3, retdat
 				rcnt += 1
 		SFR = SFR[ok]
 		sfrdata[cnt] = np.sum(SFR)/volume
+		cnt += 1
 
 	if plot:
 		if xlog is True:
