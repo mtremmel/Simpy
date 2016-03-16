@@ -69,13 +69,11 @@ def cosmicSFH_by_step(dbsim, style, range=None, label=None, volume=25**3, retdat
 		if len(rangespl)%3 != 0:
 			print "range string given has incorrect syntax, " \
 					"must go as property min max property min max, etc"
-		proplist.append(rangespl[0::3])
+		proplist.extend(rangespl[0::3])
 		min = np.array(rangespl[1::3]).astype(np.float)
 		max = np.array(rangespl[2::3]).astype(np.float)
-	print proplist
 	proplist = tuple(proplist)
 	cnt = 0
-	print proplist
 	for step in dbsim.timesteps:
 		redshift[cnt] = step.redshift
 		data = step.gather_property(*proplist)
