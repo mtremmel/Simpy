@@ -65,7 +65,7 @@ def cosmicSFH_by_step(dbsim, style, range=None, label=None, volume=25**3, retdat
 	min = []
 	max = []
 	if range is not None:
-		rangespl = range.splot(' ')
+		rangespl = range.split(' ')
 		if len(rangespl)%3 != 0:
 			print "range string given has incorrect syntax, " \
 					"must go as property min max property min max, etc"
@@ -97,7 +97,7 @@ def cosmicSFH_by_step(dbsim, style, range=None, label=None, volume=25**3, retdat
 		if ylog is True:
 			plotting.plt.yscale('log',base=10)
 		if plotobs is True:
-			cosmicSFR(None,None,xlog=xlog,ylog=ylog)
+			cosmicSFH(None,None,xlog=xlog,ylog=ylog)
 
 	if retdata:
 		return redshift,sfrdata
