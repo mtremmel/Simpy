@@ -75,19 +75,17 @@ def cosmicSFH_by_step(dbsim, style, range=None, label=None, volume=25**3, retdat
 	proplist = tuple(proplist)
 	cnt = 0
 	for step in dbsim.timesteps:
+		print "getting data for redshift", step.redshift
 		redshift[cnt] = step.redshift
 		data = step.gather_property(*proplist)
 		SFR = data[0]
-		nothing = 0
+		ok = np.arange(len(SFR))
 		if len(data)>1:
-			ok = np.arange(len(SFR))
 			rcnt = 0
 			for dd in data[1::]:
 				oknew = np.where((dd[ok] > min[rcnt])&(dd[ok] < max[rcnt]))[0]
 				ok = ok[oknew]
 				rcnt += 1
-
-
 		SFR = SFR[ok]
 		sfrdata[cnt] = np.sum(SFR)/volume
 
