@@ -72,9 +72,10 @@ def cosmicSFH_by_step(dbsim, style, range=None, label=None, volume=25**3, retdat
 		proplist.append(rangespl[0::3])
 		min = np.array(rangespl[1::3]).astype(np.float)
 		max = np.array(rangespl[2::3]).astype(np.float)
-
+	print proplist
 	proplist = tuple(proplist)
 	cnt = 0
+	print proplist
 	for step in dbsim.timesteps:
 		redshift[cnt] = step.redshift
 		data = step.gather_property(*proplist)
