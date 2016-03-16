@@ -98,7 +98,7 @@ def cosmicSFH_by_step(dbsim, style, range=None, label=None, volume=25**3, retdat
 		if ylog is True:
 			plotting.plt.yscale('log',base=10)
 		if plotobs is True:
-			cosmicSFH(None,None,xlog=xlog,ylog=ylog)
+			cosmicSFH(None,None,xlog=xlog,ylog=ylog,zrange=[redshift.min(),redshift.max()])
 
 	if retdata:
 		return redshift,sfrdata
@@ -108,11 +108,11 @@ def cosmicSFH_by_step(dbsim, style, range=None, label=None, volume=25**3, retdat
 
 def cosmicSFH(sim, style, lw=3, bins=50, zrange=None, label=None, ret_hist=True,xlog=False,ylog=False,
 			  plotdata=True,volume=25**3):
+	if zrange is None:
+			zrange = [0,25]
 	if sim is not None:
 		tform = get.tform_fromsnap(sim,'Gyr')
 		massform = sim.stars['massform'].in_units('Msol')
-		if zrange is None:
-			zrange = [0,25]
 		dz = (zrange[1]-zrange[0])/float(bins)
 		zbins = np.arange(zrange[0],zrange[1]+dz,dz)
 		tedges = np.array([cosmology.getTime(z,sim) for z in zbins])
