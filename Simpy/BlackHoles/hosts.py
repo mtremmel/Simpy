@@ -85,7 +85,7 @@ class StepData(object):
         print "ordering data..."
         ord = np.argsort(bhids)
         util.cutdict(self.bh,ord)
-        util.cutdict(self,halo_properties,ord)
+        util.cutdict(self.halo_properties,ord)
 
         print "slicing data..."
         self.host_ids, self._halo_slices,self._host_indices = self._get_halo_slices()
