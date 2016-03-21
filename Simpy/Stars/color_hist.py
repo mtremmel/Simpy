@@ -85,8 +85,7 @@ class ColorHist(object):
             redcNorm = pltcolors.Normalize(1./(self.z.max()+1), 1./(self.z.min()+1))
         else:
             redcNorm = pltcolors.Normalize(1./(1+zcolor_range[0]), 1./(1+zcolor_range[1]))
-        plotting.plt.scatter(self.colors[c1+c2], self.colors[c3+c4],
-                             c=1./(1+self.z), norm=redcNorm, cmap=cmap, s=marksize, marker=mark, label=label, color=color)
+
         if data==True:
             plotting.plt.errorbar(CANDELS_MW['VJ'], CANDELS_MW['UV'],
                                   xerr=[CANDELS_MW['VJ-'],CANDELS_MW['VJ+']], yerr=[CANDELS_MW['UV-'],CANDELS_MW['UV+']],
@@ -99,6 +98,9 @@ class ColorHist(object):
                                  norm=redcNorm, cmap='Greys', s=150, marker='D',label='CANDELS MW', linewidth=1.5, color='k')
             plotting.plt.scatter(CANDELS_M31['VJ'], CANDELS_M31['UV'], c=1./(1+np.array(CANDELS_M31['redshift'])),
                                  norm=redcNorm, cmap='Greys', s=150, marker='^',label='CANDELS M31', linewidth=1.5, color='k')
+
+        plotting.plt.scatter(self.colors[c1+c2], self.colors[c3+c4],
+                             c=1./(1+self.z), norm=redcNorm, cmap=cmap, s=marksize, marker=mark, label=label, color=color)
 
 
         if cbar is True:
