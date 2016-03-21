@@ -215,6 +215,9 @@ class StepData(object):
                         'mass1': np.zeros(len(ID1)), 'mass2': np.zeros(len(ID1)),
                         'lum1': np.zeros(len(ID1)), 'lum2': np.zeros(len(ID1)), 'kick':kick}
 
+        self._merger_halo_indices = []
+        self._eaten_halo_indices = []
+
         for i in range(len(ID1)):
             o1, = np.where(self.bh['bhid']==ID1[i])
             o2, = np.where(self.bh['bhid']==ID2[i])
@@ -226,6 +229,10 @@ class StepData(object):
                 self.mergers['mass1'][i] = m1
                 md1 = self.bh['mdot'][o1]
                 self.mergers['lum1'][i] = calc_lum(md1)
+                h1index, = np.where(self.host_ids==h1)
+                if len(h1index)>0:
+                    h1index = h1index[0]
+                    self._merger_halo_indices.append(h1index)
             if len(o2) > 0:
                 h2 = self.bh['host'][o2]
                 self.mergers['eaten_halo'][i] = h2
@@ -233,12 +240,10 @@ class StepData(object):
                 self.mergers['mass2'][i] = m2
                 md2 = self.bh['mdot'][o2]
                 self.mergers['lum2'][i] = calc_lum(md2)
-
-
-            h1index = np.where(self.host_ids==h1)[0][0]
-            h2index = np.where(self.host_ids==h2)[0][0]
-            self._merger_halo_indices.append(h1index)
-            self._eaten_halo_indices.append(h2index)
+                h2index, = np.where(self.host_ids==h2)
+                if len(h2index)>0:
+                    h2index = h2index[0]
+                    self._eaten_halo_indices.append(h2index)
 
     def BH_merger_halo_props(self,key):
         main = self.host_prop(key)[self._merger_halo_indices]
