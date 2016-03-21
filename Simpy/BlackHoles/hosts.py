@@ -1,4 +1,4 @@
-from .. import readcol
+from .. import readcol,util
 import numpy as np
 import pynbody
 import os
@@ -27,10 +27,15 @@ class StepList(object):
             target = np.where(self._steplist.astype(np.int)==int(step))[0]
         return self.data[self._steplist[target[0]]]
 
-    def add_halo_property(self, db, *plist):
+    def add_host_property(self, db, *plist):
         for step in self._steplist:
             dbstep = db.get_timestep(self.simname+'/%'+step)
-            self.data[step].add_halo_property(dbstep, *plist)
+            self.data[step].add_host_property(dbstep, *plist)
+
+    def add_nearby_property(self, db, *plist):
+        for step in self._steplist:
+            dbstep = db.get_timestep(self.simname+'/%'+step)
+            self.data[step].add_nearby_property(dbstep, *plist)
 
     def addstep(self,step, db, boxsize):
         dbstep = db.get_timestep(self.simname+'/%'+step)
@@ -59,8 +64,10 @@ class StepData(object):
 
         print "Gathering BH data..."
 
-        bhids, bhmass, bhmdot, offset, dist, hostnum = \
-                dbstep.gather_property('N', 'BH_mass', 'BH_mdot_ave', 'BH_central_offset', 'BH_central_distance','host')
+        bhids, bhmass, bhmdot, offset, dist, hostnum, Mvir, Mstar, Rvir, Mgas, SSC = \
+                dbstep.gather_property('halo_number()', 'BH_mass', 'BH_mdot_ave', 'BH_central_offset', 'BH_central_distance',
+                                       'host_halo.halo_number()', 'host_halo.Mvir', 'host_halo.Mstar', 'host_halo.Rvir',
+                                       'host_halo.Mgas', 'host_halo.SSC')
 
         nbhs = len(bhids)
 
@@ -68,36 +75,26 @@ class StepData(object):
             print "No BHs Found in This Step"
             self.bh = {'lum':[], 'dist':[], 'pos':[], 'host':[], 'mass':[],
                    'bhid':[], 'nearhalo':[],'mdot':[], 'neardist':[]}
-            self.halo_properties = {'Mvir':[], 'Mstar':[], 'Rvir':[], 'Mgas':[], 'SSC':[], 'N':[]}
+            self.halo_properties = {'Mvir':[], 'Mstar':[], 'Rvir':[], 'Mgas':[], 'SSC':[]}
             return
-
 
         self.bh = {'lum':calc_lum(bhmdot), 'dist':dist, 'pos':offset, 'host':hostnum, 'mass':bhmass,
                    'bhid':bhids, 'mdot':bhmdot}
+        self.halo_properties = {'Mvir':Mvir, 'Mstar':Mstar, 'Rvir':Rvir, 'Mgas':Mgas, 'SSC':SSC, 'N':hostnum}
+
+        print "ordering data..."
+        ord = np.argsort(bhids)
+        util.cutdict(self.bh,ord)
+        util.cutdict(self,halo_properties,ord)
 
         print "slicing data..."
         self.host_ids, self._halo_slices,self._host_indices = self._get_halo_slices()
 
         nhalos = len(self.host_ids)
 
-        print "Gathering halo data"
-        Mvir, Mstar, Rvir, Mgas, SSC, hid = dbstep.gather_property('Mvir', 'Mstar', 'Rvir', 'Mgas', 'SSC', 'N')
+        print "Finding nearby halos..."
+        Mvir, Mstar, Rvir, Mgas, SSC, hid = dbstep.gather_property('Mvir', 'Mstar', 'Rvir', 'Mgas', 'SSC', 'halo_number()')
 
-        self.halo_properties = {'Mvir':np.zeros(nbhs), 'Mstar':np.zeros(nbhs), 'Rvir':np.zeros(nbhs), 'Mgas':np.zeros(nbhs),
-                                'SSC':np.zeros((nbhs,3)), 'N':np.zeros(nbhs)}
-
-        print "matching halo data to BHs"
-        for i in range(nhalos):
-            target = np.where(hid==self.host_ids[i])[0]
-            self.halo_properties['Mvir'][self._halo_slices[i]] = Mvir[target]
-            self.halo_properties['Mstar'][self._halo_slices[i]] = Mstar[target]
-            self.halo_properties['Mgas'][self._halo_slices[i]] = Mgas[target]
-            self.halo_properties['Rvir'][self._halo_slices[i]] = Rvir[target]
-            self.halo_properties['N'][self._halo_slices[i]] = hid[target]
-            self.halo_properties['SSC'][self._halo_slices[i]] = SSC[target]
-
-
-        print "finding nearby halos"
         self.nearby_halo_properties = \
             {'Mvir':np.zeros(nbhs), 'Mstar':np.zeros(nbhs), 'Rvir':np.zeros(nbhs),
              'Mgas':np.zeros(nbhs), 'SSC':np.zeros((nbhs,3)), 'N':np.zeros(nbhs)}
@@ -140,6 +137,9 @@ class StepData(object):
         target = np.where(self.host_ids==N)[0]
         return self.bh[key][self._halo_slices[target]]
 
+    def nearby_prop(self,key):
+        return self.nearby_halo_properties[key][self._near_indices]
+
     def _get_halo_slices(self, near=False):
         if near is True:
             key = 'nearhalo'
@@ -155,34 +155,59 @@ class StepData(object):
         slice_.append(ss)
         return uvalues, slice_, ord_[ind]
 
-    def add_halo_property(self, dbstep, *plist):
+    def add_host_property(self, dbstep, *plist):
         nbh = len(self.bh['bhid'])
         plist = list(plist)
-        finallist = []
+        finallist = ['halo_number()']
         for key in plist:
             if key not in self.halo_properties.keys():
-                self.halo_properties[key] = np.zeros(nbh)
-                self.nearby_halo_properties[key] = np.zeros(nbh)
+                self.halo_properties[key] = np.ones(nbh) * -1
+                finallist.append('host_halo.'+key)
+        if len(finallist)==0:
+            return
+
+        finallist = tuple(finallist)
+        print "gathering data..."
+        data = dbstep.gather_property(*finallist)
+        bhid_new = data[0]
+        ord_ = np.argsort(bhid_new)
+        match = np.in1d(self.bh['bhid'],bhid_new)
+        match2 = np.in1d(bhid_new[ord_],self.bh['bhid'])
+
+        if not np.array_equal(self.bh['bhid'][match],bhid_new[ord_][match2]):
+            print "ERROR with match"
+            return
+
+        cnt = 1
+        for key in finallist[1::]:
+            self.halo_properties[key][match] = data[cnt][ord_][match2]
+            cnt += 1
+
+    def add_nearby_property(self,dbstep,*plist):
+        nbh = len(self.bh['bhid'])
+        plist = list(plist)
+        finallist = ['halo_number()']
+        for key in plist:
+            if key not in self.halo_properties.keys():
+                self.nearby_halo_properties[key] = np.ones(nbh) * -1
                 finallist.append(key)
         if len(finallist)==0:
             return
-        finallist.append('N')
         finallist = tuple(finallist)
         data = dbstep.gather_property(*finallist)
-
-        for i in range(len(self.host_ids)):
-            if self.host_ids[i] not in data[-1]:
-                continue
-            target = np.where(data[-1]==self.host_ids[i])
-            for j in range(len(finallist)-1):
-                self.halo_properties[finallist[j]][self._halo_slices[i]] = data[j][target]
-
-        for i in range(len(self.near_ids)):
-            if self.near_ids[i] not in data[-1]:
-                continue
-            target = np.where(data[-1]==self.near_ids[i])
-            for j in range(len(finallist)-1):
-                self.nearby_halo_properties[finallist[j]][self._near_slices[i]] = data[j][target]
+        hid = data[0]
+        ord_ = np.argsort(self.nearby_halo_properties['N'])
+        ord2_ = np.argsort(hid)
+        match = np.in1d(self.nearby_halo_properties['N'][ord_],hid)
+        match2 = np.in1d(hid[ord2_], self.nearby_halo_properties['N'])
+        umatch, uinv = np.unique(self.nearby_halo_properties['N'][ord_][match],return_inverse=True)
+        if not np.array_equal(self.nearby_halo_properties['N'][ord_][match],hid[ord2_][match2][uinv]):
+            print "ERROR in matching"
+            return
+        cnt = 1
+        for key in finallist[1::]:
+            self.nearby_halo_properties[key][ord_][match] = data[cnt][ord2_][match2][uinv]
+            cnt += 1
 
     def get_BH_mergers(self, time, step, ID1, ID2, ratio, kick):
         self.mergers = {'bhid': ID1, 'eaten_bhid': ID2, 'ratio': ratio, 'time': time,
@@ -250,14 +275,13 @@ class BHhalocat(object):
                 pickle.dump(self,fout)
                 fout.close()
 
-
     def __getitem__(self,N):
         if type(N)==int:
             return self.data[self.steps[N]]
         if type(N)==str:
             return self.data[N]
 
-    def save(self,newname=None):
+    def save(self, newname=None):
         if newname:
             if os.path.exists(newname):
                 print "ERROR ", newname, " already exists. NOT SAVING OBJECT TO FILE"
