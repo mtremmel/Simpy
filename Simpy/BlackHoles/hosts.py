@@ -316,9 +316,14 @@ class BHhalocat(object):
             print "gathering data for step ", step
             self.data.addstep(step, db, self.boxsize)
 
-    def add_halo_property(self,*plist):
+    def add_host_property(self,*plist):
         import halo_db as db
-        self.data.add_halo_property(db, *plist)
+        self.data.add_host_property(db, *plist)
+
+    def add_nearby_property(self,*plist):
+        import halo_db as db
+        self.data.add_nearby_property(db, *plist)
+
 
     def get_mergers(self,simname):
         time, step, ID, IDeat, ratio, kick = readcol.readcol(simname+'.mergers',twod=False)
