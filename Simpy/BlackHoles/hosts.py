@@ -179,7 +179,7 @@ class StepData(object):
             return
 
         cnt = 1
-        for key in finallist[1::]:
+        for key in plist:
             self.halo_properties[key][match] = data[cnt][ord_][match2]
             cnt += 1
 
@@ -205,7 +205,7 @@ class StepData(object):
             print "ERROR in matching"
             return
         cnt = 1
-        for key in finallist[1::]:
+        for key in plist:
             self.nearby_halo_properties[key][ord_][match] = data[cnt][ord2_][match2][uinv]
             cnt += 1
 
