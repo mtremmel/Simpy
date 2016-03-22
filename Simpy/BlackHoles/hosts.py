@@ -209,7 +209,7 @@ class StepData(object):
             self.nearby_halo_properties[key][ord_][match] = data[cnt][ord2_][match2][uinv]
             cnt += 1
 
-    def get_BH_merger_prog(self, time, step, ID1, ID2, ratio, kick):
+    def get_BH_mergers(self, time, step, ID1, ID2, ratio, kick):
         self.mergers = {'bhid': ID1, 'eaten_bhid': ID2, 'ratio': ratio, 'time': time,
                         'step': step, 'halo': -1*np.ones(len(ID1)), 'eaten_halo': -1*np.ones(len(ID1)),
                         'mass1': np.zeros(len(ID1)), 'mass2': np.zeros(len(ID1)),
