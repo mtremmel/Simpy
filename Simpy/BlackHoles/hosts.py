@@ -201,11 +201,13 @@ class StepData(object):
         match = np.in1d(self.nearby_halo_properties['N'][ord_],hid)
         match2 = np.in1d(hid[ord2_], self.nearby_halo_properties['N'])
         umatch, uinv = np.unique(self.nearby_halo_properties['N'][ord_][match],return_inverse=True)
+        print len(match), len(match2), len(hid)
         if not np.array_equal(self.nearby_halo_properties['N'][ord_][match],hid[ord2_][match2][uinv]):
             print "ERROR in matching"
             return
         cnt = 1
         for key in plist:
+            print key
             self.nearby_halo_properties[key][ord_][match] = data[cnt][ord2_][match2][uinv]
             cnt += 1
 
