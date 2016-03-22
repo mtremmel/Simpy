@@ -188,7 +188,7 @@ class StepData(object):
         plist = list(plist)
         finallist = ['halo_number()']
         for key in plist:
-            if key not in self.halo_properties.keys():
+            if key not in self.nearby_halo_properties.keys():
                 self.nearby_halo_properties[key] = np.ones(nbh) * -1
                 finallist.append(key)
         if len(finallist)==0:
