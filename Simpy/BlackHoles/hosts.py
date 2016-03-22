@@ -171,8 +171,8 @@ class StepData(object):
         data = dbstep.gather_property(*finallist)
         bhid_new = data[0]
         ord_ = np.argsort(bhid_new)
-        match = np.in1d(self.bh['bhid'],bhid_new)
-        match2 = np.in1d(bhid_new[ord_],self.bh['bhid'])
+        match = np.where(np.in1d(self.bh['bhid'],bhid_new))[0]
+        match2 = np.where(np.in1d(bhid_new[ord_],self.bh['bhid']))[0]
 
         if not np.array_equal(self.bh['bhid'][match],bhid_new[ord_][match2]):
             print "ERROR with match"
@@ -198,8 +198,8 @@ class StepData(object):
         hid = data[0]
         ord_ = np.argsort(self.nearby_halo_properties['N'])
         ord2_ = np.argsort(hid)
-        match = np.in1d(self.nearby_halo_properties['N'][ord_],hid)
-        match2 = np.in1d(hid[ord2_], self.nearby_halo_properties['N'])
+        match = np.where(np.in1d(self.nearby_halo_properties['N'][ord_],hid))[0]
+        match2 = np.where(np.in1d(hid[ord2_], self.nearby_halo_properties['N']))[0]
         umatch, uinv = np.unique(self.nearby_halo_properties['N'][ord_][match],return_inverse=True)
         print match, match2, data[1]
         if not np.array_equal(self.nearby_halo_properties['N'][ord_][match],hid[ord2_][match2][uinv]):
