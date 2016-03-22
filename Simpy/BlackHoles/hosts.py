@@ -201,14 +201,14 @@ class StepData(object):
         match = np.where(np.in1d(self.nearby_halo_properties['N'][ord_],hid))[0]
         match2 = np.where(np.in1d(hid[ord2_], self.nearby_halo_properties['N']))[0]
         umatch, uinv = np.unique(self.nearby_halo_properties['N'][ord_][match],return_inverse=True)
-        print match, match2, data[1]
+        print self.nearby_halo_properties['N'][ord_][match], hid[ord2_][match2][uinv]
         if not np.array_equal(self.nearby_halo_properties['N'][ord_][match],hid[ord2_][match2][uinv]):
             print "ERROR in matching"
             return
         cnt = 1
         for key in plist:
-            print key, data[cnt][ord2_][match2][uinv]
             self.nearby_halo_properties[key][ord_][match] = data[cnt][ord2_][match2][uinv]
+            print self.nearby_halo_properties[key][ord_][match]
             cnt += 1
 
     def get_BH_mergers(self, time, step, ID1, ID2, ratio, kick):
