@@ -207,8 +207,8 @@ class StepData(object):
             return
         cnt = 1
         for key in plist:
-            self.nearby_halo_properties[key][ord_][match] = data[cnt][ord2_][match2][uinv]
-            print self.nearby_halo_properties[key][ord_][match]
+            self.nearby_halo_properties[key][ord_[match]] = data[cnt][ord2_][match2][uinv]
+            print self.nearby_halo_properties[key][ord_[match]]
             cnt += 1
 
     def get_BH_mergers(self, time, step, ID1, ID2, ratio, kick):
