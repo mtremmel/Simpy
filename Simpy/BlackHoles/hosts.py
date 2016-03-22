@@ -216,6 +216,7 @@ class StepData(object):
             cnt += 1
 
     def get_BH_mergers(self, time, step, ID1, ID2, ratio, kick):
+        nbh = len(self.bh['bhid'])
         if nbh==0:
             print "No Black Holes This Step"
             return
