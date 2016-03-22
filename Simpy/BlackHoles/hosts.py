@@ -64,19 +64,19 @@ class StepData(object):
 
         print "Gathering BH data..."
 
-        bhids, bhmass, bhmdot, offset, dist, hostnum, Mvir, Mstar, Rvir, Mgas, SSC = \
+        try:
+            bhids, bhmass, bhmdot, offset, dist, hostnum, Mvir, Mstar, Rvir, Mgas, SSC = \
                 dbstep.gather_property('halo_number()', 'BH_mass', 'BH_mdot_ave', 'BH_central_offset', 'BH_central_distance',
                                        'host_halo.halo_number()', 'host_halo.Mvir', 'host_halo.Mstar', 'host_halo.Rvir',
                                        'host_halo.Mgas', 'host_halo.SSC')
-
-        nbhs = len(bhids)
-
-        if nbhs==0:
+        except ValueError:
             print "No BHs Found in This Step"
             self.bh = {'lum':[], 'dist':[], 'pos':[], 'host':[], 'mass':[],
                    'bhid':[], 'nearhalo':[],'mdot':[], 'neardist':[]}
-            self.halo_properties = {'Mvir':[], 'Mstar':[], 'Rvir':[], 'Mgas':[], 'SSC':[]}
+            self.halo_properties = {'Mvir':[], 'Mstar':[], 'Rvir':[], 'Mgas':[], 'SSC':[], 'N':[]}
             return
+
+        nbhs = len(bhids)
 
         self.bh = {'lum':calc_lum(bhmdot), 'dist':dist, 'pos':offset, 'host':hostnum, 'mass':bhmass,
                    'bhid':bhids, 'mdot':bhmdot}
@@ -157,6 +157,9 @@ class StepData(object):
 
     def add_host_property(self, dbstep, *plist):
         nbh = len(self.bh['bhid'])
+        if nbh==0:
+            print "No Black Holes This Step"
+            return
         plist = list(plist)
         finallist = ['halo_number()']
         for key in plist:
@@ -185,6 +188,9 @@ class StepData(object):
 
     def add_nearby_property(self,dbstep,*plist):
         nbh = len(self.bh['bhid'])
+        if nbh==0:
+            print "No Black Holes This Step"
+            return
         plist = list(plist)
         finallist = ['halo_number()']
         for key in plist:
@@ -210,6 +216,9 @@ class StepData(object):
             cnt += 1
 
     def get_BH_mergers(self, time, step, ID1, ID2, ratio, kick):
+        if nbh==0:
+            print "No Black Holes This Step"
+            return
         self.mergers = {'bhid': ID1, 'eaten_bhid': ID2, 'ratio': ratio, 'time': time,
                         'step': step, 'halo': -1*np.ones(len(ID1)), 'eaten_halo': -1*np.ones(len(ID1)),
                         'mass1': np.zeros(len(ID1)), 'mass2': np.zeros(len(ID1)),
