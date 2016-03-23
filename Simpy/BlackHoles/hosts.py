@@ -344,6 +344,7 @@ class BHhalocat(object):
         for kk in keys:
             output[kk] = []
         for step in self.steps:
+            step = str(step)
             print step
             if self[step].mergers:
                 output['ID1'].extend(self[step].mergers['ID1'])
@@ -351,7 +352,7 @@ class BHhalocat(object):
                 output['redshift'].extend(np.ones(len(self[step].mergers['ID1']))*self[step].redshift)
                 for kk in keys:
                     if kk in self[step].merger.keys():
-                        output[kk].extend(self[step].mergers[key])
+                        output[kk].extend(self[step].mergers[kk])
                     if kk in self[step].halo_properties.keys():
                         output[kk].extend(self[step].BH_merger_halo_props(kk))
         for kk in output.keys():
