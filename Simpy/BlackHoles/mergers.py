@@ -1,5 +1,5 @@
 import numpy as np
-from .. import Files, cosmology, readcol
+from .. import Files, cosmology, readcol, plotting
 import os
 import pynbody
 
@@ -82,5 +82,43 @@ def get_complete_prog_list(bhorbit, bhid, tmax):
         idlist = np.append(idlist,idnew)
     print "finished with ", deep, "steps\n"
     return idlist
+
+def plt_merger_rates(time,sim, style, vol_weights=1./25.**3, bins=50,
+                     zrange=None, xlog=True, ylog=True, lw=3, label=None, ret_data=False):
+    a, z = cosmology.getScaleFactor(time,sim)
+    if zrange is None:
+        zrange = [0,25]
+    if type(vol_weights)==list or type(vol_weights)==np.ndarray:
+        if len(vol_weights)!=1 and len(vol_weights) != len(time):
+            print "ERROR do not understand vol_weights format... aborting"
+            return
+    else:
+        vol_weights = np.ones(len(time))*vol_weights
+
+    dz = (zrange[1]-zrange[0])/float(bins)
+    zbins = np.arange(zrange[0],zrange[1]+dz,dz)
+    tedges = np.array([cosmology.getTime(z,sim) for z in zbins])
+    tsorted = np.argsort(tedges)
+    tedges = tedges[tsorted]
+    dt = np.abs((tedges[0:-1] - tedges[1:]) * 1e9)
+
+    data = np.histogram(time, bins=tedges, weights=vol_weights)
+    rate = data[0]/dt
+    zbins = zbins[tsorted]
+    if xlog is False:
+        plotting.plt.step(zbins[0:-1],rate, style, label=label, linewidth=lw, where='post')
+        plotting.plt.xlabel('Redshift')
+    else:
+        plotting.plt.step(zbins[0:-1]+1,rate, style, label=label, linewidth=lw, where='post')
+        plotting.plt.xscale('log',base=10)
+        plotting.plt.xlabel('z + 1')
+
+    if ylog is True:
+        plotting.plt.yscale('log',base=10)
+
+    if ret_data is True:
+        return rate, zbins
+
+
 
 
