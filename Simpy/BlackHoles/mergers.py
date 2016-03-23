@@ -97,16 +97,17 @@ def plt_merger_rates(time,sim, style, vol_weights=1./25.**3, bins=50,
     tzbins = np.arange(tzrange[0],tzrange[1]+dtz,dtz)
     if pltredshift:
         tedges = np.array([cosmology.getTime(z,sim) for z in tzbins])
-        tsorted = np.argsort(tedges)
-        tedges = tedges[tsorted]
     else:
         tedges = tzbins
+
+    tsorted = np.argsort(tedges)
+    tedges = tedges[tsorted]
 
     dt = np.abs((tedges[0:-1] - tedges[1:]) * 1e9)
 
     data = np.histogram(time, bins=tedges, weights=vol_weights)
     rate = data[0]/dt
-    zbins = tzbins[tsorted]
+    tzbins = tzbins[tsorted]
     if pltredshift:
         plotting.plt.step(tzbins[0:-1],rate, style, label=label, linewidth=lw, where='post')
     else:
