@@ -85,7 +85,6 @@ def get_complete_prog_list(bhorbit, bhid, tmax):
 
 def plt_merger_rates(time,sim, style, vol_weights=1./25.**3, bins=50,
                      zrange=None, xlog=True, ylog=True, lw=3, label=None, ret_data=False):
-    a, z = cosmology.getScaleFactor(time,sim)
     if zrange is None:
         zrange = [0,25]
     if type(vol_weights)==list or type(vol_weights)==np.ndarray:
