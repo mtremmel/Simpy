@@ -347,9 +347,9 @@ class BHhalocat(object):
             step = str(step)
             print step
             if self[step].mergers:
-                output['ID1'].extend(self[step].mergers['ID1'])
-                output['ID2'].extend(self[step].mergers['ID2'])
-                output['redshift'].extend(np.ones(len(self[step].mergers['ID1']))*self[step].redshift)
+                output['ID1'].extend(self[step].mergers['bhid'])
+                output['ID2'].extend(self[step].mergers['eaten_bhid'])
+                output['redshift'].extend(np.ones(len(self[step].mergers['bhid']))*self[step].redshift)
                 for kk in keys:
                     if kk in self[step].merger.keys():
                         output[kk].extend(self[step].mergers[kk])
