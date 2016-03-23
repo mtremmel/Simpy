@@ -338,3 +338,22 @@ class BHhalocat(object):
     def get_mergers(self,simname):
         time, step, ID, IDeat, ratio, kick = readcol.readcol(simname+'.mergers',twod=False)
         self.data.get_BH_mergers(time, step, ID, IDeat, ratio, kick)
+
+    def get_all_mergers(self,*keys):
+        output = {'ID1':[],'ID2':[],'redshift':[]}
+        for kk in keys:
+            output[kk] = []
+        for step in self.steps:
+            print step
+            if self[step].mergers:
+                output['ID1'].extend(self[step].mergers['ID1'])
+                output['ID2'].extend(self[step].mergers['ID2'])
+                output['redshift'].extend(np.ones(len(self[step].mergers['ID1']))*self[step].redshift)
+                for kk in keys:
+                    if kk in self[step].merger.keys():
+                        output[kk].extend(self[step].mergers[key])
+                    if kk in self[step].halo_properties.keys():
+                        output[kk].extend(self[step].BH_merger_halo_props(kk))
+        for kk in output.keys():
+            output[kk] = np.array(output[kk])
+        return output
