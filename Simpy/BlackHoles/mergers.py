@@ -108,8 +108,9 @@ def plt_merger_rates(time,sim, style, vol_weights=1./25.**3, bins=50,
     data = np.histogram(time, bins=tedges, weights=vol_weights)
     rate = data[0]/dt
     tzbins = tzbins[tsorted]
-    if pltredshift:
+    if pltredshift is False:
         plotting.plt.step(tzbins[0:-1],rate, style, label=label, linewidth=lw, where='post')
+        plotting.plt.xlabel('Time (Gyr)')
     else:
         if xlog is False:
             plotting.plt.step(tzbins[0:-1],rate, style, label=label, linewidth=lw, where='post')
