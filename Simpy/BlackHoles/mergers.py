@@ -127,7 +127,7 @@ def plt_merger_rates(time,sim, style, vol_weights=1./25.**3, bins=50,
         plotting.plt.yscale('log',base=10)
 
     if ret_data is True:
-        return rate, zbins
+        return rate, tzbins
 
 
 
