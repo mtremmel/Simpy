@@ -351,7 +351,7 @@ class BHhalocat(object):
                 output['ID2'].extend(self[step].mergers['eaten_bhid'])
                 output['redshift'].extend(np.ones(len(self[step].mergers['bhid']))*self[step].redshift)
                 for kk in keys:
-                    if kk in self[step].merger.keys():
+                    if kk in self[step].mergers.keys():
                         output[kk].extend(self[step].mergers[kk])
                     if kk in self[step].halo_properties.keys():
                         output[kk].extend(self[step].BH_merger_halo_props(kk))
