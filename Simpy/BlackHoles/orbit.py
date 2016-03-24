@@ -388,6 +388,8 @@ class Orbit(object):
 		o, = np.where(self.steps == step)
 		if len(o)>1:
 			o = o[0]
+		if len(o)==0:
+			return np.array([])
 		slice_ = self.step_slice[o]
 		return self.data[key][slice_]
 
