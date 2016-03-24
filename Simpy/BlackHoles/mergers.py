@@ -155,6 +155,7 @@ class mergerCat(object):
         print "gathering black hole data from orbit file..."
 
         for st in self.step_slice.keys():
+            print st
             bhids = bhorbit.single_step_data(int(st),'iord')
             ord_orbit = np.argsort(bhids)
             masses = bhorbit.single_step_data(int(st),'mass')
