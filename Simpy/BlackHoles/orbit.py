@@ -385,8 +385,10 @@ class Orbit(object):
 		return meandat
 
 	def single_step_data(self, step, key):
-		o, = np.where(self.steps == step)
-		slice_ = self.step_slice[o[0]]
+		o, = np.where(self.steps == step)[0]
+		if len(o)>1:
+			o = o[0]
+		slice_ = self.step_slice[o]
 		return self.data[key][slice_]
 
 	def get_all_BH_tform(self, sl):
