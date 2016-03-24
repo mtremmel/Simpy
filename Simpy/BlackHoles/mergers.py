@@ -142,7 +142,7 @@ class mergerCat(object):
                      'snap_prev':np.ones(len(ID))*-1, 'snap_post':np.ones(len(ID))*-1,
                      'tform1':np.ones(len(ID))*-1,'tform2':np.ones(len(ID))*-1}
 
-        stepfl = np.int(np.floor(step))
+        stepfl = np.floor(step).astype(np.int)
         sord = np.argsort(stepfl)
         ustepfl, ind = np.unique(stepfl[sord],return_index=True)
         self.step_slice = {}
