@@ -385,7 +385,7 @@ class Orbit(object):
 		return meandat
 
 	def single_step_data(self, step, key):
-		o, = np.where(self.steps == step)[0]
+		o, = np.where(self.steps == step)
 		if len(o)>1:
 			o = o[0]
 		slice_ = self.step_slice[o]
