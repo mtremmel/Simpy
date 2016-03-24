@@ -157,6 +157,8 @@ class mergerCat(object):
         for st in self.step_slice.keys():
             print st
             bhids = bhorbit.single_step_data(int(st),'iord')
+            if len(bhids) == 0:
+                continue
             ord_orbit = np.argsort(bhids)
             masses = bhorbit.single_step_data(int(st),'mass')
             masses = masses[ord_orbit]
