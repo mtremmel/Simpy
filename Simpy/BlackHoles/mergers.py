@@ -169,14 +169,14 @@ class mergerCat(object):
             ord2_ = np.argsort(stepid2)
             omatch = np.where(np.in1d(bhids,stepid1[ord_]))[0]
             omatch2 = np.where(np.in1d(stepid1[ord_],bhids))[0]
-            self.data['mass1'][self.step_slice[st]][ord_][omatch] = masses[omatch2]
-            self.data['mdot1'][self.step_slice[st]][ord_][omatch] = mdot[omatch2]
-            self.data['lum1'][self.step_slice[st]][ord_][omatch] = lum[omatch2]
+            self.data['mass1'][self.step_slice[st]][ord_][omatch2] = masses[omatch]
+            self.data['mdot1'][self.step_slice[st]][ord_][omatch2] = mdot[omatch]
+            self.data['lum1'][self.step_slice[st]][ord_][omatch2] = lum[omatch]
             omatch = np.where(np.in1d(bhids,stepid2[ord2_]))[0]
             omatch2 = np.where(np.in1d(stepid2[ord2_],bhids))[0]
-            self.data['mass2'][self.step_slice[st]][ord2_][omatch] = masses[omatch2]
-            self.data['mdot2'][self.step_slice[st]][ord2_][omatch] = mdot[omatch2]
-            self.data['lum2'][self.step_slice[st]][ord2_][omatch] = lum[omatch2]
+            self.data['mass2'][self.step_slice[st]][ord2_][omatch2] = masses[omatch]
+            self.data['mdot2'][self.step_slice[st]][ord2_][omatch2] = mdot[omatch]
+            self.data['lum2'][self.step_slice[st]][ord2_][omatch2] = lum[omatch]
 
         ord_ = np.argsort(self.data['ID1'])
         match1 = np.where(np.in1d(bhorbit.bhiords,self.data['ID1'][ord_]))[0]
