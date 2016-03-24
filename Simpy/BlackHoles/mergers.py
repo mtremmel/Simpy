@@ -117,7 +117,7 @@ def plt_merger_rates(time,sim, style, vol_weights=1./25.**3, bins=50,
             plotting.plt.xlabel('Redshift')
 
         else:
-            plotting.plt.step(zbins[0:-1]+1,rate, style, label=label, linewidth=lw, where='post')
+            plotting.plt.step(tzbins[0:-1]+1,rate, style, label=label, linewidth=lw, where='post')
             plotting.plt.xlabel('z + 1')
 
 
@@ -128,6 +128,121 @@ def plt_merger_rates(time,sim, style, vol_weights=1./25.**3, bins=50,
 
     if ret_data is True:
         return rate, tzbins
+
+
+
+
+class mergerCat(object):
+    def __init(self,bhhalocat,bhorbit,mergerfile):
+        time, step, ID, IDeat, ratio, kick = readcol.readcol(mergerfile,twod=False)
+        self.data = {'time':time, 'step':step, 'ID1':ID, 'ID2':IDeat, 'ratio':ratio, 'kcik':kick,
+                     'mass1':np.ones(len(ID))*-1, 'mass2':np.ones(len(ID))*-1,
+                     'mdot1':np.ones(len(ID))*-1,'mdot2':np.ones(len(ID))*-1,
+                     'lum1':np.ones(len(ID))*-1,'lum2':np.ones(len(ID))*-1,
+                     'snap_prev':np.ones(len(ID))*-1, 'snap_post':np.ones(len(ID))*-1,
+                     'tform1':np.ones(len(ID))*-1,'tform2':np.ones(len(ID))*-1}
+
+        stepfl = np.floor(step)
+        sord = np.argsort(stepfl)
+        ustepfl, ind = np.unique(stepfl[sord],return_index=True)
+        self.step_slice = {}
+        for i in range(len(ustepfl) - 1):
+            ss = sord[ind[i]:ind[i + 1]]
+            self.step_slice[str(ustepfl[i])] = ss
+        ss = sord[ind[i + 1]:]
+        self.step_slice[str(ustepfl[i+1])] = ss
+
+        print "gathering black hole data from orbit file..."
+
+        for st in self.step_slice.keys():
+            bhids = bhorbit.single_step_data(int(st),'iord')
+            ord_orbit = np.argsort(bhids)
+            masses = bhorbit.single_step_data(int(st),'mass')
+            masses = masses[ord_orbit]
+            mdot = bhorbit.single_step_data(int(st),'mdotmean')
+            mdot = mdot[ord_orbit]
+            lum = bhorbit.single_step_data(int(st),'lum')
+            lum = lum[ord_orbit]
+            stepid1 = self.data['ID1'][self.step_slice[st]]
+            stepid2 = self.data['ID2'][self.step_slice[st]]
+            ord_ = np.argsort(stepid1)
+            ord2_ = np.argsort(stepid2)
+            omatch = np.where(np.in1d(bhids,stepid1[ord_]))[0]
+            omatch2 = np.where(np.in1d(stepid1[ord_],bhids))[0]
+            self.data['mass1'][self.step_slice[st]][ord_][omatch] = masses[omatch2]
+            self.data['mdot1'][self.step_slice[st]][ord_][omatch] = mdot[omatch2]
+            self.data['lum1'][self.step_slice[st]][ord_][omatch] = lum[omatch2]
+            omatch = np.where(np.in1d(bhids,stepid2[ord2_]))[0]
+            omatch2 = np.where(np.in1d(stepid2[ord2_],bhids))[0]
+            self.data['mass2'][self.step_slice[st]][ord2_][omatch] = masses[omatch2]
+            self.data['mdot2'][self.step_slice[st]][ord2_][omatch] = mdot[omatch2]
+            self.data['lum2'][self.step_slice[st]][ord2_][omatch] = lum[omatch2]
+
+        ord_ = np.argsort(self.data['ID1'])
+        match1 = np.where(np.in1d(bhorbit.bhiords,self.data['ID1'][ord_]))[0]
+        match2 = np.where(np.in1d(self.data['ID1'][ord_],bhorbit.bhiords))[0]
+        self.data['tform1'][match2] = bhorbit.tform[match1]
+
+        ord_ = np.argsort(self.data['ID2'])
+        match1 = np.where(np.in1d(bhorbit.bhiords,self.data['ID2'][ord_]))[0]
+        match2 = np.where(np.in1d(self.data['ID2'][ord_],bhorbit.bhiords))[0]
+        self.data['tform2'][match2] = bhorbit.tform[match1]
+
+        self._prev_snap_slice_1 = {}
+        self._prev_snap_slice_inv_1 = {}
+        self._prev_snap_slice_2 = {}
+        self._prev_snap_slice_inv_2 = {}
+
+        self._post_snap_slice = {}
+        self._post_snap_slice_inv = {}
+
+
+        for ii in range(len(bhhalocat.steps)-1):
+            curstep = int(bhhalocat.steps[ii])
+            nextstep = int(bhhalocat.steps[ii+1])
+            print curstep,nextstep
+            curdata = np.where((self.data['step']>curstep)&(self.data['step']<nextstep))[0]
+
+            self.data['snap_prev'][curdata] = curstep
+            self.data['snap_post'][curdata] = nextstep
+
+            ord1 = np.argsort(self.data['ID1'][curdata])
+            ord2 = np.argsort(self.data['ID2'][curdata])
+
+            self._prev_snap_slice_1[str(curstep)] = \
+                np.where(np.in1d(bhhalocat[str(curstep)].bh['bhid'],self.data['ID1'][curdata[ord1]]))[0]
+            self._prev_snap_slice_inv_1[str(curstep)] = \
+                curdata[ord1[np.where(np.in1d(self.data['ID1'][curdata[ord1]],bhhalocat[str(curstep)].bh['bhid'])[0])]]
+
+            self._prev_snap_slice_2[str(curstep)] = \
+                np.where(np.in1d(bhhalocat[str(curstep)].bh['bhid'],self.data['ID2'][curdata[ord2]]))[0]
+            self._prev_snap_slice_inv_2[str(curstep)] = \
+                curdata[ord2[np.where(np.in1d(self.data['ID2'][curdata[ord2]],bhhalocat[str(curstep)].bh['bhid'])[0])]]
+
+            self._post_snap_slice[str(nextstep)] = \
+                np.where(np.in1d(bhhalocat[str(nextstep)].bh['bhid'],self.data['ID1'][curdata[ord1]]))[0]
+            self._post_snap_slice_inv[str(nextstep)] = \
+                curdata[ord1[np.where(np.in1d(self.data['ID1'][curdata[ord1]],bhhalocat[str(nextstep)].bh['bhid'])[0])]]
+
+
+
+    def get_snap_info(self,key,bhhalocat):
+        self.data['prev_'+key+'1'] = np.ones(len(self.data['ID1']))*-1
+        self.data['prev_'+key+'2'] = np.ones(len(self.data['ID1']))*-1
+        self.data['post_'+key] = np.ones(len(self.data['ID1']))*-1
+        for ii in range(len(bhhalocat.steps)-1):
+            print bhhalocat.steps[ii]
+            curstep = int(bhhalocat.steps[ii])
+            nextstep = int(bhhalocat.steps[ii+1])
+            if key in bhhalocat[bhhalocat.steps[ii]].bh.keys():
+                data = bhhalocat[curstep].bh[key]
+                datanext = bhhalocat[nextstep].bh[key]
+            else:
+                data = bhhalocat[curstep].halo_properties[key]
+                datanext = bhhalocat[nextstep].halo_properties[key]
+            self.data['prev_'+key+'1'][self._prev_snap_slice_inv_1[curstep]] = data[self._prev_snap_slice_1[curstep]]
+            self.data['prev_'+key+'2'][self._prev_snap_slice_inv_2[curstep]] = data[self._prev_snap_slice_2[curstep]]
+            self.data['post_'+key][self._post_snap_slice_inv[nextstep]] = datanext[self._post_snap_slice[nextstep]]
 
 
 
