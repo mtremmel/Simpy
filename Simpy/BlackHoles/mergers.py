@@ -155,7 +155,6 @@ class mergerCat(object):
         print "gathering black hole data from orbit file..."
 
         for st in self.step_slice.keys():
-            print st
             bhids = bhorbit.single_step_data(int(st),'iord')
             if len(bhids) == 0:
                 continue
@@ -172,24 +171,24 @@ class mergerCat(object):
             ord2_ = np.argsort(stepid2)
             omatch = np.where(np.in1d(bhids,stepid1[ord_]))[0]
             omatch2 = np.where(np.in1d(stepid1[ord_],bhids))[0]
-            self.data['mass1'][self.step_slice[st]][ord_][omatch2] = masses[omatch]
-            self.data['mdot1'][self.step_slice[st]][ord_][omatch2] = mdot[omatch]
-            self.data['lum1'][self.step_slice[st]][ord_][omatch2] = lum[omatch]
+            self.data['mass1'][self.step_slice[st][ord_[omatch2]]] = masses[omatch]
+            self.data['mdot1'][self.step_slice[st][ord_[omatch2]]] = mdot[omatch]
+            self.data['lum1'][self.step_slice[st][ord_[omatch2]]] = lum[omatch]
             omatch = np.where(np.in1d(bhids,stepid2[ord2_]))[0]
             omatch2 = np.where(np.in1d(stepid2[ord2_],bhids))[0]
-            self.data['mass2'][self.step_slice[st]][ord2_][omatch2] = masses[omatch]
-            self.data['mdot2'][self.step_slice[st]][ord2_][omatch2] = mdot[omatch]
-            self.data['lum2'][self.step_slice[st]][ord2_][omatch2] = lum[omatch]
+            self.data['mass2'][self.step_slice[st][ord2_[omatch2]]] = masses[omatch]
+            self.data['mdot2'][self.step_slice[st][ord2_[omatch2]]] = mdot[omatch]
+            self.data['lum2'][self.step_slice[st][ord2_[omatch2]]] = lum[omatch]
 
         ord_ = np.argsort(self.data['ID1'])
         match1 = np.where(np.in1d(bhorbit.bhiords,self.data['ID1'][ord_]))[0]
         match2 = np.where(np.in1d(self.data['ID1'][ord_],bhorbit.bhiords))[0]
-        self.data['tform1'][match2] = bhorbit.tform[match1]
+        self.data['tform1'][ord_[match2]] = bhorbit.tform[match1]
 
         ord_ = np.argsort(self.data['ID2'])
         match1 = np.where(np.in1d(bhorbit.bhiords,self.data['ID2'][ord_]))[0]
         match2 = np.where(np.in1d(self.data['ID2'][ord_],bhorbit.bhiords))[0]
-        self.data['tform2'][match2] = bhorbit.tform[match1]
+        self.data['tform2'][ord_[match2]] = bhorbit.tform[match1]
 
         self._prev_snap_slice_1 = {}
         self._prev_snap_slice_inv_1 = {}
