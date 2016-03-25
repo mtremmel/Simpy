@@ -396,7 +396,7 @@ class Orbit(object):
 	def get_all_BH_tform(self, sl):
 		# sl = pynbody.tipsy.StarLog(self.simname+'.starlog')
 		sliords = sl['iord'].astype(np.int64)
-		sliords[(sliords<0)] = 2*2147483648 + sliords[(sliords['iord']<0)]
+		sliords[(sliords<0)] = 2*2147483648 + sliords[(sliords<0)]
 		ord = np.argsort(sliords)
 		bhind, = np.where(np.in1d(sliords[ord], self.bhiords))
 		self.tform = sl['tform'][ord][bhind] * -1
