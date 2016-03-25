@@ -187,6 +187,7 @@ class mergerCat(object):
         match2 = np.where(np.in1d(self.data['ID1'][ord_],bhorbit.bhiords))[0]
         umatch1, uinv1 = np.unique(self.data['ID1'][ord_[match2]],return_inverse=True)
         print len(match1), len(match2), len(ord_), len(self.data['tform1']), len(uinv1)
+        print match1.max(), match2.max(), len(bhorbit.tform), uinv1.max(), ord_.max()
         self.data['tform1'][ord_[match2]] = bhorbit.tform[match1[uinv1]]
 
         ord_ = np.argsort(self.data['ID2'])
