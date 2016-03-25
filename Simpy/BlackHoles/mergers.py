@@ -249,9 +249,11 @@ class mergerCat(object):
             else:
                 data = bhhalocat[str(curstep)].halo_properties[key]
                 datanext = bhhalocat[str(nextstep)].halo_properties[key]
-            self.data['prev_'+key+'1'][self._prev_snap_slice_inv_1[str(curstep)]] = data[self._prev_snap_slice_1[str(curstep)]]
-            self.data['prev_'+key+'2'][self._prev_snap_slice_inv_2[str(curstep)]] = data[self._prev_snap_slice_2[str(curstep)]]
-            self.data['post_'+key][self._post_snap_slice_inv[str(nextstep)]] = datanext[self._post_snap_slice[str(nextstep)]]
+            if len(self._prev_snap_slice_1[str(curstep)])>0:
+                self.data['prev_'+key+'1'][self._prev_snap_slice_inv_1[str(curstep)]] = data[self._prev_snap_slice_1[str(curstep)]]
+                self.data['prev_'+key+'2'][self._prev_snap_slice_inv_2[str(curstep)]] = data[self._prev_snap_slice_2[str(curstep)]]
+            if len(self._post_snap_slice_inv[str(nextstep)])>0:
+                self.data['post_'+key][self._post_snap_slice_inv[str(nextstep)]] = datanext[self._post_snap_slice[str(nextstep)]]
 
 
 
