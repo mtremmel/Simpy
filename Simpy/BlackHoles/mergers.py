@@ -171,24 +171,28 @@ class mergerCat(object):
             ord2_ = np.argsort(stepid2)
             omatch = np.where(np.in1d(bhids,stepid1[ord_]))[0]
             omatch2 = np.where(np.in1d(stepid1[ord_],bhids))[0]
-            self.data['mass1'][self.step_slice[st][ord_[omatch2]]] = masses[omatch]
-            self.data['mdot1'][self.step_slice[st][ord_[omatch2]]] = mdot[omatch]
-            self.data['lum1'][self.step_slice[st][ord_[omatch2]]] = lum[omatch]
+            umatch1, uinv1 = np.unique(stepid1[ord_[omatch2]],return_inverse=True)
+            self.data['mass1'][self.step_slice[st][ord_[omatch2]]] = masses[omatch[uinv1]]
+            self.data['mdot1'][self.step_slice[st][ord_[omatch2]]] = mdot[omatch[uinv1]]
+            self.data['lum1'][self.step_slice[st][ord_[omatch2]]] = lum[omatch[uinv1]]
             omatch = np.where(np.in1d(bhids,stepid2[ord2_]))[0]
             omatch2 = np.where(np.in1d(stepid2[ord2_],bhids))[0]
-            self.data['mass2'][self.step_slice[st][ord2_[omatch2]]] = masses[omatch]
-            self.data['mdot2'][self.step_slice[st][ord2_[omatch2]]] = mdot[omatch]
-            self.data['lum2'][self.step_slice[st][ord2_[omatch2]]] = lum[omatch]
+            umatch2, uinv2 = np.unique(stepid2[ord_[omatch2]],return_inverse=True)
+            self.data['mass2'][self.step_slice[st][ord2_[omatch2]]] = masses[omatch[uinv2]]
+            self.data['mdot2'][self.step_slice[st][ord2_[omatch2]]] = mdot[omatch[uinv2]]
+            self.data['lum2'][self.step_slice[st][ord2_[omatch2]]] = lum[omatch[uinv2]]
 
         ord_ = np.argsort(self.data['ID1'])
         match1 = np.where(np.in1d(bhorbit.bhiords,self.data['ID1'][ord_]))[0]
         match2 = np.where(np.in1d(self.data['ID1'][ord_],bhorbit.bhiords))[0]
-        self.data['tform1'][ord_[match2]] = bhorbit.tform[match1]
+        umatch1, uinv1 = np.unique(self.data['ID1'][ord_[match2]],return_inverse=True)
+        self.data['tform1'][ord_[match2]] = bhorbit.tform[match1[uinv1]]
 
         ord_ = np.argsort(self.data['ID2'])
         match1 = np.where(np.in1d(bhorbit.bhiords,self.data['ID2'][ord_]))[0]
         match2 = np.where(np.in1d(self.data['ID2'][ord_],bhorbit.bhiords))[0]
-        self.data['tform2'][ord_[match2]] = bhorbit.tform[match1]
+        umatch2, uinv2 = np.unique(self.data['ID2'][ord_[match2]],return_inverse=True)
+        self.data['tform2'][ord_[match2]] = bhorbit.tform[match1[uinv2]]
 
         self._prev_snap_slice_1 = {}
         self._prev_snap_slice_inv_1 = {}
@@ -211,22 +215,23 @@ class mergerCat(object):
             ord1 = np.argsort(self.data['ID1'][curdata])
             ord2 = np.argsort(self.data['ID2'][curdata])
 
-            self._prev_snap_slice_1[str(curstep)] = \
-                np.where(np.in1d(bhhalocat[str(curstep)].bh['bhid'],self.data['ID1'][curdata[ord1]]))[0]
-            self._prev_snap_slice_inv_1[str(curstep)] = \
-                curdata[ord1[np.where(np.in1d(self.data['ID1'][curdata[ord1]],bhhalocat[str(curstep)].bh['bhid'])[0])]]
+            match1 = np.where(np.in1d(bhhalocat[str(curstep)].bh['bhid'],self.data['ID1'][curdata[ord1]]))[0]
+            match2 = np.where(np.in1d(self.data['ID1'][curdata[ord1]],bhhalocat[str(curstep)].bh['bhid']))[0]
+            umatch, uinv = np.unique(self.data['ID1'][curdata[ord1[match2]]],return_inverse=True)
+            self._prev_snap_slice_1[str(curstep)] = match1[uinv]
+            self._prev_snap_slice_inv_1[str(curstep)] = curdata[ord1[match2]]
 
-            self._prev_snap_slice_2[str(curstep)] = \
-                np.where(np.in1d(bhhalocat[str(curstep)].bh['bhid'],self.data['ID2'][curdata[ord2]]))[0]
-            self._prev_snap_slice_inv_2[str(curstep)] = \
-                curdata[ord2[np.where(np.in1d(self.data['ID2'][curdata[ord2]],bhhalocat[str(curstep)].bh['bhid'])[0])]]
+            match1 = np.where(np.in1d(bhhalocat[str(curstep)].bh['bhid'],self.data['ID2'][curdata[ord2]]))[0]
+            match2 = np.where(np.in1d(self.data['ID2'][curdata[ord2]],bhhalocat[str(curstep)].bh['bhid']))[0]
+            umatch, uinv = np.unique(self.data['ID2'][curdata[ord2[match2]]],return_inverse=True)
+            self._prev_snap_slice_2[str(curstep)] = match1[uinv]
+            self._prev_snap_slice_inv_2[str(curstep)] = curdata[ord2[match2]]
 
-            self._post_snap_slice[str(nextstep)] = \
-                np.where(np.in1d(bhhalocat[str(nextstep)].bh['bhid'],self.data['ID1'][curdata[ord1]]))[0]
-            self._post_snap_slice_inv[str(nextstep)] = \
-                curdata[ord1[np.where(np.in1d(self.data['ID1'][curdata[ord1]],bhhalocat[str(nextstep)].bh['bhid'])[0])]]
-
-
+            match1 = np.where(np.in1d(bhhalocat[str(nextstep)].bh['bhid'],self.data['ID1'][curdata[ord1]]))[0]
+            match2 = np.where(np.in1d(self.data['ID1'][curdata[ord1]],bhhalocat[str(nextstep)].bh['bhid']))[0]
+            umatch, uinv = np.unique(self.data['ID1'][curdata[ord1[match2]]],return_inverse=True)
+            self._post_snap_slice[str(curstep)] = match1[uinv]
+            self._post_snap_slice_inv[str(curstep)] = curdata[ord1[match2]]
 
     def get_snap_info(self,key,bhhalocat):
         self.data['prev_'+key+'1'] = np.ones(len(self.data['ID1']))*-1
