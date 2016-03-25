@@ -232,8 +232,8 @@ class mergerCat(object):
             match1 = np.where(np.in1d(bhhalocat[str(nextstep)].bh['bhid'],self.data['ID1'][curdata[ord1]]))[0]
             match2 = np.where(np.in1d(self.data['ID1'][curdata[ord1]],bhhalocat[str(nextstep)].bh['bhid']))[0]
             umatch, uinv = np.unique(self.data['ID1'][curdata[ord1[match2]]],return_inverse=True)
-            self._post_snap_slice[str(curstep)] = match1[uinv]
-            self._post_snap_slice_inv[str(curstep)] = curdata[ord1[match2]]
+            self._post_snap_slice[str(nextstep)] = match1[uinv]
+            self._post_snap_slice_inv[str(nextstep)] = curdata[ord1[match2]]
 
     def get_snap_info(self,key,bhhalocat):
         self.data['prev_'+key+'1'] = np.ones(len(self.data['ID1']))*-1
