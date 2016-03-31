@@ -151,19 +151,20 @@ class mergerCat(object):
             lum2 = bhorbit.single_BH_data(IDeat[i],'lum')
             time1 = bhorbit.single_BH_data(ID[i],'time')
             time2 = bhorbit.single_BH_data(IDeat[i],'time')
+            if len(mass2)>0:
+                self.data['step'][i] = bhorbit.single_BH_data(IDeat[i],'step')[-1]
+                timemerge = time2[-1]
+                self.data['mass2'][i] = mass2[-1]
+                self.data['lum2'][i] = lum2[-1]
+                self.data['mdot2'][i] = mdot2[-1]
+            else:
+                timemerge = time[i]
 
-            self.data['step'][i] = bhorbit.single_BH_data(IDeat[i],'step')[-1]
-
-            timemerge = time2[-1]
-            argmerge1 = np.argmin(np.abs(time1-timemerge))
-
-            self.data['mass2'][i] = mass2[-1]
-            self.data['lum2'][i] = lum2[-1]
-            self.data['mdot2'][i] = mdot2[-1]
-
-            self.data['mass1'][i] = mass1[argmerge1]
-            self.data['mdot1'][i] = mdot1[argmerge1]
-            self.data['lum1'][i] = lum1[argmerge1]
+            if len(mass1)>0:
+                argmerge1 = np.argmin(np.abs(time1-timemerge))
+                self.data['mass1'][i] = mass1[argmerge1]
+                self.data['mdot1'][i] = mdot1[argmerge1]
+                self.data['lum1'][i] = lum1[argmerge1]
 
             if i/float(len(ID)) % 0.1 == 0:
                 print i/float(len(ID)) * 100, '% done'
