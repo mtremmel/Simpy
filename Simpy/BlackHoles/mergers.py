@@ -134,7 +134,7 @@ def plt_merger_rates(time,sim, style, vol_weights=1./25.**3, bins=50,
 
 class mergerCat(object):
     def __init__(self,bhhalocat,bhorbit,mergerfile):
-        time, step, ID, IDeat, ratio, kick = readcol(mergerfile,twod=False)
+        time, step, ID, IDeat, ratio, kick = readcol.readcol(mergerfile,twod=False)
         self.data = {'time':time, 'step':step, 'ID1':ID, 'ID2':IDeat, 'ratio':ratio, 'kcik':kick,
                      'mass1':np.ones(len(ID))*-1, 'mass2':np.ones(len(ID))*-1,
                      'mdot1':np.ones(len(ID))*-1,'mdot2':np.ones(len(ID))*-1,
