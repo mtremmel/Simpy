@@ -166,7 +166,7 @@ class mergerCat(object):
                 self.data['mdot1'][i] = mdot1[argmerge1]
                 self.data['lum1'][i] = lum1[argmerge1]
 
-            if i/float(len(ID)) % 0.1 == 0:
+            if (i+1)/float(len(ID)) % 0.1 == 0:
                 print i/float(len(ID)) * 100, '% done'
 
         ord_ = np.argsort(self.data['ID1'])
