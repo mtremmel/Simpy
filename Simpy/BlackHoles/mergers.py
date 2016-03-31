@@ -188,13 +188,13 @@ class mergerCat(object):
         umatch1, uinv1 = np.unique(self.data['ID1'][ord_[match2]],return_inverse=True)
         print len(match1), len(match2), len(ord_), len(self.data['tform1']), len(uinv1)
         print match1.max(), match2.max(), len(bhorbit.tform), uinv1.max(), ord_.max()
-        self.data['tform1'][ord_[match2]] = bhorbit.tform[match1[uinv1]]
+        self.data['tform1'][ord_[match2]] = bhorbit.tform.in_units('Gyr')[match1[uinv1]]
 
         ord_ = np.argsort(self.data['ID2'])
         match1 = np.where(np.in1d(bhorbit.bhiords,self.data['ID2'][ord_]))[0]
         match2 = np.where(np.in1d(self.data['ID2'][ord_],bhorbit.bhiords))[0]
         umatch2, uinv2 = np.unique(self.data['ID2'][ord_[match2]],return_inverse=True)
-        self.data['tform2'][ord_[match2]] = bhorbit.tform[match1[uinv2]]
+        self.data['tform2'][ord_[match2]] = bhorbit.tform.in_units('Gyr')[match1[uinv2]]
 
         self._prev_snap_slice_1 = {}
         self._prev_snap_slice_inv_1 = {}
