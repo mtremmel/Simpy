@@ -370,6 +370,10 @@ class Orbit(object):
 
 	def single_BH_data(self, iord, key):
 		o, = np.where(self.bhiords == iord)
+		if len(o)>1:
+			o = o[0]
+		if len(o)==0:
+			return np.array([])
 		slice_ = self.id_slice[o[0]]
 		return self.data[key][slice_]
 
