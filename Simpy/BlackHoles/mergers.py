@@ -25,7 +25,7 @@ def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt',
     s = pynbody.load(farr[-1].strip('\n'))
     lstep = float(sarr[-1].strip('\n'))
 
-    simtime = cosmology.getTime(s.properties['a'] ** -1 - 1, s)
+    simtime = s.properties['time'].in_units('Gyr')#cosmology.getTime(s.properties['a'] ** -1 - 1, s)
     dt = simtime / lstep
     tunit = s.infer_original_units('Gyr')
 
@@ -135,52 +135,38 @@ def plt_merger_rates(time,sim, style, vol_weights=1./25.**3, bins=50,
 class mergerCat(object):
     def __init__(self,bhhalocat,bhorbit,mergerfile):
         time, step, ID, IDeat, ratio, kick = readcol(mergerfile,twod=False)
-        self.data = {'time':time, 'step':step, 'ID1':ID, 'ID2':IDeat, 'ratio':ratio, 'kick':kick,
+        self.data = {'time':time, 'step':np.ones(len(ID))*-1, 'ID1':ID, 'ID2':IDeat, 'ratio':ratio, 'kick':kick,
                      'mass1':np.ones(len(ID))*-1, 'mass2':np.ones(len(ID))*-1,
                      'mdot1':np.ones(len(ID))*-1,'mdot2':np.ones(len(ID))*-1,
                      'lum1':np.ones(len(ID))*-1,'lum2':np.ones(len(ID))*-1,
                      'snap_prev':np.ones(len(ID))*-1, 'snap_post':np.ones(len(ID))*-1,
                      'tform1':np.ones(len(ID))*-1,'tform2':np.ones(len(ID))*-1}
 
-        stepfl = np.floor(step).astype(np.int)
-        sord = np.argsort(stepfl)
-        ustepfl, ind = np.unique(stepfl[sord],return_index=True)
-        self.step_slice = {}
-        for i in range(len(ustepfl) - 1):
-            ss = sord[ind[i]:ind[i + 1]]
-            self.step_slice[str(ustepfl[i])] = ss
-        ss = sord[ind[i + 1]:]
-        self.step_slice[str(ustepfl[i+1])] = ss
+        for i in range(len(ID)):
+            mass1 = bhorbit.single_BH_data(ID[i],'mass')
+            mass2 = bhorbit.single_BH_data(IDeat[i],'mass')
+            mdot1 = bhorbit.single_BH_data(ID[i],'mdot')
+            mdot2 = bhorbit.single_BH_data(IDeat[i],'mdot')
+            lum1 = bhorbit.single_BH_data(ID[i],'lum')
+            lum2 = bhorbit.single_BH_data(IDeat[i],'lum')
+            time1 = bhorbit.single_BH_data(ID[i],'time')
+            time2 = bhorbit.single_BH_data(IDeat[i],'time')
 
-        print "gathering black hole data from orbit file..."
+            self.data['step'][i] = bhorbit.single_BH_data(IDeat[i],'step')[-1]
 
-        for st in self.step_slice.keys():
-            bhids = bhorbit.single_step_data(int(st),'iord')
-            if len(bhids) == 0:
-                continue
-            ord_orbit = np.argsort(bhids)
-            masses = bhorbit.single_step_data(int(st),'mass')
-            masses = masses[ord_orbit]
-            mdot = bhorbit.single_step_data(int(st),'mdotmean')
-            mdot = mdot[ord_orbit]
-            lum = bhorbit.single_step_data(int(st),'lum')
-            lum = lum[ord_orbit]
-            stepid1 = self.data['ID1'][self.step_slice[st]]
-            stepid2 = self.data['ID2'][self.step_slice[st]]
-            ord_ = np.argsort(stepid1)
-            ord2_ = np.argsort(stepid2)
-            omatch = np.where(np.in1d(bhids,stepid1[ord_]))[0]
-            omatch2 = np.where(np.in1d(stepid1[ord_],bhids))[0]
-            umatch1, uinv1 = np.unique(stepid1[ord_[omatch2]],return_inverse=True)
-            self.data['mass1'][self.step_slice[st][ord_[omatch2]]] = masses[omatch[uinv1]]
-            self.data['mdot1'][self.step_slice[st][ord_[omatch2]]] = mdot[omatch[uinv1]]
-            self.data['lum1'][self.step_slice[st][ord_[omatch2]]] = lum[omatch[uinv1]]
-            omatch = np.where(np.in1d(bhids,stepid2[ord2_]))[0]
-            omatch2 = np.where(np.in1d(stepid2[ord2_],bhids))[0]
-            umatch2, uinv2 = np.unique(stepid2[ord_[omatch2]],return_inverse=True)
-            self.data['mass2'][self.step_slice[st][ord2_[omatch2]]] = masses[omatch[uinv2]]
-            self.data['mdot2'][self.step_slice[st][ord2_[omatch2]]] = mdot[omatch[uinv2]]
-            self.data['lum2'][self.step_slice[st][ord2_[omatch2]]] = lum[omatch[uinv2]]
+            timemerge = time2[-1]
+            argmerge1 = np.argmin(np.abs(time1-timemerge))
+
+            self.data['mass2'][i] = mass2[-1]
+            self.data['lum2'][i] = lum2[-1]
+            self.data['mdot2'][i] = mdot2[-1]
+
+            self.data['mass1'][i] = mass1[argmerge1]
+            self.data['mdot1'][i] = mdot1[argmerge1]
+            self.data['lum1'][i] = lum1[argmerge1]
+
+            if i/float(len(ID)) % 0.1 == 0:
+                print i/float(len(ID)) * 100, '% done'
 
         ord_ = np.argsort(self.data['ID1'])
         match1 = np.where(np.in1d(bhorbit.bhiords,self.data['ID1'][ord_]))[0]
