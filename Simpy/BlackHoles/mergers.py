@@ -123,7 +123,7 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
     if xlog is True:
         plotting.plt.xscale('log',base=10)
         if pltredshift is True:
-            plotting.plt.xticks([1,2,3,4,5,6,9,11,16,21],['0','1','2','3','4','5','6','8','10','15','20'])
+            plotting.plt.xticks([1,2,3,4,5,6,9,11,16,21],['0','1','2','3','4','5','8','10','15','20'])
     if ylog is True:
         plotting.plt.yscale('log',base=10)
 
