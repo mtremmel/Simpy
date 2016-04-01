@@ -83,7 +83,7 @@ def get_complete_prog_list(bhorbit, bhid, tmax):
     print "finished with ", deep, "steps\n"
     return idlist
 
-def plt_merger_rates(time,sim, style, vol_weights=1./25.**3, bins=50,
+def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, bins=50,
                      tzrange=[0,25], xlog=True, ylog=True, lw=3, label=None, ret_data=False,
                      pltredshift=True):
     if type(vol_weights)==list or type(vol_weights)==np.ndarray:
@@ -109,18 +109,18 @@ def plt_merger_rates(time,sim, style, vol_weights=1./25.**3, bins=50,
     rate = data[0]/dt
     tzbins = tzbins[tsorted]
     if pltredshift is False:
-        plotting.plt.step(tzbins[0:-1],rate, style, label=label, linewidth=lw, where='post')
+        plotting.plt.step(tzbins[0:-1],rate, color=color,linestyle=linestyle, label=label, linewidth=lw, where='post')
         plotting.plt.xlabel('Time (Gyr)')
     else:
         if xlog is False:
-            plotting.plt.step(tzbins[0:-1],rate, style, label=label, linewidth=lw, where='post')
-            plotting.plt.xlabel('Redshift')
+            plotting.plt.step(tzbins[0:-1],rate, color=color,linestyle=linestyle, label=label, linewidth=lw, where='post')
 
         else:
-            plotting.plt.step(tzbins[0:-1]+1,rate, style, label=label, linewidth=lw, where='post')
-            plotting.plt.xlabel('z + 1')
+            plotting.plt.step(tzbins[0:-1]+1,rate, color=color,linestyle=linestyle, label=label, linewidth=lw, where='post')
             plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10,11])
             plotting.plt.xlim(tzrange[0]+1,tzrange[1]+1)
+
+    plotting.plt.xlabel('Redshift')
 
     if xlog is True:
         plotting.plt.xscale('log',base=10)
