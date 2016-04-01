@@ -1,10 +1,11 @@
 from pynbody.analysis import pkdgrav_cosmo as cosmo
+import pynbody.analysis.cosmology as other_cosmo
 import numpy as np
 from scipy import optimize as opt
 
 def getTime(z,sim):
         c = cosmo.Cosmology(sim=sim)
-        return 13.7*c.Exp2Time(1.0 / (1+z))/c.Exp2Time(1)
+        return other_cosmo.age(sim,z=0)*c.Exp2Time(1.0 / (1+z))/c.Exp2Time(1)
 
 def getScaleFactor(times,s):
         redshift = np.zeros(np.size(times))
