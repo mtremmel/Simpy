@@ -129,7 +129,7 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
         plotting.plt.yscale('log',base=10)
 
     if ret_data is True:
-        return rate, tzbins
+        return rate, tzbins,tedges
 
 
 
