@@ -119,7 +119,8 @@ def plt_merger_rates(time,sim, style, vol_weights=1./25.**3, bins=50,
         else:
             plotting.plt.step(tzbins[0:-1]+1,rate, style, label=label, linewidth=lw, where='post')
             plotting.plt.xlabel('z + 1')
-
+            plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10,11])
+            plotting.plt.xlim(tzrange[0]+1,tzrange[1]+1)
 
     if xlog is True:
         plotting.plt.xscale('log',base=10)
