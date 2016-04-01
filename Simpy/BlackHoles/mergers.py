@@ -117,7 +117,7 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
 
         else:
             plotting.plt.step(tzbins[0:-1]+1,rate, color=color,linestyle=linestyle, label=label, linewidth=lw, where='post')
-            plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10,11])
+            plotting.plt.xticks([1,2,3,4,5,6,9,11,16,21],['0','1','2','3','4','5','6','8','10','15','20'])
             plotting.plt.xlim(tzrange[0]+1,tzrange[1]+1)
 
     plotting.plt.xlabel('Redshift')
