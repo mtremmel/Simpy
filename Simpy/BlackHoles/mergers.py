@@ -109,14 +109,14 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
     rate = data[0]/dt
     tzbins = tzbins[tsorted]
     if pltredshift is False:
-        plotting.plt.step(tzbins[0:-1],rate, color=color,linestyle=linestyle, label=label, linewidth=lw, where='post')
+        plotting.plt.step(tzbins[0:],np.append(rate,rate[-1], color=color,linestyle=linestyle, label=label, linewidth=lw, where='post')
         plotting.plt.xlabel('Time (Gyr)')
     else:
         if xlog is False:
             plotting.plt.step(tzbins[0:-1],rate, color=color,linestyle=linestyle, label=label, linewidth=lw, where='post')
 
         else:
-            plotting.plt.step(tzbins[0:-1]+1,rate, color=color,linestyle=linestyle, label=label, linewidth=lw, where='post')
+            plotting.plt.step(tzbins[0:]+1,np.append(rate,rate[-1]), color=color,linestyle=linestyle, label=label, linewidth=lw, where='post')
 
     plotting.plt.xlabel('Redshift')
 
