@@ -95,9 +95,9 @@ class ColorHist(object):
                                   fmt='o-', color='k', markersize=0, elinewidth=.75, linewidth=2)
 
             plotting.plt.scatter(CANDELS_MW['VJ'], CANDELS_MW['UV'], c=1./(1+np.array(CANDELS_MW['redshift'])),
-                                 norm=redcNorm, cmap='Greys', s=150, marker='D',label='CANDELS MW', linewidth=1.5, color='k')
+                                 norm=redcNorm, cmap='Greys', s=150, marker='D',label='Papovich+ 14 MW', linewidth=1.5, color='k')
             plotting.plt.scatter(CANDELS_M31['VJ'], CANDELS_M31['UV'], c=1./(1+np.array(CANDELS_M31['redshift'])),
-                                 norm=redcNorm, cmap='Greys', s=150, marker='^',label='CANDELS M31', linewidth=1.5, color='k')
+                                 norm=redcNorm, cmap='Greys', s=150, marker='^',label='M31', linewidth=1.5, color='k')
 
         plotting.plt.scatter(self.colors[c1+c2], self.colors[c3+c4],
                              c=1./(1+self.z), norm=redcNorm, cmap=cmap, s=marksize, marker=mark, label=label, color=color)
