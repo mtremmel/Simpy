@@ -58,7 +58,7 @@ def SFH(sim, color, style, lw=3,bins=50, trange=None, label=None, ret_hist=True,
 		return
 
 
-def cosmicSFH_by_step(dbsim, style, range=None, label=None, volume=25**3, retdata=False, plot=True, plotobs=True,xlog=True,ylog=True):
+def cosmicSFH_by_step(dbsim, style, lw=3, range=None, label=None, volume=25**3, retdata=False, plot=True, plotobs=True,xlog=True,ylog=True):
 	sfrdata = np.zeros(len(dbsim.timesteps))
 	redshift = np.zeros(len(dbsim.timesteps))
 	proplist = ['SFR']
@@ -92,7 +92,7 @@ def cosmicSFH_by_step(dbsim, style, range=None, label=None, volume=25**3, retdat
 
 	if plot:
 		if xlog is True:
-			plotting.plt.plot(redshift+1,sfrdata,style,label=label)
+			plotting.plt.plot(redshift+1,sfrdata,style,label=label,lw=lw)
 			plotting.plt.xscale('log',base=10)
 		else:
 			plotting.plt.plot(redshift,sfrdata,style,label=label)
