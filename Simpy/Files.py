@@ -67,9 +67,6 @@ def makelinks(parentdir, simname):
 		else:
 			print "link already found. skipping. . ."
 			continue
-	os.system('ln -s ' + parentdir + simname + '.orbit ' + simname + '.orbit')
-	os.system('ln -s ' + parentdir + simname + '.starlog ' + simname + '.starlog')
-	os.system('ln -s ' + parentdir + simname + '.BHAccLog ' + simname + '.BHAccLog')
 	return
 
 
