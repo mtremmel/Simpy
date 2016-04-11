@@ -234,11 +234,54 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
 	plotting.plt.xlim(minmass, maxmass)
 
 
+def mergerhist(dbsim,volume=25**3,mfconv=False,*attrange):
+	cnt = 0
+	nmerge = np.zeros(len(dbsim.timesteps))
+	time = np.zeros(len(dbsim.timesteps))
+	redshift = np.zeros(len(dbsim.timesteps))
+	min = []
+	max = []
+	properties = ['halo_number()', 'later(1).halo_number()']
+	rprops = []
+	for rr in attrange:
+		properties.append(rr[0])
+		rprops.append(rr[0])
+		min.append(rr[1])
+		max.append(rr[2])
+	properties = tuple(properties)
+	for step in dbsim.timesteps:
+		print step
+		if step.next is None:
+			break
+		data = step.gather_property(*properties)
+		N = data[0]
+		Nf = data[1]
+		ok = np.arange(len(N))
+		for i in range(len(rprops)):
+			okn = np.where((data[1+i][ok]>min[i])&(data[1+i][ok]<max[i]))[0]
+			ok = ok[okn]
+		u, count = np.unique(Nf[ok], return_counts=True)
+		mm = np.where(count>1)[0]
+		nn = np.sum(Nf[ok[mm]] - 1)
+		nmerge[cnt] = float(nn)/float(volume)
+		time[cnt] = step.time_gyr
+		redshift[cnt] = step.redshift
+		cnt += 1
+	return nmerge, redshift, time
 
 
+def plt_halo_merge_rate(dbsim, color='blue', linestyle='-',label=None,
+						type='redshift',volume=25**3,mfconv=False,ret_data=False,*attrange):
+	n,red,t = mergerhist(dbsim,volume,mfconv,*attrange)
+	if type=='redshift':
+		plotting.plt.step(red,n,color=color,linestyle=linestyle,label=label)
+	if type=='time':
+		plotting.plt.step(t,n,color=color,linestyle=linestyle,label=label)
 
-
-
+	if red_data:
+		return n, red, t
+	else:
+		return
 
 
 
