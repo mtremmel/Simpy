@@ -125,7 +125,6 @@ def getOrbitValbyStep(simname, minstep=1, maxstep=4096, MBHinit=1e6, clean=False
 	if not os.path.exists('orbitsteps/') or newdata is True:
 		print "Running code to extract data by step from raw orbit file. . ."
 		sepOrbitbyStep(simname, minstep=minstep, maxstep=maxstep, MBHinit=MBHinit)
-		return
 	for i in range(minstep, maxstep + 1):
 		if os.path.exists('orbitsteps/' + str(i)):
 			print "getting data for step ", i
