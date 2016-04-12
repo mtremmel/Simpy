@@ -133,7 +133,7 @@ def cosmicSFH(sim, style, lw=3, bins=50, zrange=None, label=None, ret_hist=True,
 	if plotdata is True:
 		import colldata as dat
 
-		zfits = np.arange(zbins[0],zbins[-1],0.01)
+		zfits = np.arange(zrange[0],zrange[1],0.01)
 		fitB,sigB = dat.CSFRFit(zfits,type='beh')
 		fitH,sigH = dat.CSFRFit(zfits,type='hop')
 		if xlog is True:
