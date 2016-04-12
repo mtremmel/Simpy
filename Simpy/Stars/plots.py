@@ -164,6 +164,6 @@ def cosmicSFH(sim, style, lw=3, bins=50, zrange=None, label=None, ret_hist=True,
 		plotting.plt.xlim(zrange[0],zrange[1])
 	else:
 		plotting.plt.xscale('log',base=10)
-		plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10,11])
+		plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10,11,12,13],['0','1','2','3','4','5','6','7','8','9','10','11','12'])
 		plotting.plt.xlim(zrange[0]+1,zrange[1]+1)
-		plotting.plt.xlabel(r'z + 1',fontsize=30)
+		plotting.plt.xlabel(r'Redshift',fontsize=30)
