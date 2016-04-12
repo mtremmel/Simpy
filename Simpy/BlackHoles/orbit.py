@@ -103,7 +103,8 @@ def smooth_raw_orbit_data(output, key, nsteps, maxstep=4096, minstep=0):
 	return np.array(smoothed_dat), np.array(stdev), np.array(time)
 
 
-def getOrbitValbyStep(simname, minstep=1, maxstep=4096, MBHinit=1e6, clean=False, filename=None, ret_output=False, newdata=False):
+def getOrbitValbyStep(simname, minstep=1, maxstep=4096, MBHinit=1e6, clean=False, filename=None,
+					ret_output=False, newdata=False, tryold=True):
 	'''
 	Extract raw data from the orbit files, after separating the data out by step to save memory
 	Average BH data over each simulation step to make it easier to handle.
@@ -132,9 +133,18 @@ def getOrbitValbyStep(simname, minstep=1, maxstep=4096, MBHinit=1e6, clean=False
 				bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt, a = \
 					readcol('orbitsteps/' + str(i), twod=False)
 			except:
-				oldform = True
-				bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt = \
-					readcol('orbitsteps/' + str(i), twod=False)
+				if tryold:
+					oldform = True
+					try:
+						bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt = \
+							readcol('orbitsteps/' + str(i), twod=False)
+					except:
+						oldform = False
+						print "ERROR reading step! skipping. . ."
+						continue
+				else:
+					print "ERROR reading step! skipping. . ."
+					continue
 			if clean:
 				os.system('rm orbitsteps/' + str(i))
 		else:
@@ -192,7 +202,7 @@ def getOrbitValbyStep(simname, minstep=1, maxstep=4096, MBHinit=1e6, clean=False
 		return output
 
 
-def truncOrbitFile(simname, minstep=1, maxstep=4096, ret_output=False, MBHinit=1e6, overwrite=False, newdata=False):
+def truncOrbitFile(simname, minstep=1, maxstep=4096, ret_output=False, MBHinit=1e6, overwrite=False, newdata=False, tryold=True):
 	'''
 	Extract raw data from the orbit files, after separating the data out by step to save memory
 	Average BH data over each simulation step to make it easier to handle, create new "shortened" orbit file
@@ -204,7 +214,7 @@ def truncOrbitFile(simname, minstep=1, maxstep=4096, ret_output=False, MBHinit=1
 	MBHinit = the initial BH mass (as specified in param file)
 	overwrite = True/False overwrite shortened.orbit file if it exists. Useful for adding timesteps to an already existing file
 	'''
-	output = getOrbitValbyStep(simname, minstep=minstep, maxstep=maxstep, ret_output=True, MBHinit=MBHinit, newdata=newdata)
+	output = getOrbitValbyStep(simname, minstep=minstep, maxstep=maxstep, ret_output=True, MBHinit=MBHinit, newdata=newdata, tryold=tryold)
 	outorder = ['iord', 'time', 'step', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'mdot', 'mdotmean', 'mdotsig', 'a', 'dM']
 	tofile = []
 	for key in outorder:
