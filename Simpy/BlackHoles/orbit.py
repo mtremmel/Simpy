@@ -149,8 +149,9 @@ def getOrbitValbyStep(simname, minstep=1, maxstep=4096, MBHinit=1e6, clean=False
 				os.system('rm orbitsteps/' + str(i))
 		else:
 			continue
+		bhid = bhid.astype(np.int64)
 		order = np.argsort(bhid)
-		bhid = bhid[order].astype(np.int64)
+		bhid = bhid[order]
 		time = time[order]
 		step = step[order]
 		mass = mass[order]
