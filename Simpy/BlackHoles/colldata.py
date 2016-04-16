@@ -25,6 +25,9 @@ Hopkins07merr = 10**Hopkins07 - 10**Hopkins07L
 
 Uneda14z, Uneda14rho = readcol(os.path.join(os.path.dirname(__file__),"data/QSOdata/UnedaRhoBH.csv"),twod=False)
 
+Lacy15zBF, Lacy15rhoBF = readcol(os.path.join(os.path.dirname(__file__),"data/QSOdata/Lacy15_bestfit_rhoBHz.csv"),twod=False)
+Lacy15zCS, Lacy15rhoCS = readcol(os.path.join(os.path.dirname(__file__),"data/QSOdata/Lacy15_constFaintSlope_rhoBHz.csv"),twod=False)
+
 #BH Luminosity Function Data
 #Hopkins 07
 hop_bhlf_z =      np.array([1.  ,1.5 ,2.  ,2.5 ,3.  ,3.5 ,4.  ,4.5 ,5.  ,5.5 ,6.])
