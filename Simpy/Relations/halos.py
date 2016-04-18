@@ -156,7 +156,7 @@ def SMHM_db(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmas
 
 
 def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None,
-		 markersize=5,label=None, correct=True, usedb=False, remove_sats=True, only_sats=False, error=True):
+		 markersize=5,label=None, correct=True, usedb=False, remove_sats=True, only_sats=False, error=True, alpha=1.0):
 	if usedb is True:
 		import halo_db as db
 		dbstep = db.get_timestep(sim+'/%'+step)
