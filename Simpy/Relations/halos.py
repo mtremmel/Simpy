@@ -156,7 +156,7 @@ def SMHM_db(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmas
 
 
 def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None,
-		 markersize=5,label=None, correct=True, usedb=False, remove_sats=True, only_sats=False, error=True, alpha=1.0):
+		 markersize=5,label=None, correct=True, usedb=False, remove_sats=True, only_sats=False, error=True, alpha=1.0, remove_sats_hard=False):
 	if usedb is True:
 		import halo_db as db
 		dbstep = db.get_timestep(sim+'/%'+step)
@@ -178,6 +178,16 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
 				ok, = np.where(amigastat['Satellite?'] == -1)
 			if type == 'amiga':
 				ok, = np.where(amigastat['Satellite?'] == 'no')
+		if remove_sats_hard is True:
+			satsarray = np.zeros(len(amigastat['Grp']))
+			for i in range(len(amigastat['Grp'])):
+				dist = np.sqrt((amigastat['Xc'][i] - amigastat['Xc'])**2 +
+							   (amigastat['Yc'][i] - amigastat['Yc'])**2 +
+							   (amigastat['Zc'][i] - amigastat['Zc'])**2)
+				bad = np.where((dist<amigastat['Rvir(kpc)'])&(amigastat['N_tot']<amigastat['N_tot']))[0]
+				if len(bad)>0:
+					satsarray[i] = 1
+			ok = np.where(satsarray==0)[0]
 		if only_sats is True:
 			if type == 'rockstar':
 				ok, = np.where(amigastat['Satellite?'] != -1)
