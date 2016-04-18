@@ -186,10 +186,13 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
 				dist = np.sqrt((amigastat['Xc'][i] - amigastat['Xc'])**2 +
 							   (amigastat['Yc'][i] - amigastat['Yc'])**2 +
 							   (amigastat['Zc'][i] - amigastat['Zc'])**2)
-				bad = np.where((dist<amigastat['Rvir(kpc)'])&(amigastat['N_tot'][i]<amigastat['N_tot']))[0]
+				bad = np.where((dist*1e3<amigastat['Rvir(kpc)'])&(amigastat['N_tot'][i]<amigastat['N_tot']))[0]
 				if len(bad)>0:
 					satsarray[i] = 1
-			ok = np.where((satsarray==0)&(amigastat['Satellite?']==-1))[0]
+			if type == 'rockstar':
+				ok = np.where((satsarray==0)&(amigastat['Satellite?']==-1))[0]
+			if type == 'amiga':
+				ok = np.where((satsarray==0)&(amigastat['Satellite?']=='no'))[0]
 		if only_sats is True:
 			if type == 'rockstar':
 				ok, = np.where(amigastat['Satellite?'] != -1)
