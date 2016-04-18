@@ -188,6 +188,7 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
 							   (amigastat['Zc'][i] - amigastat['Zc'])**2)
 				bad = np.where((dist*1e3<amigastat['Rvir(kpc)']+amigastat['Rvir(kpc)'][i])&(amigastat['N_tot'][i]<amigastat['N_tot']))[0]
 				if len(bad)>0:
+					print "FOUND"
 					satsarray[i] = 1
 			if type == 'rockstar':
 				ok = np.where((satsarray==0)&(amigastat['Satellite?']==-1))[0]
