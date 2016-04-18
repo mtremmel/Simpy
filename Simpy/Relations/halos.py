@@ -181,8 +181,6 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
 		if remove_sats_hard is True:
 			satsarray = np.zeros(len(amigastat['Grp']))
 			for i in range(len(amigastat['Grp'])):
-				if Mvir[i] < minmass:
-					break
 				dist = np.sqrt((amigastat['Xc'][i] - amigastat['Xc'])**2 +
 							   (amigastat['Yc'][i] - amigastat['Yc'])**2 +
 							   (amigastat['Zc'][i] - amigastat['Zc'])**2)
