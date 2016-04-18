@@ -27,6 +27,8 @@ Uneda14z, Uneda14rho = readcol(os.path.join(os.path.dirname(__file__),"data/QSOd
 
 Lacy15zBF, Lacy15rhoBF = readcol(os.path.join(os.path.dirname(__file__),"data/QSOdata/Lacy15_bestfit_rhoBHz.csv"),twod=False)
 Lacy15zCS, Lacy15rhoCS = readcol(os.path.join(os.path.dirname(__file__),"data/QSOdata/Lacy15_constFaintSlope_rhoBHz.csv"),twod=False)
+Lacy15zBF_eps06, Lacy15rhoBF_eps06 = readcol(os.path.join(os.path.dirname(__file__),"data/QSOdata/Lacy15_bestfit_epsp06_rhoBHz.csv"),twod=False)
+
 
 #BH Luminosity Function Data
 #Hopkins 07
