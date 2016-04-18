@@ -198,7 +198,7 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
 
 	logmv_fit = np.arange(np.log10(minmass),np.log10(maxmass),0.1)
 	cnt = 0
-	plotting.plt.plot(Mvir, Mstar/Mvir, style, color=color, markersize=markersize, label=label, alpha=alpha)
+	plotting.plt.plot(Mvir, Mstar/Mvir, style, color=color, markersize=markersize, label=label, alpha=alpha,zorder=1)
 	if fit is not None:
 		for ff in fit:
 			if ff not in ['Mos','Beh', 'Krav', 'Moster', 'Behroozi', 'Kravtsov']:
@@ -218,10 +218,10 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
 				flabel = 'Kravtsov+ 14, z < 0.1'
 
 			ratio_fit = fitfunc(logmv_fit, redshift)
-			plotting.plt.plot(10**logmv_fit, ratio_fit, fitstyle[cnt], label=flabel, lw=5,alpha=0.75)
+			plotting.plt.plot(10**logmv_fit, ratio_fit, fitstyle[cnt], label=flabel, lw=5,alpha=0.75,zorder=10)
 			if ff in ['Mos', 'Moster'] and error is True:
 				sigma = errmoster13(logmv_fit, redshift)
-				plotting.plt.fill_between(10**logmv_fit,ratio_fit-sigma,ratio_fit+sigma, facecolor='grey',alpha=0.5)
+				plotting.plt.fill_between(10**logmv_fit,ratio_fit-sigma,ratio_fit+sigma, facecolor='grey',alpha=0.5,zorder=10)
 
 			cnt += 1
 
