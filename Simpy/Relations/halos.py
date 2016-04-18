@@ -181,6 +181,8 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
 		if remove_sats_hard is True:
 			satsarray = np.zeros(len(amigastat['Grp']))
 			for i in range(len(amigastat['Grp'])):
+				if Mvir[i] < minmass:
+					break
 				dist = np.sqrt((amigastat['Xc'][i] - amigastat['Xc'])**2 +
 							   (amigastat['Yc'][i] - amigastat['Yc'])**2 +
 							   (amigastat['Zc'][i] - amigastat['Zc'])**2)
@@ -193,7 +195,7 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
 				ok, = np.where(amigastat['Satellite?'] != -1)
 			if type == 'amiga':
 				ok, = np.where(amigastat['Satellite?'] == 'yes')
-		if only_sats is True or remove_sats is True:
+		if only_sats is True or remove_sats is True or remove_sats_hard:
 			Mvir = Mvir[ok].astype(np.float)
 			Mstar = Mstar[ok].astype(np.float)
 
