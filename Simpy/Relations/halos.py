@@ -186,11 +186,11 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
                 yd = amigastat['Yc'][i] - amigastat['Yc']
                 zd = amigastat['Zc'][i] - amigastat['Zc']
                 oo = np.where(np.abs(xd) > boxsize*1e3/2.)
-                xd[oo] = -1.0 * (xd[oo]/np.abs(xd[oo])) * (boxzize*1e3 - np.abs(xd[oo]))
+                xd[oo] = -1.0 * (xd[oo]/np.abs(xd[oo])) * (boxsize*1e3 - np.abs(xd[oo]))
                 oo = np.where(np.abs(yd) > boxsize*1e3/2.)
-                yd[oo] = -1.0 * (yd[oo]/np.abs(yd[oo])) * (boxzize*1e3 - np.abs(yd[oo]))
+                yd[oo] = -1.0 * (yd[oo]/np.abs(yd[oo])) * (boxsize*1e3 - np.abs(yd[oo]))
                 oo = np.where(np.abs(zd) > boxsize*1e3/2.)
-                zd[oo] = -1.0 * (zd[oo]/np.abs(zd[oo])) * (boxzize*1e3 - np.abs(zd[oo]))
+                zd[oo] = -1.0 * (zd[oo]/np.abs(zd[oo])) * (boxsize*1e3 - np.abs(zd[oo]))
 
                 dist = np.sqrt(xd**2 + yd**2 + zd**2)
                 bad = np.where((dist*1e3<amigastat['Rvir(kpc)']+amigastat['Rvir(kpc)'][i])&(amigastat['N_tot'][i]<amigastat['N_tot']))[0]
@@ -300,7 +300,7 @@ def plt_halo_merge_rate(dbsim, color='blue', linestyle='-',label=None,
     if type=='time':
         plotting.plt.step(t,n,color=color,linestyle=linestyle,label=label)
 
-    if red_data:
+    if ret_data:
         return n, red, t
     else:
         return
