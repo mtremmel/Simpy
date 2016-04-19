@@ -124,11 +124,11 @@ def cosmicSFH(sim, style, lw=3, bins=50, zrange=None, label=None, ret_hist=True,
 		data = np.histogram(tform, bins=tedges, weights=massform)
 		sfr = data[0]/dt
 		zbins = zbins[tsorted]
-		sfr = np.append(sfr,sfr[-1])
+		#sfr = np.append(sfr,sfr[-1])
 		if xlog is False:
-			plotting.plt.step(zbins,sfr/volume,style, label=label, linewidth=lw, where='post')
+			plotting.plt.step(zbins[1:],sfr/volume,style, label=label, linewidth=lw, where='post')
 		else:
-			plotting.plt.step(zbins+1,sfr/volume,style, label=label, linewidth=lw, where='post')
+			plotting.plt.step(zbins[1:]+1,sfr/volume,style, label=label, linewidth=lw, where='post')
 
 
 	if plotdata is True:
