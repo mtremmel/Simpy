@@ -558,7 +558,7 @@ class Orbit(object):
 				plotting.plt.xlabel('z',fontsize=30)
 			if type == 'time':
 				plotting.plt.xlabel('Time (Gyr)',fontsize=30)
-			plotting.plt.ylabel(r'log($\rho_{acc}$ [M$_{\odot}$ Mpc$^{-3}$])',fontsize=30)
+			plotting.plt.ylabel(r'$\rho_{acc}$ [M$_{\odot}$ Mpc$^{-3}$]',fontsize=30)
 		if label is not None or plotdata is True: plotting.plt.legend(fontsize=20)
 		return
 
