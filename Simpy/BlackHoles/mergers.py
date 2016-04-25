@@ -271,11 +271,7 @@ class mergerCat(object):
                 self.data['merge_lum_2'][i] = lum2[-1]
 
             if len(mass1)>0:
-                argm = np.argmin(np.abs(self.data['tmerge']-time))
+                argm = np.argmin(np.abs(self.data['tmerge']-time1))
                 self.data['merge_mass_1'] = mass1[argm]
                 self.data['merge_mdot_1'] = mdot1[argm]
                 self.data['merge_lum_1'] = lum1[argm]
-
-    #def frac_time_dual(self,bhorbit):
-     #   self.data['frac_dual'] = np.ones(len(self.data['ID1']))*-1
-      #  for i in range(len(self.data['ID1'])):
