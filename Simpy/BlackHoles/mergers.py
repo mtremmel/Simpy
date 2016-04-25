@@ -168,7 +168,11 @@ class mergerCat(object):
 
         for step in dbsim.timesteps:
             print step
-            data = step.gather_property(*proplist)
+            try:
+                data = step.gather_property(*proplist)
+            except:
+                print "Nothing found in this step"
+                continue
             bhid = data[0]
             bhid_next = data[1]
             good = np.where(np.in1d(bhid_next,bhid))[0]
