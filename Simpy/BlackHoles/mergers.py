@@ -189,13 +189,19 @@ class mergerCat(object):
 
             ubhid, inv, cnt = np.unique(bhid_next,return_counts=True, return_inverse=True)
             mm = np.where(cnt>1)
+            if len(mm)==0:
+                print "No BH mergers found this step"
+                continue
             self.nmergers.append((cnt[mm]-1).sum())
             self.steptimes.append(step.time_gyr)
+            print self.nmergers, self.steptimes
 
             eat = np.where((bhid_next != bhid)&(cnt[inv]>1))
             bheat = bhid[eat]
             bhmain, inv = np.unique(bhid_next[eat],return_inverse=True)
             match = np.where(np.in1d(bhid[ordd],bhmain))[0]
+            print np.where(np.equal(bhid[ordd[match]],bhmain)==False)
+            print np.where(np.equal(bhid[ordd[match[inv]]],bhmain[inv]))
 
             self.data['host_N_pre_1'].append(host_n[match[inv]])
             self.data['host_N_pre_2'].append(host_n[eat])
@@ -209,8 +215,8 @@ class mergerCat(object):
                 index += 2
 
         ordee = np.argsort(self.data['ID2'])
-        match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))
-        match2 = np.where(np.in1d(self.rawdat['ID2'],self.data['ID2'][ordee]))
+        match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))[0]
+        match2 = np.where(np.in1d(self.rawdat['ID2'],self.data['ID2'][ordee]))[0]
 
         self.data['ratio'] = np.zeros(len(self.data['ID2']))
         self.data['kick'] = np.zeros(len(self.data['ID2']))
