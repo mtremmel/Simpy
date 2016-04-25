@@ -203,6 +203,9 @@ class mergerCat(object):
             print np.where(np.equal(bhid[ordd[match]],bhmain)==False)
             print np.where(np.equal(bhid[ordd[match[inv]]],bhmain[inv]))
 
+            self.data['ID1'].append(bhmain[inv])
+            self.data['ID2'].append(bheat)
+
             self.data['host_N_pre_1'].append(host_n[match[inv]])
             self.data['host_N_pre_2'].append(host_n[eat])
             self.data['host_N_post'].append(host_n_next[eat])
