@@ -157,9 +157,9 @@ class mergerCat(object):
                     'tmerge':[], 'tstep_prev':[], 'tstep_after':[],
                     'host_N_pre_1':[], 'host_N_pre_2':[], 'host_N_post':[]}
         for p in properties:
-            self.data[p+_pre_1] = []
-            self.data[p+_pre_2] = []
-            self.data[p+_post] = []
+            self.data[p+'_pre_1'] = []
+            self.data[p+'_pre_2'] = []
+            self.data[p+'_post'] = []
 
 
         self.nmergers = []
