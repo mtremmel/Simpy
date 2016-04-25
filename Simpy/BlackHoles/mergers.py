@@ -172,6 +172,8 @@ class mergerCat(object):
                 data = step.gather_property(*proplist)
             except:
                 print "Nothing found in this step"
+                self.nmergers.append(0)
+                self.steptimes.append(step.time_gyr)
                 continue
             bhid = data[0]
             bhid_next = data[1]
@@ -188,9 +190,11 @@ class mergerCat(object):
             ordd = np.argsort(bhid)
 
             ubhid, inv, cnt = np.unique(bhid_next,return_counts=True, return_inverse=True)
-            mm = np.where(cnt>1)
+            mm = np.where(cnt>1)[0]
             if len(mm)==0:
                 print "No BH mergers found this step"
+                self.nmergers.append(0)
+                self.steptimes.append(step.time_gyr)
                 continue
             self.nmergers.append((cnt[mm]-1).sum())
             self.steptimes.append(step.time_gyr)
@@ -208,13 +212,13 @@ class mergerCat(object):
             self.data['ID1'].extend(bhmain[inv])
             self.data['ID2'].extend(bheat)
 
-            self.data['host_N_pre_1'].extend(host_n[match[inv]])
+            self.data['host_N_pre_1'].extend(host_n[ordd[match[inv]]])
             self.data['host_N_pre_2'].extend(host_n[eat])
             self.data['host_N_post'].extend(host_n_next[eat])
 
             index = 4
             for i in range(len(properties)):
-                self.data[properties[i]+'_pre_1'].extend(data[index][match[inv]])
+                self.data[properties[i]+'_pre_1'].extend(data[index][ordd[match[inv]]])
                 self.data[properties[i]+'_pre_2'].extend(data[index][eat])
                 self.data[properties[i]+'_post'].extend(data[index+1][eat])
                 index += 2
@@ -235,4 +239,44 @@ class mergerCat(object):
         self.data['kick'][ordee[match]] = self.rawdat['kick'][match2]
         self.data['time'][ordee[match]] = self.rawdat['time'][match2]
         self.data['step'][ordee[match]] = self.rawdat['step'][match2]
+
+    def __getitem__(self, item):
+        return self.data[item]
+
+    def keys(self):
+        return self.data.keys()
+
+    def get_final_values(self,bhorbit):
+        self.data['merge_mass_2'] = np.ones(len(self.data['ID1']))*-1
+        self.data['merge_mass_1'] = np.ones(len(self.data['ID1']))*-1
+        self.data['merge_mdot_2'] = np.ones(len(self.data['ID1']))*-1
+        self.data['merge_mass_1'] = np.ones(len(self.data['ID1']))*-1
+        self.data['merge_lum_2'] = np.ones(len(self.data['ID1']))*-1
+        self.data['merge_lum_1'] = np.ones(len(self.data['ID1']))*-1
+        for i in range(len(self.data['ID1'])):
+            mass1 = bhorbit.single_BH_data(self.data['ID1'],'mass')
+            mass2 = bhorbit.single_BH_data(self.data['ID2'],'mass')
+
+            mdot1 = bhorbit.single_BH_data(self.data['ID1'],'mdotmean')
+            mdot2 = bhorbit.single_BH_data(self.data['ID2'],'mdotmean')
+
+            lum1 = bhorbit.single_BH_data(self.data['ID1'],'lum')
+            lum2 = bhorbit.single_BH_data(self.data['ID2'],'lum')
+
+            time1 = bhorbit.single_BH_data(self.data['ID1'],'time')
+
+            if len(mass2)>0:
+                self.data['merge_mass_2'][i] = mass2[-1]
+                self.data['merge_mdot_2'][i] = mdot2[-1]
+                self.data['merge_lum_2'][i] = lum2[-1]
+
+            if len(mass1)>0:
+                argm = np.argmin(np.abs(self.data['tmerge']-time))
+                self.data['merge_mass_1'] = mass1[argm]
+                self.data['merge_mdot_1'] = mdot1[argm]
+                self.data['merge_lum_1'] = lum1[argm]
+
+    def frac_time_dual(self,bhorbit):
+        self.data['frac_dual'] = np.ones(len(self.data['ID1']))*-1
+        for i in range(len(self.data['ID1'])):
 
