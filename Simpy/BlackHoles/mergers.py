@@ -200,7 +200,7 @@ class mergerCat(object):
             self.steptimes.append(step.time_gyr)
             print self.nmergers[-1], self.steptimes[-1]
 
-            eat = np.where((bhid_next != bhid)&(cnt[inv]>1))
+            eat = np.where((bhid_next != bhid)&(cnt[inv]>1))[0]
             bheat = bhid[eat]
             bhmain, inv = np.unique(bhid_next[eat],return_inverse=True)
             match = np.where(np.in1d(bhid[ordd],bhmain))[0]
@@ -276,7 +276,6 @@ class mergerCat(object):
                 self.data['merge_mdot_1'] = mdot1[argm]
                 self.data['merge_lum_1'] = lum1[argm]
 
-    def frac_time_dual(self,bhorbit):
-        self.data['frac_dual'] = np.ones(len(self.data['ID1']))*-1
-        for i in range(len(self.data['ID1'])):
-
+    #def frac_time_dual(self,bhorbit):
+     #   self.data['frac_dual'] = np.ones(len(self.data['ID1']))*-1
+      #  for i in range(len(self.data['ID1'])):
