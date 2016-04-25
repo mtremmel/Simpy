@@ -1,5 +1,5 @@
 import numpy as np
-from .. import Files, cosmology, readcol, plotting
+from .. import Files, cosmology, readcol, plotting, util
 import os
 import pynbody
 
@@ -130,122 +130,90 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
     if ret_data is True:
         return rate, tzbins,tedges
 
-
-
-
 class mergerCat(object):
-    def __init__(self,bhhalocat,bhorbit,mergerfile):
+    def __init__(self, dbsim, properties=[]):
+        proplist = ['halo_number()', 'later(1).halo_number()', 'host_halo.halo_number()', 'later(1).halo_number()']
+        for prop in properties:
+            proplist.append(prop)
+            proplist.append('later(1).'+prop)
+
+        print "reading .mergers file..."
         time, step, ID, IDeat, ratio, kick = readcol(mergerfile,twod=False)
-        self.data = {'time':time, 'step':np.ones(len(ID))*-1, 'ID1':ID, 'ID2':IDeat, 'ratio':ratio, 'kick':kick,
-                     'mass1':np.ones(len(ID))*-1, 'mass2':np.ones(len(ID))*-1,
-                     'mdot1':np.ones(len(ID))*-1,'mdot2':np.ones(len(ID))*-1,
-                     'lum1':np.ones(len(ID))*-1,'lum2':np.ones(len(ID))*-1,
-                     'snap_prev':np.ones(len(ID))*-1, 'snap_post':np.ones(len(ID))*-1,
-                     'tform1':np.ones(len(ID))*-1,'tform2':np.ones(len(ID))*-1}
+        ID = ID.astype(np.int64)
+        IDeat = IDeat.astype(np.int64)
+        print "checking for bad IDs..."
+        bad = np.where(ID<0)
+        if len(bad)>0:
+            ID[bad] = 2*2147483648 + ID[bad]
+        bad2 = np.where(IDeat<0)
+        if len(bad2)>0:
+            IDeat[bad2] = 2*2147483648 + IDeat[bad2]
 
-        for i in range(len(ID)):
-            mass1 = bhorbit.single_BH_data(ID[i],'mass')
-            mass2 = bhorbit.single_BH_data(IDeat[i],'mass')
-            mdot1 = bhorbit.single_BH_data(ID[i],'mdot')
-            mdot2 = bhorbit.single_BH_data(IDeat[i],'mdot')
-            lum1 = bhorbit.single_BH_data(ID[i],'lum')
-            lum2 = bhorbit.single_BH_data(IDeat[i],'lum')
-            time1 = bhorbit.single_BH_data(ID[i],'time')
-            time2 = bhorbit.single_BH_data(IDeat[i],'time')
-            if len(mass2)>0:
-                self.data['step'][i] = bhorbit.single_BH_data(IDeat[i],'step')[-1]
-                timemerge = time2[-1]
-                self.data['mass2'][i] = mass2[-1]
-                self.data['lum2'][i] = lum2[-1]
-                self.data['mdot2'][i] = mdot2[-1]
-            else:
-                timemerge = time[i]
+        self.rawdat = {'time':time, 'ID1':ID, 'ID2':IDeat, 'ratio':ratio, 'kick':kick}
+        ordr = np.argsort(self.rawdat['ID2'])
+        util.cutdict(self.rawdat,ordr)
 
-            if len(mass1)>0:
-                argmerge1 = np.argmin(np.abs(time1-timemerge))
-                self.data['mass1'][i] = mass1[argmerge1]
-                self.data['mdot1'][i] = mdot1[argmerge1]
-                self.data['lum1'][i] = lum1[argmerge1]
-
-            if (i+1)/float(len(ID)) % 0.1 == 0:
-                print i/float(len(ID)) * 100, '% done'
-
-        ord_ = np.argsort(self.data['ID1'])
-        match1 = np.where(np.in1d(bhorbit.bhiords,self.data['ID1'][ord_]))[0]
-        match2 = np.where(np.in1d(self.data['ID1'][ord_],bhorbit.bhiords))[0]
-        umatch1, uinv1 = np.unique(self.data['ID1'][ord_[match2]],return_inverse=True)
-        print len(match1), len(match2), len(ord_), len(self.data['tform1']), len(uinv1)
-        print match1.max(), match2.max(), len(bhorbit.tform), uinv1.max(), ord_.max()
-        self.data['tform1'][ord_[match2]] = bhorbit.tform.in_units('Gyr')[match1[uinv1]]
-
-        ord_ = np.argsort(self.data['ID2'])
-        match1 = np.where(np.in1d(bhorbit.bhiords,self.data['ID2'][ord_]))[0]
-        match2 = np.where(np.in1d(self.data['ID2'][ord_],bhorbit.bhiords))[0]
-        umatch2, uinv2 = np.unique(self.data['ID2'][ord_[match2]],return_inverse=True)
-        self.data['tform2'][ord_[match2]] = bhorbit.tform.in_units('Gyr')[match1[uinv2]]
-
-        self._prev_snap_slice_1 = {}
-        self._prev_snap_slice_inv_1 = {}
-        self._prev_snap_slice_2 = {}
-        self._prev_snap_slice_inv_2 = {}
-
-        self._post_snap_slice = {}
-        self._post_snap_slice_inv = {}
+        self.data = {'ID1':[], 'ID2':[], 'ratio':[], 'kick':[], 'step':[]
+                    'tmerge':[], 'tstep_prev':[], 'tstep_after':[],
+                    'host_N_pre_1':[], 'host_N_pre_2':[], 'host_N_post':[]}
+        for p in properties:
+            self.data[p+_pre_1] = []
+            self.data[p+_pre_2] = []
+            self.data[p+_post] = []
 
 
-        for ii in range(len(bhhalocat.steps)-1):
-            curstep = int(bhhalocat.steps[ii])
-            nextstep = int(bhhalocat.steps[ii+1])
-            print curstep,nextstep
-            curdata = np.where((self.data['step']>curstep)&(self.data['step']<nextstep))[0]
+        self.nmergers = []
+        self.steptimes = []
 
-            self.data['snap_prev'][curdata] = curstep
-            self.data['snap_post'][curdata] = nextstep
+        for step in dbsim.timesteps:
+            print step
+            data = step.gather_property(*proplist)
+            bhid = data[0]
+            bhid_next = data[1]
+            good = np.where(np.in1d(bhid_next,bhid))[0]
 
-            ord1 = np.argsort(self.data['ID1'][curdata])
-            ord2 = np.argsort(self.data['ID2'][curdata])
+            bhid = bhid[good]
+            bhid_next = bhid_next[good]
+            for i in range(len(data[2:])):
+                data[i+2] = data[i+2][good]
 
-            match1 = np.where(np.in1d(bhhalocat[str(curstep)].bh['bhid'],self.data['ID1'][curdata[ord1]]))[0]
-            match2 = np.where(np.in1d(self.data['ID1'][curdata[ord1]],bhhalocat[str(curstep)].bh['bhid']))[0]
-            umatch, uinv = np.unique(self.data['ID1'][curdata[ord1[match2]]],return_inverse=True)
-            self._prev_snap_slice_1[str(curstep)] = match1[uinv]
-            self._prev_snap_slice_inv_1[str(curstep)] = curdata[ord1[match2]]
+            host_n = data[2]
+            host_n_next = data[3]
 
-            match1 = np.where(np.in1d(bhhalocat[str(curstep)].bh['bhid'],self.data['ID2'][curdata[ord2]]))[0]
-            match2 = np.where(np.in1d(self.data['ID2'][curdata[ord2]],bhhalocat[str(curstep)].bh['bhid']))[0]
-            umatch, uinv = np.unique(self.data['ID2'][curdata[ord2[match2]]],return_inverse=True)
-            self._prev_snap_slice_2[str(curstep)] = match1[uinv]
-            self._prev_snap_slice_inv_2[str(curstep)] = curdata[ord2[match2]]
+            ordd = np.argsort(bhid)
 
-            match1 = np.where(np.in1d(bhhalocat[str(nextstep)].bh['bhid'],self.data['ID1'][curdata[ord1]]))[0]
-            match2 = np.where(np.in1d(self.data['ID1'][curdata[ord1]],bhhalocat[str(nextstep)].bh['bhid']))[0]
-            umatch, uinv = np.unique(self.data['ID1'][curdata[ord1[match2]]],return_inverse=True)
-            self._post_snap_slice[str(nextstep)] = match1[uinv]
-            self._post_snap_slice_inv[str(nextstep)] = curdata[ord1[match2]]
+            ubhid, inv, cnt = np.unique(bhid_next,return_counts=True, return_inverse=True)
+            mm = np.where(cnt>1)
+            self.nmergers.append((cnt[mm]-1).sum())
+            self.steptimes.append(step.time_gyr)
 
-    def get_snap_info(self,key,bhhalocat):
-        self.data['prev_'+key+'1'] = np.ones(len(self.data['ID1']))*-1
-        self.data['prev_'+key+'2'] = np.ones(len(self.data['ID1']))*-1
-        self.data['post_'+key] = np.ones(len(self.data['ID1']))*-1
-        for ii in range(len(bhhalocat.steps)-1):
-            print bhhalocat.steps[ii]
-            curstep = int(bhhalocat.steps[ii])
-            nextstep = int(bhhalocat.steps[ii+1])
-            if key in bhhalocat[str(curstep)].bh.keys():
-                data = bhhalocat[str(curstep)].bh[key]
-                datanext = bhhalocat[str(nextstep)].bh[key]
-            else:
-                data = bhhalocat[str(curstep)].halo_properties[key]
-                datanext = bhhalocat[str(nextstep)].halo_properties[key]
-            if len(self._prev_snap_slice_1[str(curstep)])>0:
-                self.data['prev_'+key+'1'][self._prev_snap_slice_inv_1[str(curstep)]] = data[self._prev_snap_slice_1[str(curstep)]]
-                self.data['prev_'+key+'2'][self._prev_snap_slice_inv_2[str(curstep)]] = data[self._prev_snap_slice_2[str(curstep)]]
-            if len(self._post_snap_slice_inv[str(nextstep)])>0:
-                self.data['post_'+key][self._post_snap_slice_inv[str(nextstep)]] = datanext[self._post_snap_slice[str(nextstep)]]
+            eat = np.where((bhid_next != bhid)&(cnt[inv]>1))
+            bheat = bhid[eat]
+            bhmain, inv = np.unique(bhid_next[eat],return_inverse=True)
+            match = np.where(np.in1d(bhid[ordd]),bhmain)[0]
 
+            self.data['host_N_pre_1'].append(host_n[match[inv]])
+            self.data['host_N_pre_2'].append(host_n[eat])
+            self.data['host_N_post'].append(host_n_next[eat])
 
-    def __getitem__(self,item):
-        return self.data[item]
+            index = 4
+            for i in range(len(properties)):
+                self.data[properties[i]+'_pre_1'].append(data[index][match[inv]])
+                self.data[properties[i]+'_pre_2'].append(data[index][eat])
+                self.data[properties[i]+'_post'].append(data[index+1][eat])
+                index += 2
 
-    def keys(self):
-        return self.data.keys()
+        ordee = np.argsort(self.data['ID2'])
+        match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))
+        match2 = np.where(np.in1d(self.rawdat['ID2'],self.data['ID2'][ordee]))
+
+        self.data['ratio'] = np.zeros(len(self.data['ID2']))
+        self.data['kick'] = np.zeros(len(self.data['ID2']))
+        self.data['time'] = np.zeros(len(self.data['ID2']))
+        self.data['step'] = np.zeros(len(self.data['ID2']))
+
+        self.data['ratio'][ordee[match]] = self.rawdat['ratio'][match2]
+        self.data['kick'][ordee[match]] = self.rawdat['kick'][match2]
+        self.data['time'][ordee[match]] = self.rawdat['time'][match2]
+        self.data['step'][ordee[match]] = self.rawdat['step'][match2]
+
