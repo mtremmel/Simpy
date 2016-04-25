@@ -201,7 +201,7 @@ class mergerCat(object):
             bhmain, inv = np.unique(bhid_next[eat],return_inverse=True)
             match = np.where(np.in1d(bhid[ordd],bhmain))[0]
             print np.where(np.equal(bhid[ordd[match]],bhmain)==False)
-            print np.where(np.equal(bhid[ordd[match[inv]]],bhmain[inv]))
+            print np.where(np.equal(bhid[ordd[match[inv]]],bhmain[inv])==False)
 
             self.data['ID1'].append(bhmain[inv])
             self.data['ID2'].append(bheat)
