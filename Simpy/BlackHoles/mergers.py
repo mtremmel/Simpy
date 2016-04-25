@@ -131,12 +131,12 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
         return rate, tzbins,tedges
 
 class mergerCat(object):
-    def __init__(self, dbsim, properties=[]):
+    def __init__(self, dbsim, simname, properties=[]):
         proplist = ['halo_number()', 'later(1).halo_number()', 'host_halo.halo_number()', 'later(1).halo_number()']
         for prop in properties:
             proplist.append(prop)
             proplist.append('later(1).'+prop)
-
+        mergerfile = simname+'.mergers'
         print "reading .mergers file..."
         time, step, ID, IDeat, ratio, kick = readcol(mergerfile,twod=False)
         ID = ID.astype(np.int64)
