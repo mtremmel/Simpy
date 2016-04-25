@@ -200,8 +200,10 @@ class mergerCat(object):
             bheat = bhid[eat]
             bhmain, inv = np.unique(bhid_next[eat],return_inverse=True)
             match = np.where(np.in1d(bhid[ordd],bhmain))[0]
-            print np.where(np.equal(bhid[ordd[match]],bhmain)==False)
-            print np.where(np.equal(bhid[ordd[match[inv]]],bhmain[inv])==False)
+            if len(np.where(np.equal(bhid[ordd[match]],bhmain)==False)[0])>0:
+                print "FUCK BALLS"
+            if len(np.where(np.equal(bhid[ordd[match[inv]]],bhmain[inv])==False)[0])>0:
+                print "SWEET JESUS WHY"
 
             self.data['ID1'].append(bhmain[inv])
             self.data['ID2'].append(bheat)
