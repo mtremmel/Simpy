@@ -153,7 +153,7 @@ class mergerCat(object):
         ordr = np.argsort(self.rawdat['ID2'])
         util.cutdict(self.rawdat,ordr)
 
-        self.data = {'ID1':[], 'ID2':[], 'ratio':[], 'kick':[], 'step':[]
+        self.data = {'ID1':[], 'ID2':[], 'ratio':[], 'kick':[], 'step':[],
                     'tmerge':[], 'tstep_prev':[], 'tstep_after':[],
                     'host_N_pre_1':[], 'host_N_pre_2':[], 'host_N_post':[]}
         for p in properties:
