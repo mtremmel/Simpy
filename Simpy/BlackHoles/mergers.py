@@ -194,7 +194,7 @@ class mergerCat(object):
                 continue
             self.nmergers.append((cnt[mm]-1).sum())
             self.steptimes.append(step.time_gyr)
-            print self.nmergers, self.steptimes
+            print self.nmergers[-1], self.steptimes[-1]
 
             eat = np.where((bhid_next != bhid)&(cnt[inv]>1))
             bheat = bhid[eat]
