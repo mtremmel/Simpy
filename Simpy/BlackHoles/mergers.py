@@ -1,5 +1,5 @@
 import numpy as np
-from .. import Files, cosmology, readcol, plotting, util
+from .. import Files, cosmology, plotting, util, readcol
 import os
 import pynbody
 
@@ -138,7 +138,7 @@ class mergerCat(object):
             proplist.append('later(1).'+prop)
         mergerfile = simname+'.mergers'
         print "reading .mergers file..."
-        time, step, ID, IDeat, ratio, kick = readcol(mergerfile,twod=False)
+        time, step, ID, IDeat, ratio, kick = readcol.readcol(mergerfile,twod=False)
         ID = ID.astype(np.int64)
         IDeat = IDeat.astype(np.int64)
         print "checking for bad IDs..."
