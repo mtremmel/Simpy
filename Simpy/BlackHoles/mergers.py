@@ -195,7 +195,7 @@ class mergerCat(object):
             eat = np.where((bhid_next != bhid)&(cnt[inv]>1))
             bheat = bhid[eat]
             bhmain, inv = np.unique(bhid_next[eat],return_inverse=True)
-            match = np.where(np.in1d(bhid[ordd]),bhmain)[0]
+            match = np.where(np.in1d(bhid[ordd],bhmain))[0]
 
             self.data['host_N_pre_1'].append(host_n[match[inv]])
             self.data['host_N_pre_2'].append(host_n[eat])
