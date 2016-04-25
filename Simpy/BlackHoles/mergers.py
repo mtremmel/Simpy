@@ -205,19 +205,22 @@ class mergerCat(object):
             if len(np.where(np.equal(bhid[ordd[match[inv]]],bhmain[inv])==False)[0])>0:
                 print "SWEET JESUS WHY"
 
-            self.data['ID1'].append(bhmain[inv])
-            self.data['ID2'].append(bheat)
+            self.data['ID1'].extend(bhmain[inv])
+            self.data['ID2'].extend(bheat)
 
-            self.data['host_N_pre_1'].append(host_n[match[inv]])
-            self.data['host_N_pre_2'].append(host_n[eat])
-            self.data['host_N_post'].append(host_n_next[eat])
+            self.data['host_N_pre_1'].extend(host_n[match[inv]])
+            self.data['host_N_pre_2'].extend(host_n[eat])
+            self.data['host_N_post'].extend(host_n_next[eat])
 
             index = 4
             for i in range(len(properties)):
-                self.data[properties[i]+'_pre_1'].append(data[index][match[inv]])
-                self.data[properties[i]+'_pre_2'].append(data[index][eat])
-                self.data[properties[i]+'_post'].append(data[index+1][eat])
+                self.data[properties[i]+'_pre_1'].extend(data[index][match[inv]])
+                self.data[properties[i]+'_pre_2'].extend(data[index][eat])
+                self.data[properties[i]+'_post'].extend(data[index+1][eat])
                 index += 2
+
+        for key in self.data.keys():
+            self.data[key] = np.array(self.data[key])
 
         ordee = np.argsort(self.data['ID2'])
         match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))[0]
