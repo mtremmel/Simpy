@@ -205,9 +205,9 @@ class mergerCat(object):
             bhmain, inv = np.unique(bhid_next[eat],return_inverse=True)
             match = np.where(np.in1d(bhid[ordd],bhmain))[0]
             if len(np.where(np.equal(bhid[ordd[match]],bhmain)==False)[0])>0:
-                print "FUCK BALLS"
+                print "WARNING! matching between arrays is bad"
             if len(np.where(np.equal(bhid[ordd[match[inv]]],bhmain[inv])==False)[0])>0:
-                print "SWEET JESUS WHY"
+                print "WARNING! matching between arrays is bad"
 
             self.data['ID1'].extend(bhmain[inv])
             self.data['ID2'].extend(bheat)
