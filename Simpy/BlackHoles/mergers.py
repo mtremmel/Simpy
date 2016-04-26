@@ -232,12 +232,12 @@ class mergerCat(object):
 
         self.data['ratio'] = np.zeros(len(self.data['ID2']))
         self.data['kick'] = np.zeros(len(self.data['ID2']))
-        self.data['time'] = np.zeros(len(self.data['ID2']))
+        self.data['tmerge'] = np.zeros(len(self.data['ID2']))
         self.data['step'] = np.zeros(len(self.data['ID2']))
 
         self.data['ratio'][ordee[match]] = self.rawdat['ratio'][match2]
         self.data['kick'][ordee[match]] = self.rawdat['kick'][match2]
-        self.data['time'][ordee[match]] = self.rawdat['time'][match2]
+        self.data['tmerge'][ordee[match]] = self.rawdat['time'][match2]
         self.data['step'][ordee[match]] = self.rawdat['step'][match2]
 
     def __getitem__(self, item):
@@ -247,31 +247,102 @@ class mergerCat(object):
         return self.data.keys()
 
     def get_final_values(self,bhorbit):
-        self.data['merge_mass_2'] = np.ones(len(self.data['ID1']))*-1
-        self.data['merge_mass_1'] = np.ones(len(self.data['ID1']))*-1
-        self.data['merge_mdot_2'] = np.ones(len(self.data['ID1']))*-1
-        self.data['merge_mass_1'] = np.ones(len(self.data['ID1']))*-1
-        self.data['merge_lum_2'] = np.ones(len(self.data['ID1']))*-1
-        self.data['merge_lum_1'] = np.ones(len(self.data['ID1']))*-1
-        for i in range(len(self.data['ID1'])):
-            mass1 = bhorbit.single_BH_data(self.data['ID1'],'mass')
-            mass2 = bhorbit.single_BH_data(self.data['ID2'],'mass')
+        self.rawdat['merge_mass_2'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['merge_mass_1'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['merge_mdot_2'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['merge_mass_1'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['merge_lum_2'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['merge_lum_1'] = np.ones(len(self.rawdat['ID1']))*-1
+        for i in range(len(self.rawdat['ID1'])):
+            mass1 = bhorbit.single_BH_data(self.rawdat['ID1'],'mass')
+            mass2 = bhorbit.single_BH_data(self.rawdat['ID2'],'mass')
 
-            mdot1 = bhorbit.single_BH_data(self.data['ID1'],'mdotmean')
-            mdot2 = bhorbit.single_BH_data(self.data['ID2'],'mdotmean')
+            mdot1 = bhorbit.single_BH_data(self.rawdat['ID1'],'mdotmean')
+            mdot2 = bhorbit.single_BH_data(self.rawdat['ID2'],'mdotmean')
 
-            lum1 = bhorbit.single_BH_data(self.data['ID1'],'lum')
-            lum2 = bhorbit.single_BH_data(self.data['ID2'],'lum')
+            lum1 = bhorbit.single_BH_data(self.rawdat['ID1'],'lum')
+            lum2 = bhorbit.single_BH_data(self.rawdat['ID2'],'lum')
 
             time1 = bhorbit.single_BH_data(self.data['ID1'],'time')
 
             if len(mass2)>0:
-                self.data['merge_mass_2'][i] = mass2[-1]
-                self.data['merge_mdot_2'][i] = mdot2[-1]
-                self.data['merge_lum_2'][i] = lum2[-1]
+                self.rawdat['merge_mass_2'][i] = mass2[-1]
+                self.rawdat['merge_mdot_2'][i] = mdot2[-1]
+                self.rawdat['merge_lum_2'][i] = lum2[-1]
 
             if len(mass1)>0:
-                argm = np.argmin(np.abs(self.data['tmerge']-time1))
-                self.data['merge_mass_1'] = mass1[argm]
-                self.data['merge_mdot_1'] = mdot1[argm]
-                self.data['merge_lum_1'] = lum1[argm]
+                argm = np.argmin(np.abs(self.rawdat['time']-time1))
+                self.rawdat['merge_mass_1'] = mass1[argm]
+                self.rawdat['merge_mdot_1'] = mdot1[argm]
+                self.rawdat['merge_lum_1'] = lum1[argm]
+
+        ordee = np.argsort(self.data['ID2'])
+        match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))[0]
+        match2 = np.where(np.in1d(self.rawdat['ID2'],self.data['ID2'][ordee]))[0]
+
+        self.data['merge_mass_1'] = np.zeros(len(self.data['ID2']))
+        self.data['merge_mass_2'] = np.zeros(len(self.data['ID2']))
+        self.data['merge_mdot_1'] = np.zeros(len(self.data['ID2']))
+        self.data['merge_mdot_2'] = np.zeros(len(self.data['ID2']))
+        self.data['merge_lum_1'] = np.zeros(len(self.data['ID2']))
+        self.data['merge_lum_2'] = np.zeros(len(self.data['ID2']))
+
+        self.data['merge_mass_1'][ordee[match]] = self.rawdat['merge_mass_1'][match2]
+        self.data['merge_mass_2'][ordee[match]] = self.rawdat['merge_mass_2'][match2]
+        self.data['merge_mdot_1'][ordee[match]] = self.rawdat['merge_mdot_1'][match2]
+        self.data['merge_mdot_2'][ordee[match]] = self.rawdat['merge_mdot_2'][match2]
+        self.data['merge_lum_1'][ordee[match]] = self.rawdat['merge_lum_1'][match2]
+        self.data['merge_lum_2'][ordee[match]] = self.rawdat['merge_lum_2'][match2]
+
+    def get_dual_frac(self,bhorbit,minL=1e43,maxD=10):
+        self.rawdat['frdual_'+str(minL)+'_'+str(maxD)] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['t_'+str(maxD)] = np.ones(len(self.rawdat['ID1']))*-1
+        for i in range(len(self.rawdat['ID1'])):
+            x1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'x')
+            x2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'x')
+            y1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'y')
+            y2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'y')
+            z1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'z')
+            z2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'z')
+
+            lum1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'lum')
+            lum2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'lum')
+
+            time1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'time')
+            time2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'time')
+
+            mint = np.min(time1.min(),time2.min())
+            maxt = self.rawdat['time'][i]
+
+            use1 = np.where((time1<maxt)&(time1>mint))[0]
+            use2 = np.where((time2<maxt)&(time2>mint))[0]
+
+            if len(use1) != len(use2):
+                print "Shit!!!!!"
+
+            dist = np.sqrt((x1[use1]-x2[use2])**2 + (y1[use1]-y2[use2])**2 + (z1[use1]-z2[use2])**2)
+            close = np.where(dist<maxD)[0]
+            dt = time1[use1[close[-1]]] - time1[use1[close[0]]]
+            self.rawdat['t_'+str(maxD)][i] = dt
+            dual = np.where((lum1[use1[close]]>minL)&(lum2[use2[close]]>minL))
+            self.rawdat['frdual_'+str(minL)+'_'+str(maxD)][i] = float(len(dual))/float(len(close))
+
+        ordee = np.argsort(self.data['ID2'])
+        match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))[0]
+        match2 = np.where(np.in1d(self.rawdat['ID2'],self.data['ID2'][ordee]))[0]
+
+        self.data['t_'+str(maxD)] = np.zeros(len(self.data['ID2']))
+        self.data['frdual_'+str(minL)+'_'+str(maxD)] = np.zeros(len(self.data['ID2']))
+
+        self.data['t_'+str(maxD)][ordee[match]] = self.rawdat['t_'+str(maxD)][match2]
+        self.data['frdual_'+str(minL)+'_'+str(maxD)][ordee[match]] = self.rawdat['frdual_'+str(minL)+'_'+str(maxD)][match2]
+
+
+
+
+
+
+
+
+
+
