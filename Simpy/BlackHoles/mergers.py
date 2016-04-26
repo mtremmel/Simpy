@@ -254,7 +254,6 @@ class mergerCat(object):
         self.rawdat['merge_lum_2'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['merge_lum_1'] = np.ones(len(self.rawdat['ID1']))*-1
         for i in range(len(self.rawdat['ID1'])):
-            print self.rawdat['ID1'], self.rawdat['ID2']
             mass1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'mass')
             mass2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'mass')
 
@@ -264,7 +263,7 @@ class mergerCat(object):
             lum1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'lum')
             lum2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'lum')
 
-            time1 = bhorbit.single_BH_data(self.data['ID1'][i],'time')
+            time1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'time')
 
             if len(mass2)>0:
                 self.rawdat['merge_mass_2'][i] = mass2[-1]
@@ -272,7 +271,6 @@ class mergerCat(object):
                 self.rawdat['merge_lum_2'][i] = lum2[-1]
 
             if len(mass1)>0:
-                print len(time1), len(mass1)
                 argm = np.argmin(np.abs(self.rawdat['time'][i]-time1))
                 self.rawdat['merge_mass_1'][i] = mass1[argm]
                 self.rawdat['merge_mdot_1'][i] = mdot1[argm]
