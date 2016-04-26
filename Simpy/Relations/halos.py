@@ -267,9 +267,16 @@ def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False):
 
     for step in dbsim.timesteps:
         print step
-        time, N, Nf, Mvir, Mvirf, Mstar, Mstarf, Mgas, Mgasf = \
-            step.gather_property('t()', 'halo_number()','later(1).halo_number()', 'Mvir', 'later(1).Mvir',
-                             'Mstar', 'later(1).Mstar', 'Mgas', 'later(1).Mgas')
+        try:
+            time, N, Nf, Mvir, Mvirf, Mstar, Mstarf, Mgas, Mgasf = \
+                step.gather_property('t()', 'halo_number()','later(1).halo_number()', 'Mvir', 'later(1).Mvir',
+                                    'Mstar', 'later(1).Mstar', 'Mgas', 'later(1).Mgas')
+        except:
+            print "No halo data this step"
+            nmergers.append(0)
+            times.append(step.time_gyr)
+            redshifts.append(step.redshift)
+
 
         ordM = np.argsort(Mvir)
         Nf = Nf[ordM]
