@@ -272,7 +272,12 @@ class mergerCat(object):
                 self.rawdat['merge_lum_2'][i] = lum2[-1]
 
             if len(mass1)>0:
-                argm = np.argmin(np.abs(time2[-1]-time1))
+                if len(time2)>0:
+                    argm = np.argmin(np.abs(time2[-1]-time1))
+                else:
+                    argm = np.argmin(np.abs(self.rawdat['time'][i]-time1))
+                    if argm > 0:
+                        argm = argm - 1
                 self.rawdat['merge_mass_1'][i] = mass1[argm]
                 self.rawdat['merge_mdot_1'][i] = mdot1[argm]
                 self.rawdat['merge_lum_1'][i] = lum1[argm]
