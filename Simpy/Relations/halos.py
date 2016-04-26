@@ -256,54 +256,71 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
     plotting.plt.xlim(minmass, maxmass)
 
 
-def mergerhist(dbsim,volume=25**3,mfconv=False,*attrange):
-    cnt = 0
-    nmerge = np.zeros(len(dbsim.timesteps))
-    time = np.zeros(len(dbsim.timesteps))
-    redshift = np.zeros(len(dbsim.timesteps))
-    min = []
-    max = []
-    properties = ['halo_number()', 'later(1).halo_number()']
-    rprops = []
-    for rr in attrange:
-        properties.append(rr[0])
-        rprops.append(rr[0])
-        min.append(rr[1])
-        max.append(rr[2])
-    properties = tuple(properties)
+def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False):
+    data = {'time': [], 'Mstar1':[], 'Mstar2':[], 'Mstarf':[],'Mvir1':[], 'Mvir2':[], 'Mvirf':[],
+            'Mgas1':[], 'Mgas2':[], 'Mgasf':[], 'nMerge':[],
+            'N1':[], 'N2':[], 'Nf':[]}
+
+    nmergers = []
+    redshifts = []
+    times = []
+
     for step in dbsim.timesteps:
-        print step
-        if step.next is None:
-            break
-        data = step.gather_property(*properties)
-        N = data[0]
-        Nf = data[1]
-        ok = np.arange(len(N))
-        for i in range(len(rprops)):
-            okn = np.where((data[1+i][ok]>min[i])&(data[1+i][ok]<max[i]))[0]
-            ok = ok[okn]
-        u, count = np.unique(Nf[ok], return_counts=True)
-        mm = np.where(count>1)[0]
-        nn = np.sum(Nf[ok[mm]] - 1)
-        nmerge[cnt] = float(nn)/float(volume)
-        time[cnt] = step.time_gyr
-        redshift[cnt] = step.redshift
-        cnt += 1
-    return nmerge, redshift, time
+        time, N, Nf, Mvir, Mvirf, Mstar, Mstarf, Mgas, Mgasf = \
+            step.gather_property('t()', 'halo_number()','later(1).halo_number()', 'Mvir', 'later(1).Mvir',
+                             'Mstar', 'later(1).Mstar', 'Mgas', 'later(1).Mgas')
 
+        ordM = np.argsort(Mvir)
+        Nf = Nf[ordM]
+        N = N[ordM]
+        Mvir = Mvir[ordM]
+        Mvirf = Mvirf[ordM]
+        Mstar = Mstar[ordM]
+        Mstarf = Mstarf[ordM]
+        Mgas = Mgas[ordM]
+        Mgasf = Mgas[ordM]
 
-def plt_halo_merge_rate(dbsim, color='blue', linestyle='-',label=None,
-                        type='redshift',volume=25**3,mfconv=False,ret_data=False,*attrange):
-    n,red,t = mergerhist(dbsim,volume,mfconv,*attrange)
-    if type=='redshift':
-        plotting.plt.step(red,n,color=color,linestyle=linestyle,label=label)
-    if type=='time':
-        plotting.plt.step(t,n,color=color,linestyle=linestyle,label=label)
+        ordNf = np.argsort(Nf)
+        Nf = Nf[ordNf]
+        time = time[ordNf]
+        N = N[ordNf]
+        Mvir = Mvir[ordNf]
+        Mvirf = Mvirf[ordNf]
+        Mstar = Mstar[ordNf]
+        Mstarf = Mstarf[ordNf]
+        Mgas = Mgas[ordNf]
+        Mgasf = Mgas[ordNf]
 
-    if ret_data:
-        return n, red, t
+        uNf, ind, inv, cnt = np.unique(Nf,return_index=True, return_inverse=True,return_counts=True)
+
+        mm = np.where(cnt > 1)[0]
+        indm = ind[mm]
+
+        nmergers.append(np.sum(cnt[mm]-1))
+        times.append(step.time_gyr)
+        redshifts.append(step.redshift)
+
+        data['time'].append(time[indm])
+        data['Mvirf'].append(Mvirf[indm])
+        data['Mstarf'].apend(Mstarf[indm])
+        data['Mgasf'].apend(Mgasf[indm])
+        data['Nf'].append(Nf[indm])
+
+        data['Mvir1'].append(Mvir[indm])
+        data['Mvir2'].append(Mvir[indm+1])
+        data['Mstar1'].append(Mstar[indm])
+        data['Mstar2'].append(Mstar[indm+1])
+        data['Mgas1'].append(Mgas[indm])
+        data['Mgas2'].append(Mgas[indm+1])
+        data['N1'].append(N[indm])
+        data['N2'].append(N[indm+1])
+
+        data['nMerge'].append(cnt[mm])
+
+    if ret_totals:
+        return data, nmergers, times, redshifts
     else:
-        return
+        return data
 
 
 
