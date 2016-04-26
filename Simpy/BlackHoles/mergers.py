@@ -250,7 +250,7 @@ class mergerCat(object):
         self.rawdat['merge_mass_2'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['merge_mass_1'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['merge_mdot_2'] = np.ones(len(self.rawdat['ID1']))*-1
-        self.rawdat['merge_mass_1'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['merge_mdot_1'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['merge_lum_2'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['merge_lum_1'] = np.ones(len(self.rawdat['ID1']))*-1
         for i in range(len(self.rawdat['ID1'])):
