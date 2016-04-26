@@ -318,8 +318,8 @@ def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False):
 
         data['time'].append(time[indm])
         data['Mvirf'].append(Mvirf[indm])
-        data['Mstarf'].apend(Mstarf[indm])
-        data['Mgasf'].apend(Mgasf[indm])
+        data['Mstarf'].append(Mstarf[indm])
+        data['Mgasf'].append(Mgasf[indm])
         data['Nf'].append(Nf[indm])
 
         data['Mvir1'].append(Mvir[indm])
