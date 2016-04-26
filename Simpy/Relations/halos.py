@@ -276,6 +276,7 @@ def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False):
             nmergers.append(0)
             times.append(step.time_gyr)
             redshifts.append(step.redshift)
+            continue
 
 
         ordM = np.argsort(Mvir)
