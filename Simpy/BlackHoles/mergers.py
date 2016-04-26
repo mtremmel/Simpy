@@ -253,6 +253,8 @@ class mergerCat(object):
         self.rawdat['merge_mdot_1'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['merge_lum_2'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['merge_lum_1'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['tform1'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['tform2'] = np.ones(len(self.rawdat['ID1']))*-1
         for i in range(len(self.rawdat['ID1'])):
             mass1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'mass')
             mass2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'mass')
@@ -265,6 +267,16 @@ class mergerCat(object):
 
             time1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'time')
             time2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'time')
+
+            if len(time1)>0:
+                oo = np.where(bhorbit.bhiords == self.rawdat['ID1'][i])[0]
+                oo = oo[0]
+                self.rawdat['tform1'][i] = bhorbit.tform[oo]
+            if len(time2)>0:
+                oo = np.where(bhorbit.bhiords == self.rawdat['ID2'][i])[0]
+                oo = oo[0]
+                self.rawdat['tform2'][i] = bhorbit.tform[oo]
+
 
             if len(mass2)>0:
                 self.rawdat['merge_mass_2'][i] = mass2[-1]
