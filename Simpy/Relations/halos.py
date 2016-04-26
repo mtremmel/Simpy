@@ -266,6 +266,7 @@ def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False):
     times = []
 
     for step in dbsim.timesteps:
+        print step
         time, N, Nf, Mvir, Mvirf, Mstar, Mstarf, Mgas, Mgasf = \
             step.gather_property('t()', 'halo_number()','later(1).halo_number()', 'Mvir', 'later(1).Mvir',
                              'Mstar', 'later(1).Mstar', 'Mgas', 'later(1).Mgas')
@@ -294,6 +295,13 @@ def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False):
         uNf, ind, inv, cnt = np.unique(Nf,return_index=True, return_inverse=True,return_counts=True)
 
         mm = np.where(cnt > 1)[0]
+
+        if len(mm)==0:
+            print "No Mergers This Step"
+            nmergers.append(0)
+            times.append(step.time_gyr)
+            redshifts.append(step.redshift)
+            continue
         indm = ind[mm]
 
         nmergers.append(np.sum(cnt[mm]-1))
