@@ -254,16 +254,16 @@ class mergerCat(object):
         self.rawdat['merge_lum_2'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['merge_lum_1'] = np.ones(len(self.rawdat['ID1']))*-1
         for i in range(len(self.rawdat['ID1'])):
-            mass1 = bhorbit.single_BH_data(self.rawdat['ID1'],'mass')
-            mass2 = bhorbit.single_BH_data(self.rawdat['ID2'],'mass')
+            mass1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'mass')
+            mass2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'mass')
 
-            mdot1 = bhorbit.single_BH_data(self.rawdat['ID1'],'mdotmean')
-            mdot2 = bhorbit.single_BH_data(self.rawdat['ID2'],'mdotmean')
+            mdot1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'mdotmean')
+            mdot2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'mdotmean')
 
-            lum1 = bhorbit.single_BH_data(self.rawdat['ID1'],'lum')
-            lum2 = bhorbit.single_BH_data(self.rawdat['ID2'],'lum')
+            lum1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'lum')
+            lum2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'lum')
 
-            time1 = bhorbit.single_BH_data(self.data['ID1'],'time')
+            time1 = bhorbit.single_BH_data(self.data['ID1'][i],'time')
 
             if len(mass2)>0:
                 self.rawdat['merge_mass_2'][i] = mass2[-1]
@@ -271,10 +271,10 @@ class mergerCat(object):
                 self.rawdat['merge_lum_2'][i] = lum2[-1]
 
             if len(mass1)>0:
-                argm = np.argmin(np.abs(self.rawdat['time']-time1))
-                self.rawdat['merge_mass_1'] = mass1[argm]
-                self.rawdat['merge_mdot_1'] = mdot1[argm]
-                self.rawdat['merge_lum_1'] = lum1[argm]
+                argm = np.argmin(np.abs(self.rawdat['time'][i]-time1))
+                self.rawdat['merge_mass_1'][i] = mass1[argm]
+                self.rawdat['merge_mdot_1'][i] = mdot1[argm]
+                self.rawdat['merge_lum_1'][i] = lum1[argm]
 
         ordee = np.argsort(self.data['ID2'])
         match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))[0]
