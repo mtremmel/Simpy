@@ -332,7 +332,8 @@ def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False):
         data['N2'].extend(N[indm+1])
 
         data['nMerge'].extend(cnt[mm])
-
+    for key in data.keys():
+        data[key] = np.array(data[key])
     if ret_totals:
         return data, nmergers, times, redshifts
     else:
