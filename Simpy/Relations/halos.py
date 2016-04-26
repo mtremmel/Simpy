@@ -316,22 +316,22 @@ def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False):
         times.append(step.time_gyr)
         redshifts.append(step.redshift)
 
-        data['time'].append(time[indm])
-        data['Mvirf'].append(Mvirf[indm])
-        data['Mstarf'].append(Mstarf[indm])
-        data['Mgasf'].append(Mgasf[indm])
-        data['Nf'].append(Nf[indm])
+        data['time'].extend(time[indm])
+        data['Mvirf'].extend(Mvirf[indm])
+        data['Mstarf'].extend(Mstarf[indm])
+        data['Mgasf'].extend(Mgasf[indm])
+        data['Nf'].extend(Nf[indm])
 
-        data['Mvir1'].append(Mvir[indm])
-        data['Mvir2'].append(Mvir[indm+1])
-        data['Mstar1'].append(Mstar[indm])
-        data['Mstar2'].append(Mstar[indm+1])
-        data['Mgas1'].append(Mgas[indm])
-        data['Mgas2'].append(Mgas[indm+1])
-        data['N1'].append(N[indm])
-        data['N2'].append(N[indm+1])
+        data['Mvir1'].extend(Mvir[indm])
+        data['Mvir2'].extend(Mvir[indm+1])
+        data['Mstar1'].extend(Mstar[indm])
+        data['Mstar2'].extend(Mstar[indm+1])
+        data['Mgas1'].extend(Mgas[indm])
+        data['Mgas2'].extend(Mgas[indm+1])
+        data['N1'].extend(N[indm])
+        data['N2'].extend(N[indm+1])
 
-        data['nMerge'].append(cnt[mm])
+        data['nMerge'].extend(cnt[mm])
 
     if ret_totals:
         return data, nmergers, times, redshifts
