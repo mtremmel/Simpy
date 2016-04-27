@@ -190,7 +190,7 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
             for i in range(len(amigastat['Grp'])):
                 xd = xC[i] - xC
                 yd = yC[i] - yC
-                zd = zC[i] = zC
+                zd = zC[i] - zC
                 oo = np.where(np.abs(xd) > boxsize*1e3/2.)
                 xd[oo] = -1.0 * (xd[oo]/np.abs(xd[oo])) * (boxsize*1e3 - np.abs(xd[oo]))
                 oo = np.where(np.abs(yd) > boxsize*1e3/2.)
