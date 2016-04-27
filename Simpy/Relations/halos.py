@@ -157,7 +157,7 @@ def SMHM_db(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmas
 
 def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None,
          markersize=5,label=None, correct=True, usedb=False, remove_sats=True, only_sats=False, error=True, alpha=1.0,
-         remove_sats_hard=False, boxsize=25**3):
+         remove_sats_hard=False, boxsize=25):
     if usedb is True:
         import halo_db as db
         dbstep = db.get_timestep(sim+'/%'+step)
@@ -172,8 +172,14 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
         redshift = dbstep.redshift
     else:
         amigastat, redshift, type = getstats(sim, step)
-        Mvir = amigastat['Mvir(M_sol)']
-        Mstar = amigastat['StarMass(M_sol)']
+        Mvir = amigastat['Mvir(M_sol)'].astype(np.float)
+        Mstar = amigastat['StarMass(M_sol)'].astype(np.float)
+        xC = amigastat['Xc'].astype(np.float)
+        yC = amigastat['Yc'].astype(np.float)
+        zC = amigastat['Zc'].astype(np.float)
+        Rvir = amigastat['Rvir(kpc)'].astype(np.float)
+        grp = amigastat['Grp'].astype(np.int64)
+
         if remove_sats is True:
             if type == 'rockstar':
                 ok, = np.where(amigastat['Satellite?'] == -1)
@@ -182,9 +188,9 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
         if remove_sats_hard is True:
             satsarray = np.zeros(len(amigastat['Grp']))
             for i in range(len(amigastat['Grp'])):
-                xd = amigastat['Xc'][i] - amigastat['Xc']
-                yd = amigastat['Yc'][i] - amigastat['Yc']
-                zd = amigastat['Zc'][i] - amigastat['Zc']
+                xd = xC[i] - xC
+                yd = yC[i] - yC
+                zd = zC[i] = zC
                 oo = np.where(np.abs(xd) > boxsize*1e3/2.)
                 xd[oo] = -1.0 * (xd[oo]/np.abs(xd[oo])) * (boxsize*1e3 - np.abs(xd[oo]))
                 oo = np.where(np.abs(yd) > boxsize*1e3/2.)
@@ -193,7 +199,7 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
                 zd[oo] = -1.0 * (zd[oo]/np.abs(zd[oo])) * (boxsize*1e3 - np.abs(zd[oo]))
 
                 dist = np.sqrt(xd**2 + yd**2 + zd**2)
-                bad = np.where((dist*1e3<amigastat['Rvir(kpc)']+amigastat['Rvir(kpc)'][i])&(amigastat['N_tot'][i]<amigastat['N_tot']))[0]
+                bad = np.where((dist*1e3<Rvir+Rvir[i])&(0.5*Mvir[i]<Mvir)&(grp[i] != grp))[0]
                 if len(bad)>0:
                     satsarray[i] = 1
             if type == 'rockstar':
@@ -206,8 +212,8 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
             if type == 'amiga':
                 ok, = np.where(amigastat['Satellite?'] == 'yes')
         if only_sats is True or remove_sats is True or remove_sats_hard:
-            Mvir = Mvir[ok].astype(np.float)
-            Mstar = Mstar[ok].astype(np.float)
+            Mvir = Mvir[ok]
+            Mstar = Mstar[ok]
 
     if correct is True:
         Mstar *= 0.6
