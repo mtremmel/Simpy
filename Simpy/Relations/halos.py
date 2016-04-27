@@ -157,7 +157,7 @@ def SMHM_db(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmas
 
 def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None,
          markersize=5,label=None, correct=True, usedb=False, remove_sats=True, only_sats=False, error=True, alpha=1.0,
-         remove_sats_hard=False, boxsize=25):
+         remove_sats_hard=False, boxsize=25, ret_data=False):
     if usedb is True:
         import halo_db as db
         dbstep = db.get_timestep(sim+'/%'+step)
@@ -189,6 +189,8 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
         if remove_sats_hard is True:
             satsarray = np.zeros(len(amigastat['Grp']))
             for i in range(len(amigastat['Grp'])):
+                if Mvir[i] < minmass or Mvir[i] > maxmass:
+                    continue
                 xd = xC[i] - xC
                 yd = yC[i] - yC
                 zd = zC[i] - zC
@@ -215,6 +217,7 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
         if only_sats is True or remove_sats is True or remove_sats_hard:
             Mvir = Mvir[ok]
             Mstar = Mstar[ok]
+            grp = grp[ok]
 
     if correct is True:
         Mstar *= 0.6
@@ -261,6 +264,9 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
     plotting.plt.yscale('log',base=10)
     plotting.plt.xscale('log',base=10)
     plotting.plt.xlim(minmass, maxmass)
+
+    if ret_data:
+        return Mvir, Mstar, grp
 
 
 def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False):
