@@ -181,6 +181,11 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
         Rvir = amigastat['Rvir(kpc)'].astype(np.float)
         grp = amigastat['Grp'].astype(np.int64)
 
+        if minmass is None:
+            minmass = Mvir.min()/2.
+        if maxmass is None:
+            maxmass = Mvir.max()*2.
+
         if remove_sats is True:
             if type == 'rockstar':
                 ok, = np.where(amigastat['Satellite?'] == -1)
