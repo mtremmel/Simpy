@@ -174,6 +174,7 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
         amigastat, redshift, type = getstats(sim, step)
         Mvir = amigastat['Mvir(M_sol)'].astype(np.float)
         Mstar = amigastat['StarMass(M_sol)'].astype(np.float)
+        Mgas = amigastat['GasMass(M_sol)'].astype(np.float)
         xC = amigastat['Xc'].astype(np.float)
         yC = amigastat['Yc'].astype(np.float)
         zC = amigastat['Zc'].astype(np.float)
@@ -191,16 +192,16 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
                 xd = xC[i] - xC
                 yd = yC[i] - yC
                 zd = zC[i] - zC
-                oo = np.where(np.abs(xd) > boxsize*1e3/2.)
+                oo = np.where(np.abs(xd) > boxsize*1e3/2.)[0]
                 xd[oo] = -1.0 * (xd[oo]/np.abs(xd[oo])) * (boxsize*1e3 - np.abs(xd[oo]))
-                oo = np.where(np.abs(yd) > boxsize*1e3/2.)
+                oo = np.where(np.abs(yd) > boxsize*1e3/2.)[0]
                 yd[oo] = -1.0 * (yd[oo]/np.abs(yd[oo])) * (boxsize*1e3 - np.abs(yd[oo]))
-                oo = np.where(np.abs(zd) > boxsize*1e3/2.)
+                oo = np.where(np.abs(zd) > boxsize*1e3/2.)[0]
                 zd[oo] = -1.0 * (zd[oo]/np.abs(zd[oo])) * (boxsize*1e3 - np.abs(zd[oo]))
 
                 dist = np.sqrt(xd**2 + yd**2 + zd**2)
-                bad = np.where((dist*1e3<Rvir+Rvir[i])&(0.5*Mvir[i]<Mvir)&(grp[i] != grp))[0]
-                if len(bad)>0:
+                bad = np.where((dist*1e3<2*(Rvir+Rvir[i]))&(0.5*Mvir[i]<Mvir)&(grp[i] != grp))[0]
+                if len(bad)>0 or Mgas[i]==0:
                     satsarray[i] = 1
             if type == 'rockstar':
                 ok = np.where((satsarray==0)&(amigastat['Satellite?']==-1))[0]
