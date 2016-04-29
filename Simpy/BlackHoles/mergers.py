@@ -30,7 +30,7 @@ def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt',
     dt = simtime / lstep
     tunit = s.infer_original_units('Gyr')
 
-    a, b, ID, c, IDeat, d, time, e, f, kick, g, h, mratio = readcol.readcol(mergename, twod=False)
+    a, b, ID, c, IDeat, d, time, e, f, kick, g, h, mratio = readcol(mergename, twod=False)
     output = {}
     time = pynbody.array.SimArray(time, tunit)
     output['time'] = time.in_units('Gyr')
