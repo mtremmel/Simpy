@@ -133,10 +133,12 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
 
 class mergerCat(object):
     def __init__(self, dbsim, simname, properties=[]):
-        proplist = ['halo_number()', 'later(1).halo_number()', 'host_halo.halo_number()', 'later(1).halo_number()']
+        proplist = ['halo_number()', 'BH_merger.halo_number()', 'host_halo.halo_number()',
+                    'BH_merger.host_halo.halo_number()', 'BH_merger.earlier(1).host_halo.halo_number()']
         for prop in properties:
             proplist.append(prop)
-            proplist.append('later(1).'+prop)
+            proplist.append('BH_merger.'+prop)
+            proplist.append('BH_merger.earlier(1).'+prop)
         mergerfile = simname+'.mergers'
         print "reading .mergers file..."
         time, step, ID, IDeat, ratio, kick = readcol(mergerfile,twod=False)
@@ -175,53 +177,23 @@ class mergerCat(object):
                 self.nmergers.append(0)
                 self.steptimes.append(step.time_gyr)
                 continue
-            bhid = data[0]
-            bhid_next = data[1]
-            good = np.where(np.in1d(bhid_next,bhid))[0]
 
-            bhid = bhid[good]
-            bhid_next = bhid_next[good]
-            for i in range(len(data[2:])):
-                data[i+2] = data[i+2][good]
-
-            host_n = data[2]
-            host_n_next = data[3]
-
-            ordd = np.argsort(bhid)
-
-            ubhid, inv, cnt = np.unique(bhid_next,return_counts=True, return_inverse=True)
-            mm = np.where(cnt>1)[0]
-            if len(mm)==0:
-                print "No BH mergers found this step"
-                self.nmergers.append(0)
-                self.steptimes.append(step.time_gyr)
-                continue
-            self.nmergers.append((cnt[mm]-1).sum())
+            self.nmergers.append(len(data[0]))
             self.steptimes.append(step.time_gyr)
-            print self.nmergers[-1], self.steptimes[-1]
 
-            eat = np.where((bhid_next != bhid)&(cnt[inv]>1))[0]
-            bheat = bhid[eat]
-            bhmain, inv = np.unique(bhid_next[eat],return_inverse=True)
-            match = np.where(np.in1d(bhid[ordd],bhmain))[0]
-            if len(np.where(np.equal(bhid[ordd[match]],bhmain)==False)[0])>0:
-                print "WARNING! matching between arrays is bad"
-            if len(np.where(np.equal(bhid[ordd[match[inv]]],bhmain[inv])==False)[0])>0:
-                print "WARNING! matching between arrays is bad"
+            self.data['ID1'].extend(data[1])
+            self.data['ID2'].extend(data[0])
 
-            self.data['ID1'].extend(bhmain[inv])
-            self.data['ID2'].extend(bheat)
+            self.data['host_N_pre_1'].extend(data[4])
+            self.data['host_N_pre_2'].extend(data[2])
+            self.data['host_N_post'].extend(data[3])
 
-            self.data['host_N_pre_1'].extend(host_n[ordd[match[inv]]])
-            self.data['host_N_pre_2'].extend(host_n[eat])
-            self.data['host_N_post'].extend(host_n_next[eat])
-
-            index = 4
+            index = 5
             for i in range(len(properties)):
-                self.data[properties[i]+'_pre_1'].extend(data[index][ordd[match[inv]]])
-                self.data[properties[i]+'_pre_2'].extend(data[index][eat])
-                self.data[properties[i]+'_post'].extend(data[index+1][eat])
-                index += 2
+                self.data[properties[i]+'_pre_1'].extend(data[index+2])
+                self.data[properties[i]+'_pre_2'].extend(data[index])
+                self.data[properties[i]+'_post'].extend(data[index+1])
+                index += 3
 
         for key in self.data.keys():
             self.data[key] = np.array(self.data[key])
