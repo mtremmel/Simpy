@@ -178,6 +178,10 @@ class mergerCat(object):
                 self.steptimes.append(step.time_gyr)
                 continue
 
+            forwardmerge = np.where(data[0]>data[1])[0]
+            data = data[:,forwardmerge]
+
+
             self.nmergers.append(len(data[0]))
             self.steptimes.append(step.time_gyr)
 
