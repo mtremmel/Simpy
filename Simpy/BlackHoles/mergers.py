@@ -243,11 +243,11 @@ class mergerCat(object):
             if len(time1)>0:
                 oo = np.where(bhorbit.bhiords == self.rawdat['ID1'][i])[0]
                 oo = oo[0]
-                self.rawdat['tform1'][i] = bhorbit.tform[oo]
+                self.rawdat['tform1'][i] = bhorbit.tform.in_units('Gyr')[oo]
             if len(time2)>0:
                 oo = np.where(bhorbit.bhiords == self.rawdat['ID2'][i])[0]
                 oo = oo[0]
-                self.rawdat['tform2'][i] = bhorbit.tform[oo]
+                self.rawdat['tform2'][i] = bhorbit.tform.in_units('Gyr')[oo]
 
 
             if len(mass2)>0:
