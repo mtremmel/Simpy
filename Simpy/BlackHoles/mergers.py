@@ -133,15 +133,19 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
 
 # GW calculations based on Salcido+ 2015, Flanagen + Hughes 1998, and others
 def freq_qnr(Mtot, a=0.95):
-    return util.c**3 * (1 - 0.63*(1-a)**(3./10.)) / (2 * np.pi * util.G * Mtot * util.M_sun_g)
+    Mtot *= util.M_sun_g
+    return util.c**3 * (1 - 0.63*(1-a)**(3./10.)) / (2 * np.pi * util.G * Mtot)
 
 def freq_merger(Mtot):
-    return util.c**2 * 0.02  / (util.G * Mtot * util.M_sun_g)
+    Mtot *= util.M_sun_g
+    return util.c**3 * 0.02 / (util.G * Mtot)
 
 def dEdf(M1, M2, eps=0.1, a=0.95):
-    F = (4.*M1*M2)**2/(M1+M2)**4
     fqnr = freq_qnr(M1+M2,a)
     fm = freq_merger(M1+M2)
+    M1 *= util.M_sun_g
+    M2 *= util.M_sun_g
+    F = (4.*M1*M2)**2/(M1+M2)**4
     return util.c**2*(M1+M2)*F*eps/(fqnr-fm)
 
 def strain(M1, M2, z, omegaM, omegaL, h0, eps=0.1, a=0.95):
