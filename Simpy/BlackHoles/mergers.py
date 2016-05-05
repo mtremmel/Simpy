@@ -131,6 +131,27 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
     if ret_data is True:
         return rate, tzbins,tedges
 
+# GW calculations based on Salcido+ 2015, Flanagen + Hughes 1998, and others
+def freq_qnr(Mtot, a=0.95):
+    return util.c**3 * (1 - 0.63*(1-a)**(3./10.)) / (2 * np.pi * util.G * Mtot * util.M_sun_g)
+
+def freq_merger(Mtot):
+    return util.c**2 * 0.02  / (util.G * Mtot * util.M_sun_g)
+
+def dEdf(M1, M2, eps=0.1, a=0.95):
+    F = (4.*M1*M2)**2/(M1+M2)**4
+    fqnr = freq_qnr(M1+M2,a)
+    fm = freq_merger(M1+M2)
+    return util.c**2*(M1+M2)*F*eps/(fqnr-fm)
+
+def strain(M1, M2, z, omegaM, omegaL, h0, eps=0.1, a=0.95):
+    dL = cosmology.lum_distance(z,omegaM, omegaL, h0)
+    Ef = dEdf(M1, M2, eps, a)
+    return np.sqrt(2.*util.G/util.c**3) * ((1+z)/np.pi*dL.in_units('cm')) * np.sqrt(Ef)
+
+
+
+
 class mergerCat(object):
     def __init__(self, dbsim, simname, properties=[]):
         proplist = ['halo_number()', 'BH_merger.halo_number()', 'host_halo.halo_number()',
@@ -330,6 +351,8 @@ class mergerCat(object):
 
         self.data['t_'+str(maxD)][ordee[match]] = self.rawdat['t_'+str(maxD)][match2]
         self.data['frdual_'+str(minL)+'_'+str(maxD)][ordee[match]] = self.rawdat['frdual_'+str(minL)+'_'+str(maxD)][match2]
+
+
 
 
 
