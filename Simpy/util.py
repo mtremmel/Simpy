@@ -4,6 +4,8 @@ import scipy
 #useful constants
 c = 2.99792458e10
 lbol_sun = 3.9e33
+G = 6.67384e-8
+M_sun_g = 1.988547e33
 loglbol_sun = np.log10(lbol_sun)
 
 def cutdict(target, goodinds):
