@@ -46,7 +46,7 @@ def comoving_dist(z, omegaM, omegaL, h):
         else:
                 return get_d(z)
 
-def lum_distance(z, omageM, omegaL, h):
+def lum_distance(z, omegaM, omegaL, h):
         dc = comoving_dist(z,omegaM, omegaL, h)
         if isinstance(z, np.ndarray) or isinstance(z, list):
                 return arr.SimArray(dc*(1+z),'Mpc')
