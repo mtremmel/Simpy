@@ -152,7 +152,7 @@ def strain(M1, M2, z, omegaM, omegaL, h0, eps=0.1, a=0.95):
     dL = cosmology.lum_distance(z,omegaM, omegaL, h0)
     dL *= 3.086e+24
     Ef = dEdf(M1, M2, eps, a)
-    return np.sqrt(2.*util.G/util.c**3) * ((1+z)/dL) * np.sqrt(Ef)
+    return np.sqrt(2.*util.G/util.c**3) * ((1+z)/(np.pi*dL)) * np.sqrt(Ef)
 
 
 
