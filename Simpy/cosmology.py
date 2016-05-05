@@ -39,7 +39,7 @@ def comoving_dist(z, omegaM, omegaL, h):
                 return HoverH0(z,omegaM, omegaL)
 
         def get_d(x):
-                return dH * integrate.quad(func,0,x)
+                return dH * integrate.quad(func,0,x)[0]
 
         if isinstance(z, np.ndarray) or isinstance(z, list):
                 return np.array(map(get_d, z))
