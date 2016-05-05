@@ -1,5 +1,6 @@
 from pynbody.analysis import pkdgrav_cosmo as cosmo
 import pynbody.analysis.cosmology as other_cosmo
+import pynbody.array as arr
 import numpy as np
 from scipy import optimize as opt
 from scipy import integrate
@@ -28,27 +29,27 @@ def getScaleFactor(times,s):
         scaleFac = 1./(1+redshift)
         return scaleFac, redshift
 
-def HoverH0(z, sim):
-        return np.sqrt(sim.properties['omegaM0']*(1+z)**3+sim.properties['omegaL0'])
+def HoverH0(z, omegaM, omegaL):
+        return np.sqrt(omegaM*(1+z)**3+omegaL)
 
-def comoving_dist(z, sim):
-        dH = util.c*1e5/(sim.properties['h']*100)
+def comoving_dist(z, omegaM, omegaL, h):
+        dH = util.c*1e5/(h*100)
 
         def func(z):
-                return HoverH0(z,sim)
+                return HoverH0(z,omegaM, omegaL)
 
         def get_d(x):
                 return dH * integrate.quad(func,0,x)
 
         if isinstance(z, np.ndarray) or isinstance(z, list):
-                return np.SimArray((map(get_d, z)),'Mpc')
+                return np.array(map(get_d, z))
         else:
                 return get_d(z)
 
-def lum_distance(z, sim):
-        dc = comoving_dist(z,sim)
+def lum_distance(z, omageM, omegaL, h):
+        dc = comoving_dist(z,omegaM, omegaL, h)
         if isinstance(z, np.ndarray) or isinstance(z, list):
-                return np.SimArray(dc*(1+z),'Mpc')
+                return arr.SimArray(dc*(1+z),'Mpc')
         else:
                 return dc*(1+z)
 
