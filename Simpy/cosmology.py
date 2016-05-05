@@ -30,13 +30,13 @@ def getScaleFactor(times,s):
         return scaleFac, redshift
 
 def HoverH0(z, omegaM, omegaL):
-        return np.sqrt(omegaM*(1+z)**3+omegaL)
+        return np.sqrt(omegaM*(1+z)**3 + omegaL)
 
 def comoving_dist(z, omegaM, omegaL, h):
-        dH = util.c/1e5/(h*100)
+        dH = util.c/(1.0e5*h*100.)
 
         def func(z):
-                return HoverH0(z,omegaM, omegaL)
+                return 1./HoverH0(z,omegaM, omegaL)
 
         def get_d(x):
                 return dH * integrate.quad(func,0,x)[0]
