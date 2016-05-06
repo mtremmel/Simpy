@@ -160,11 +160,11 @@ def strain(M1, M2, z, omegaM, omegaL, h0, eps=0.1, a=0.95):
 class mergerCat(object):
     def __init__(self, dbsim, simname, properties=[], bhorbit=None):
         proplist = ['halo_number()', 'BH_merger.halo_number()', 'host_halo.halo_number()',
-                    'BH_merger.host_halo.halo_number()', 'BH_merger.earlier(1).host_halo.halo_number()']
+                    'BH_merger.host_halo.halo_number()', 'later(1).earlier(1).host_halo.halo_number()']
         for prop in properties:
             proplist.append(prop)
             proplist.append('BH_merger.'+prop)
-            proplist.append('BH_merger.earlier(1).'+prop)
+            proplist.append('later(1).earlier(1).'+prop)
         mergerfile = simname+'.mergers'
         print "reading .mergers file..."
         time, step, ID, IDeat, ratio, kick = readcol(mergerfile,twod=False)
