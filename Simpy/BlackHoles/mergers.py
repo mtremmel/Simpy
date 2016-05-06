@@ -160,7 +160,7 @@ def strain(M1, M2, z, omegaM, omegaL, h0, eps=0.1, a=0.95):
 class mergerCat(object):
     def __init__(self, dbsim, simname, properties=[], bhorbit=None):
         proplist = ['halo_number()', 'BH_merger.halo_number()', 'host_halo.halo_number()',
-                    'BH_merger.host_halo.halo_number()', 'later(1).earlier(1).host_halo.halo_number()']
+                    'BH_merger.host_halo.halo_number()', 'later(1).earlier(1).host_halo.halo_number()', 'BH_merger.t()']
         for prop in properties:
             proplist.append(prop)
             proplist.append('BH_merger.'+prop)
@@ -208,9 +208,10 @@ class mergerCat(object):
             stepnumA = re.match("^(.*)\.(0[0-9]*)$",step.next.filename).groups()[0]
 
 
-            forwardmerge = np.where(data[0]>data[1])[0]
-            data = data[:,forwardmerge]
+            forwardmerge = np.where(data[5]>step.time_gyr)[0]
 
+            for i in range(len(data)):
+                data[i] = data[i][forwardmerge]
 
             self.nmergers.append(len(data[0]))
             self.steptimes.append(step.time_gyr)
