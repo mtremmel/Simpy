@@ -158,7 +158,7 @@ def strain(M1, M2, z, omegaM, omegaL, h0, eps=0.1, a=0.95):
 
 
 class mergerCat(object):
-    def __init__(self, dbsim, simname, properties=[]):
+    def __init__(self, dbsim, simname, properties=[], bhorbit=None):
         proplist = ['halo_number()', 'BH_merger.halo_number()', 'host_halo.halo_number()',
                     'BH_merger.host_halo.halo_number()', 'BH_merger.earlier(1).host_halo.halo_number()']
         for prop in properties:
@@ -228,25 +228,57 @@ class mergerCat(object):
         for key in self.data.keys():
             self.data[key] = np.array(self.data[key])
 
-        ordee = np.argsort(self.data['ID2'])
-        match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))[0]
-        match2 = np.where(np.in1d(self.rawdat['ID2'],self.data['ID2'][ordee]))[0]
+        self._match_data_to_raw('ratio', 'kick', 'tmerge','step')
 
-        self.data['ratio'] = np.zeros(len(self.data['ID2']))
-        self.data['kick'] = np.zeros(len(self.data['ID2']))
-        self.data['tmerge'] = np.zeros(len(self.data['ID2']))
-        self.data['step'] = np.zeros(len(self.data['ID2']))
+#        ordee = np.argsort(self.data['ID2'])
+#        match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))[0]
+#        match2 = np.where(np.in1d(self.rawdat['ID2'],self.data['ID2'][ordee]))[0]
 
-        self.data['ratio'][ordee[match]] = self.rawdat['ratio'][match2]
-        self.data['kick'][ordee[match]] = self.rawdat['kick'][match2]
-        self.data['tmerge'][ordee[match]] = self.rawdat['time'][match2]
-        self.data['step'][ordee[match]] = self.rawdat['step'][match2]
+#        self.data['ratio'] = np.zeros(len(self.data['ID2']))
+#        self.data['kick'] = np.zeros(len(self.data['ID2']))
+#        self.data['tmerge'] = np.zeros(len(self.data['ID2']))
+#        self.data['step'] = np.zeros(len(self.data['ID2']))
+
+#        self.data['ratio'][ordee[match]] = self.rawdat['ratio'][match2]
+#        self.data['kick'][ordee[match]] = self.rawdat['kick'][match2]
+#        self.data['tmerge'][ordee[match]] = self.rawdat['time'][match2]
+#        self.data['step'][ordee[match]] = self.rawdat['step'][match2]
 
     def __getitem__(self, item):
         return self.data[item]
 
     def keys(self):
         return self.data.keys()
+
+    def _match_data_to_raw(self,*properties):
+        ordee = np.argsort(self.data['ID2'])
+        match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))[0]
+        match2 = np.where(np.in1d(self.rawdat['ID2'],self.data['ID2'][ordee]))[0]
+
+        for p in properties:
+            self.data[p] = np.ones(len(self.data['ID2'])) * -1
+            self.data[p][ordee[match]] = self.rawdat[p][match2]
+
+
+    def calc_GW_emission(self, sim, eps=0.1, a=0.95):
+        self.rawdat['GW_freq_merge'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['GW_strain_merge'] = np.ones(len(self.rawdat['ID1']))*-1
+
+        if 'merge_mass_1' not in self.rawdat.keys():
+            print "ERROR need to find final masses for BHs"
+            return
+
+        ok = np.where((self.rawdat['merge_mass_1'] > 0)&(self.rawdat['merge_mass_2']>0))[0]
+        z = pynbody.analysis.cosmology.redshift(sim, self.rawdat['tmerge'])
+        hc = strain(self.rawdat['merge_mass_1'][ok], self.rawdat['merge_mass_2'][ok], z,
+                    sim.properties['omegaM0'], sim.properties['omegaL0'], sim.properties['h'], eps=eps, a=a)
+        fm = freq_merger(self.rawdat['merge_mass_1']+self.rawdat['merge_mass_2'])
+        self.rawdat['GW_freq_merge'][ok] = fm
+        self.rawdat['GW_strain_merge'][ok] = hc
+
+        self._match_data_to_raw('GW_freq_merge', 'GW_strain_merge')
+
+
 
     def get_final_values(self,bhorbit):
         self.rawdat['merge_mass_2'] = np.ones(len(self.rawdat['ID1']))*-1
@@ -296,23 +328,27 @@ class mergerCat(object):
                 self.rawdat['merge_mdot_1'][i] = mdot1[argm]
                 self.rawdat['merge_lum_1'][i] = lum1[argm]
 
-        ordee = np.argsort(self.data['ID2'])
-        match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))[0]
-        match2 = np.where(np.in1d(self.rawdat['ID2'],self.data['ID2'][ordee]))[0]
+        self._match_data_to_raw('merge_mass_1', 'merge_mass_2', 'merge_mdot_1', 'merge_mdot_2',
+                                'merge_lum_1', 'merge_lum_2')
 
-        self.data['merge_mass_1'] = np.zeros(len(self.data['ID2']))
-        self.data['merge_mass_2'] = np.zeros(len(self.data['ID2']))
-        self.data['merge_mdot_1'] = np.zeros(len(self.data['ID2']))
-        self.data['merge_mdot_2'] = np.zeros(len(self.data['ID2']))
-        self.data['merge_lum_1'] = np.zeros(len(self.data['ID2']))
-        self.data['merge_lum_2'] = np.zeros(len(self.data['ID2']))
 
-        self.data['merge_mass_1'][ordee[match]] = self.rawdat['merge_mass_1'][match2]
-        self.data['merge_mass_2'][ordee[match]] = self.rawdat['merge_mass_2'][match2]
-        self.data['merge_mdot_1'][ordee[match]] = self.rawdat['merge_mdot_1'][match2]
-        self.data['merge_mdot_2'][ordee[match]] = self.rawdat['merge_mdot_2'][match2]
-        self.data['merge_lum_1'][ordee[match]] = self.rawdat['merge_lum_1'][match2]
-        self.data['merge_lum_2'][ordee[match]] = self.rawdat['merge_lum_2'][match2]
+#        ordee = np.argsort(self.data['ID2'])
+#        match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))[0]
+#        match2 = np.where(np.in1d(self.rawdat['ID2'],self.data['ID2'][ordee]))[0]
+
+#        self.data['merge_mass_1'] = np.zeros(len(self.data['ID2']))
+#        self.data['merge_mass_2'] = np.zeros(len(self.data['ID2']))
+#        self.data['merge_mdot_1'] = np.zeros(len(self.data['ID2']))
+#        self.data['merge_mdot_2'] = np.zeros(len(self.data['ID2']))
+#        self.data['merge_lum_1'] = np.zeros(len(self.data['ID2']))
+#        self.data['merge_lum_2'] = np.zeros(len(self.data['ID2']))
+
+#        self.data['merge_mass_1'][ordee[match]] = self.rawdat['merge_mass_1'][match2]
+#        self.data['merge_mass_2'][ordee[match]] = self.rawdat['merge_mass_2'][match2]
+#        self.data['merge_mdot_1'][ordee[match]] = self.rawdat['merge_mdot_1'][match2]
+#        self.data['merge_mdot_2'][ordee[match]] = self.rawdat['merge_mdot_2'][match2]
+#        self.data['merge_lum_1'][ordee[match]] = self.rawdat['merge_lum_1'][match2]
+#        self.data['merge_lum_2'][ordee[match]] = self.rawdat['merge_lum_2'][match2]
 
     def get_dual_frac(self,bhorbit,minL=1e43,maxD=10):
         self.rawdat['frdual_'+str(minL)+'_'+str(maxD)] = np.ones(len(self.rawdat['ID1']))*-1
@@ -347,15 +383,17 @@ class mergerCat(object):
             dual = np.where((lum1[use1[close]]>minL)&(lum2[use2[close]]>minL))
             self.rawdat['frdual_'+str(minL)+'_'+str(maxD)][i] = float(len(dual))/float(len(close))
 
-        ordee = np.argsort(self.data['ID2'])
-        match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))[0]
-        match2 = np.where(np.in1d(self.rawdat['ID2'],self.data['ID2'][ordee]))[0]
+        self._match_data_to_raw('t_'+str(maxD), 'frdual_'+str(minL)+'_'+str(maxD))
 
-        self.data['t_'+str(maxD)] = np.zeros(len(self.data['ID2']))
-        self.data['frdual_'+str(minL)+'_'+str(maxD)] = np.zeros(len(self.data['ID2']))
+#        ordee = np.argsort(self.data['ID2'])
+#        match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))[0]
+#        match2 = np.where(np.in1d(self.rawdat['ID2'],self.data['ID2'][ordee]))[0]
 
-        self.data['t_'+str(maxD)][ordee[match]] = self.rawdat['t_'+str(maxD)][match2]
-        self.data['frdual_'+str(minL)+'_'+str(maxD)][ordee[match]] = self.rawdat['frdual_'+str(minL)+'_'+str(maxD)][match2]
+#        self.data['t_'+str(maxD)] = np.zeros(len(self.data['ID2']))
+#        self.data['frdual_'+str(minL)+'_'+str(maxD)] = np.zeros(len(self.data['ID2']))
+
+#        self.data['t_'+str(maxD)][ordee[match]] = self.rawdat['t_'+str(maxD)][match2]
+#        self.data['frdual_'+str(minL)+'_'+str(maxD)][ordee[match]] = self.rawdat['frdual_'+str(minL)+'_'+str(maxD)][match2]
 
 
 
