@@ -183,7 +183,7 @@ class mergerCat(object):
         util.cutdict(self.rawdat,ordr)
 
         self.data = {'ID1':[], 'ID2':[], 'ratio':[], 'kick':[], 'step':[],
-                    'tmerge':[], 'tstep_prev':[], 'tstep_after':[],
+                    'tmerge':[], 'tsnap_prev':[], 'tsnap_after':[], 'snap_prev':[], 'snap_after':[]
                     'host_N_pre_1':[], 'host_N_pre_2':[], 'host_N_post':[]}
         for p in properties:
             self.data[p+'_pre_1'] = []
@@ -204,6 +204,10 @@ class mergerCat(object):
                 self.steptimes.append(step.time_gyr)
                 continue
 
+            stepnum = re.match("^(.*)\.(0[0-9]*)$",step.filename).groups()[0]
+            stepnumA = re.match("^(.*)\.(0[0-9]*)$",step.next.filename).groups()[0]
+
+
             forwardmerge = np.where(data[0]>data[1])[0]
             data = data[:,forwardmerge]
 
@@ -217,6 +221,11 @@ class mergerCat(object):
             self.data['host_N_pre_1'].extend(data[4])
             self.data['host_N_pre_2'].extend(data[2])
             self.data['host_N_post'].extend(data[3])
+
+            self.data['snap_after'].extend(int(stepnumA) * np.ones(len(data[1])).astype(np.int))
+            self.data['snap_prev'].extend(int(stepnum) * np.ones(len(data[1])).astype(np.int))
+            self.data['tsnap_after'].extend(step.next.time_gyr * np.ones(len(data[1])))
+            self.data['tsnap_prev'].extend(step.time_gyr * np.ones(len(data[1])))
 
             index = 5
             for i in range(len(properties)):
