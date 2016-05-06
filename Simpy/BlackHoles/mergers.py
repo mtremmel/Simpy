@@ -3,7 +3,7 @@ from .. import Files, cosmology, plotting, util
 from ..readcol import readcol
 import os
 import pynbody
-
+import re
 
 def findmergers(outname, diagname='*out*'):
     os.system("awk '/BHSink/ && /Merge/ && /eating/' " + diagname + " > " + outname)
@@ -183,7 +183,7 @@ class mergerCat(object):
         util.cutdict(self.rawdat,ordr)
 
         self.data = {'ID1':[], 'ID2':[], 'ratio':[], 'kick':[], 'step':[],
-                    'tmerge':[], 'tsnap_prev':[], 'tsnap_after':[], 'snap_prev':[], 'snap_after':[]
+                    'tmerge':[], 'tsnap_prev':[], 'tsnap_after':[], 'snap_prev':[], 'snap_after':[],
                     'host_N_pre_1':[], 'host_N_pre_2':[], 'host_N_post':[]}
         for p in properties:
             self.data[p+'_pre_1'] = []
