@@ -253,6 +253,8 @@ class mergerCat(object):
         match2 = np.where(np.in1d(self.rawdat['ID2'],self.data['ID2'][ordee]))[0]
 
         if len(match) != len(match2):
+            print self.data['ID2'][ordee], self.rawdat['ID2']
+            print match, match2
             raise RuntimeError("ERROR match not returning same number of elements")
 
         if len(np.where(np.equal(self.data['ID2'][ordee[match]],self.rawdat['ID2'][match2]) is False)[0])>0:
