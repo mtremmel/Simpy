@@ -184,6 +184,10 @@ class mergerCat(object):
         ordr = np.argsort(self.rawdat['ID2'])
         util.cutdict(self.rawdat,ordr)
 
+        uIDeat, indices = np.unique(self.rawdat['ID2'], return_index=True)
+        if len(np.where(indices>1)[0])>0:
+            print "SHIIIIIIT"
+
         self.data = {'ID1':[], 'ID2':[], 'ratio':[], 'kick':[], 'step':[],
                     'time':[], 'tsnap_prev':[], 'tsnap_after':[], 'snap_prev':[], 'snap_after':[],
                     'host_N_pre_1':[], 'host_N_pre_2':[], 'host_N_post':[]}
