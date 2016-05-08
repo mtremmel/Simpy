@@ -243,7 +243,7 @@ class mergerCat(object):
         for key in self.data.keys():
             self.data[key] = np.array(self.data[key])
 
-        self._match_data_to_raw('ratio', 'kick', 'time','step')
+        #self._match_data_to_raw('ratio', 'kick', 'time','step')
 
     def __getitem__(self, item):
         return self.data[item]
