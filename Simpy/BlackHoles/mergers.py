@@ -159,17 +159,16 @@ def strain(M1, M2, z, omegaM, omegaL, h0, eps=0.1, a=0.95):
 
 class mergerCat(object):
     def __init__(self, dbsim, simname, properties=[], bhorbit=None):
-        proplist = ['halo_number()', 'BH_merger.halo_number()', 'host_halo.halo_number()',
-                    'BH_merger.host_halo.halo_number()', 'later(1).earlier(1).host_halo.halo_number()', 'BH_merger.t()']
+        proplist = ['halo_number()', 'BH_merger_next.halo_number()', 'host_halo.halo_number()',
+                    'BH_merger_next.host_halo.halo_number()', 'bh_merger.earlier(1).host_halo.halo_number()']
         for prop in properties:
             proplist.append(prop)
-            proplist.append('BH_merger.'+prop)
-            proplist.append('later(1).earlier(1).'+prop)
+            proplist.append('BH_merger_next.'+prop)
+            proplist.append('BH_merger_next.earlier(1).'+prop)
         mergerfile = simname+'.mergers'
         print "reading .mergers file..."
         time, step, ID, IDeat, ratio, kick = readcol(mergerfile,twod=False)
-        ID = ID.astype(np.int64)
-        IDeat = IDeat.astype(np.int64)
+
         print "checking for bad IDs..."
         bad = np.where(ID<0)
         if len(bad)>0:
@@ -178,13 +177,17 @@ class mergerCat(object):
         if len(bad2)>0:
             IDeat[bad2] = 2*2147483648 + IDeat[bad2]
 
+        uIDeat, indices = np.unique(IDeat, return_index=True)
+
         self.rawdat = {'time':time, 'ID1':ID, 'ID2':IDeat, 'ratio':ratio, 'kick':kick, 'step':step}
+        util.cutdict(self.rawdat,indices)
         ordr = np.argsort(self.rawdat['ID2'])
         util.cutdict(self.rawdat,ordr)
 
         self.data = {'ID1':[], 'ID2':[], 'ratio':[], 'kick':[], 'step':[],
                     'time':[], 'tsnap_prev':[], 'tsnap_after':[], 'snap_prev':[], 'snap_after':[],
                     'host_N_pre_1':[], 'host_N_pre_2':[], 'host_N_post':[]}
+
         for p in properties:
             self.data[p+'_pre_1'] = []
             self.data[p+'_pre_2'] = []
@@ -206,12 +209,6 @@ class mergerCat(object):
 
             stepnum = re.match("^(.*)\.(0[0-9]*)$",step.filename).groups()[1]
             stepnumA = re.match("^(.*)\.(0[0-9]*)$",step.next.filename).groups()[1]
-
-
-            forwardmerge = np.where(data[5]>step.time_gyr)[0]
-
-            for i in range(len(data)):
-                data[i] = data[i][forwardmerge]
 
             self.nmergers.append(len(data[0]))
             self.steptimes.append(step.time_gyr)
@@ -239,20 +236,6 @@ class mergerCat(object):
             self.data[key] = np.array(self.data[key])
 
         self._match_data_to_raw('ratio', 'kick', 'time','step')
-
-#        ordee = np.argsort(self.data['ID2'])
-#        match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))[0]
-#        match2 = np.where(np.in1d(self.rawdat['ID2'],self.data['ID2'][ordee]))[0]
-
-#        self.data['ratio'] = np.zeros(len(self.data['ID2']))
-#        self.data['kick'] = np.zeros(len(self.data['ID2']))
-#        self.data['tmerge'] = np.zeros(len(self.data['ID2']))
-#        self.data['step'] = np.zeros(len(self.data['ID2']))
-
-#        self.data['ratio'][ordee[match]] = self.rawdat['ratio'][match2]
-#        self.data['kick'][ordee[match]] = self.rawdat['kick'][match2]
-#        self.data['tmerge'][ordee[match]] = self.rawdat['time'][match2]
-#        self.data['step'][ordee[match]] = self.rawdat['step'][match2]
 
     def __getitem__(self, item):
         return self.data[item]
@@ -341,25 +324,6 @@ class mergerCat(object):
         self._match_data_to_raw('merge_mass_1', 'merge_mass_2', 'merge_mdot_1', 'merge_mdot_2',
                                 'merge_lum_1', 'merge_lum_2')
 
-
-#        ordee = np.argsort(self.data['ID2'])
-#        match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))[0]
-#        match2 = np.where(np.in1d(self.rawdat['ID2'],self.data['ID2'][ordee]))[0]
-
-#        self.data['merge_mass_1'] = np.zeros(len(self.data['ID2']))
-#        self.data['merge_mass_2'] = np.zeros(len(self.data['ID2']))
-#        self.data['merge_mdot_1'] = np.zeros(len(self.data['ID2']))
-#        self.data['merge_mdot_2'] = np.zeros(len(self.data['ID2']))
-#        self.data['merge_lum_1'] = np.zeros(len(self.data['ID2']))
-#        self.data['merge_lum_2'] = np.zeros(len(self.data['ID2']))
-
-#        self.data['merge_mass_1'][ordee[match]] = self.rawdat['merge_mass_1'][match2]
-#        self.data['merge_mass_2'][ordee[match]] = self.rawdat['merge_mass_2'][match2]
-#        self.data['merge_mdot_1'][ordee[match]] = self.rawdat['merge_mdot_1'][match2]
-#        self.data['merge_mdot_2'][ordee[match]] = self.rawdat['merge_mdot_2'][match2]
-#        self.data['merge_lum_1'][ordee[match]] = self.rawdat['merge_lum_1'][match2]
-#        self.data['merge_lum_2'][ordee[match]] = self.rawdat['merge_lum_2'][match2]
-
     def get_dual_frac(self,bhorbit,minL=1e43,maxD=10):
         self.rawdat['frdual_'+str(minL)+'_'+str(maxD)] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['t_'+str(maxD)] = np.ones(len(self.rawdat['ID1']))*-1
@@ -394,16 +358,6 @@ class mergerCat(object):
             self.rawdat['frdual_'+str(minL)+'_'+str(maxD)][i] = float(len(dual))/float(len(close))
 
         self._match_data_to_raw('t_'+str(maxD), 'frdual_'+str(minL)+'_'+str(maxD))
-
-#        ordee = np.argsort(self.data['ID2'])
-#        match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))[0]
-#        match2 = np.where(np.in1d(self.rawdat['ID2'],self.data['ID2'][ordee]))[0]
-
-#        self.data['t_'+str(maxD)] = np.zeros(len(self.data['ID2']))
-#        self.data['frdual_'+str(minL)+'_'+str(maxD)] = np.zeros(len(self.data['ID2']))
-
-#        self.data['t_'+str(maxD)][ordee[match]] = self.rawdat['t_'+str(maxD)][match2]
-#        self.data['frdual_'+str(minL)+'_'+str(maxD)][ordee[match]] = self.rawdat['frdual_'+str(minL)+'_'+str(maxD)][match2]
 
 
 
