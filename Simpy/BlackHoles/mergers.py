@@ -160,7 +160,7 @@ def strain(M1, M2, z, omegaM, omegaL, h0, eps=0.1, a=0.95):
 class mergerCat(object):
     def __init__(self, dbsim, simname, properties=[], bhorbit=None):
         proplist = ['halo_number()', 'BH_merger_next.halo_number()', 'host_halo.halo_number()',
-                    'BH_merger_next.host_halo.halo_number()', 'bh_merger.earlier(1).host_halo.halo_number()']
+                    'BH_merger_next.host_halo.halo_number()', 'BH_merger_next.earlier(1).host_halo.halo_number()']
         for prop in properties:
             proplist.append(prop)
             proplist.append('BH_merger_next.'+prop)
