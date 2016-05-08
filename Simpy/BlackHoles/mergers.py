@@ -178,12 +178,12 @@ class mergerCat(object):
         if len(bad2)>0:
             IDeat[bad2] = 2*2147483648 + IDeat[bad2]
 
-        self.rawdat = {'tmerge':time, 'ID1':ID, 'ID2':IDeat, 'ratio':ratio, 'kick':kick, 'step':step}
+        self.rawdat = {'time':time, 'ID1':ID, 'ID2':IDeat, 'ratio':ratio, 'kick':kick, 'step':step}
         ordr = np.argsort(self.rawdat['ID2'])
         util.cutdict(self.rawdat,ordr)
 
         self.data = {'ID1':[], 'ID2':[], 'ratio':[], 'kick':[], 'step':[],
-                    'tmerge':[], 'tsnap_prev':[], 'tsnap_after':[], 'snap_prev':[], 'snap_after':[],
+                    'time':[], 'tsnap_prev':[], 'tsnap_after':[], 'snap_prev':[], 'snap_after':[],
                     'host_N_pre_1':[], 'host_N_pre_2':[], 'host_N_post':[]}
         for p in properties:
             self.data[p+'_pre_1'] = []
@@ -238,7 +238,7 @@ class mergerCat(object):
         for key in self.data.keys():
             self.data[key] = np.array(self.data[key])
 
-        self._match_data_to_raw('ratio', 'kick', 'tmerge','step')
+        self._match_data_to_raw('ratio', 'kick', 'time','step')
 
 #        ordee = np.argsort(self.data['ID2'])
 #        match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))[0]
