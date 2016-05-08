@@ -178,7 +178,7 @@ class mergerCat(object):
         if len(bad2)>0:
             IDeat[bad2] = 2*2147483648 + IDeat[bad2]
 
-        self.rawdat = {'time':time, 'ID1':ID, 'ID2':IDeat, 'ratio':ratio, 'kick':kick, 'step':step}
+        self.rawdat = {'tmerge':time, 'ID1':ID, 'ID2':IDeat, 'ratio':ratio, 'kick':kick, 'step':step}
         ordr = np.argsort(self.rawdat['ID2'])
         util.cutdict(self.rawdat,ordr)
 
