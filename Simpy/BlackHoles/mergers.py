@@ -216,6 +216,10 @@ class mergerCat(object):
             self.data['ID1'].extend(data[1])
             self.data['ID2'].extend(data[0])
 
+            tt1, tt2 = np.unique(data[0],return_counts=True)
+            if len(np.where(tt2>1)[0])>0:
+                print "FUCK"
+
             self.data['host_N_pre_1'].extend(data[4])
             self.data['host_N_pre_2'].extend(data[2])
             self.data['host_N_post'].extend(data[3])
