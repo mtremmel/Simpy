@@ -204,8 +204,8 @@ class mergerCat(object):
                 self.steptimes.append(step.time_gyr)
                 continue
 
-            stepnum = re.match("^(.*)\.(0[0-9]*)$",step.filename).groups()[0]
-            stepnumA = re.match("^(.*)\.(0[0-9]*)$",step.next.filename).groups()[0]
+            stepnum = re.match("^(.*)\.(0[0-9]*)$",step.filename).groups()[1]
+            stepnumA = re.match("^(.*)\.(0[0-9]*)$",step.next.filename).groups()[1]
 
 
             forwardmerge = np.where(data[5]>step.time_gyr)[0]
