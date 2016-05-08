@@ -170,10 +170,10 @@ class mergerCat(object):
         time, step, ID, IDeat, ratio, kick = readcol(mergerfile,twod=False)
 
         print "checking for bad IDs..."
-        bad = np.where(ID<0)
+        bad = np.where(ID<0)[0]
         if len(bad)>0:
             ID[bad] = 2*2147483648 + ID[bad]
-        bad2 = np.where(IDeat<0)
+        bad2 = np.where(IDeat<0)[0]
         if len(bad2)>0:
             IDeat[bad2] = 2*2147483648 + IDeat[bad2]
 
