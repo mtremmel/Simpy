@@ -222,7 +222,8 @@ class mergerCat(object):
 
             tt1, tt2 = np.unique(data[0],return_counts=True)
             if len(np.where(tt2>1)[0])>0:
-                print "FUCK"
+                print "Double counted IDs: ", tt1[(tt2>1)]
+                raise RuntimeError("ERROR double counted IDeat in database analysis")
 
             self.data['host_N_pre_1'].extend(data[4])
             self.data['host_N_pre_2'].extend(data[2])
@@ -243,7 +244,7 @@ class mergerCat(object):
         for key in self.data.keys():
             self.data[key] = np.array(self.data[key])
 
-        #self._match_data_to_raw('ratio', 'kick', 'time','step')
+        self._match_data_to_raw('ratio', 'kick', 'time','step')
 
     def __getitem__(self, item):
         return self.data[item]
