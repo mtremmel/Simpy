@@ -274,7 +274,7 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
         return Mvir, Mstar, grp
 
 
-def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False):
+def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False, nsteps = None):
     data = {'time': [], 'Mstar1':[], 'Mstar2':[], 'Mstarf':[],'Mvir1':[], 'Mvir2':[], 'Mvirf':[],
             'Mgas1':[], 'Mgas2':[], 'Mgasf':[], 'nMerge':[],
             'N1':[], 'N2':[], 'Nf':[]}
@@ -283,7 +283,12 @@ def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False):
     redshifts = []
     times = []
 
+    cnt = 0
+
     for step in dbsim.timesteps:
+        if nsteps is not None:
+            if cnt >= nsteps: break
+        cnt +=1
         print step
         try:
             time, N, Nf, Mvir, Mvirf, Mstar, Mstarf, Mgas, Mgasf = \
@@ -298,6 +303,7 @@ def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False):
 
 
         ordM = np.argsort(Mvir)
+        ordM[::-1]
         Nf = Nf[ordM]
         time = time[ordM]
         N = N[ordM]
@@ -306,7 +312,7 @@ def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False):
         Mstar = Mstar[ordM]
         Mstarf = Mstarf[ordM]
         Mgas = Mgas[ordM]
-        Mgasf = Mgas[ordM]
+        Mgasf = Mgasf[ordM]
 
         ordNf = np.argsort(Nf)
         Nf = Nf[ordNf]
@@ -317,7 +323,7 @@ def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False):
         Mstar = Mstar[ordNf]
         Mstarf = Mstarf[ordNf]
         Mgas = Mgas[ordNf]
-        Mgasf = Mgas[ordNf]
+        Mgasf = Mgasf[ordNf]
 
         uNf, ind, inv, cnt = np.unique(Nf,return_index=True, return_inverse=True,return_counts=True)
 
