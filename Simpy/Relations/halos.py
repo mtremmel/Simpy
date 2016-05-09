@@ -303,7 +303,7 @@ def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False, nsteps = None)
 
 
         ordM = np.argsort(Mvir)
-        ordM[::-1]
+        ordM = ordM[::-1]
         Nf = Nf[ordM]
         time = time[ordM]
         N = N[ordM]
