@@ -283,12 +283,12 @@ def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False, nsteps = None)
     redshifts = []
     times = []
 
-    cnt = 0
+    loopcnt = 0
 
     for step in dbsim.timesteps:
         if nsteps is not None:
-            if cnt >= nsteps: break
-        cnt +=1
+            if loopcnt >= nsteps: break
+        loopcnt +=1
         print step
         try:
             time, N, Nf, Mvir, Mvirf, Mstar, Mstarf, Mgas, Mgasf = \
