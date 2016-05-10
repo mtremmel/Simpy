@@ -301,29 +301,17 @@ def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False, nsteps = None)
             redshifts.append(step.redshift)
             continue
 
-
-        ordM = np.argsort(Mvir)
-        ordM = ordM[::-1]
-        Nf = Nf[ordM]
-        time = time[ordM]
-        N = N[ordM]
-        Mvir = Mvir[ordM]
-        Mvirf = Mvirf[ordM]
-        Mstar = Mstar[ordM]
-        Mstarf = Mstarf[ordM]
-        Mgas = Mgas[ordM]
-        Mgasf = Mgasf[ordM]
-
-        ordNf = np.argsort(Nf)
-        Nf = Nf[ordNf]
-        time = time[ordNf]
-        N = N[ordNf]
-        Mvir = Mvir[ordNf]
-        Mvirf = Mvirf[ordNf]
-        Mstar = Mstar[ordNf]
-        Mstarf = Mstarf[ordNf]
-        Mgas = Mgas[ordNf]
-        Mgasf = Mgasf[ordNf]
+        ziparr = np.array(zip(Nf,1./Mvir),dtype=[('nf','int64'),('mv','float')])
+        order = np.argsort(ziparr,order=('nf','mv'))
+        Nf = Nf[order]
+        time = time[order]
+        N = N[order]
+        Mvir = Mvir[order]
+        Mvirf = Mvirf[order]
+        Mstar = Mstar[order]
+        Mstarf = Mstarf[order]
+        Mgas = Mgas[order]
+        Mgasf = Mgasf[order]
 
         uNf, ind, inv, cnt = np.unique(Nf,return_index=True, return_inverse=True,return_counts=True)
 
