@@ -285,7 +285,7 @@ class mergerCat(object):
         else:
             z = pynbody.analysis.cosmology.redshift(sim, self.rawdat['time'])
             self.rawdat['redshift'] = z
-        hc = strain(self.rawdat['merge_mass_1'][ok], self.rawdat['merge_mass_2'][ok], self.rawdat['redshift'],
+        hc = strain(self.rawdat['merge_mass_1'][ok], self.rawdat['merge_mass_2'][ok], self.rawdat['redshift'][ok],
                     sim.properties['omegaM0'], sim.properties['omegaL0'], sim.properties['h'], eps=eps, a=a)
         fm = freq_merger(self.rawdat['merge_mass_1']+self.rawdat['merge_mass_2'])
         self.rawdat['GW_freq_merge'][ok] = fm
