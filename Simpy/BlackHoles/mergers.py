@@ -154,6 +154,18 @@ def strain(M1, M2, z, omegaM, omegaL, h0, eps=0.1, a=0.95):
     Ef = dEdf(M1, M2, eps, a)
     return np.sqrt(2.*util.G/util.c**3) * ((1+z)/(np.pi*dL)) * np.sqrt(Ef)
 
+#eLisa limits from Salcido+2015, taken from Amaro-Seoane+ 2013
+def eLisaLimit(fobs):
+    def sacc(fobs):
+        return 1.37e-32 * (1+1e-4/fobs)*(fobs)**-4
+    ssn = 5.25e-23
+    somn = 6.28e-23
+    L = 1.0e9
+    def sn(fobs):
+        return 20./3. * (4.*sacc(fobs)+ssn+somn)/L**2 * (1+(fobs/(0.41*(util.c/(1.0e2*2.0*L))))**2)
+
+    return np.sqrt(sn(fobs)*fobs)
+
 
 
 
