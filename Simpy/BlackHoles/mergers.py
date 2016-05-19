@@ -356,7 +356,7 @@ class mergerCat(object):
                 self.rawdat['merge_lum_1'][i] = lum1[argm]
 
         self._match_data_to_raw('merge_mass_1', 'merge_mass_2', 'merge_mdot_1', 'merge_mdot_2',
-                                'merge_lum_1', 'merge_lum_2')
+                                'merge_lum_1', 'merge_lum_2', 'tform1','tform2')
 
     def get_dual_frac(self,bhorbit,minL=1e43,maxD=10):
         self.rawdat['frdual_'+str(minL)+'_'+str(maxD)] = np.ones(len(self.rawdat['ID1']))*-1
