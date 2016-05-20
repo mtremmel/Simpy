@@ -1,30 +1,22 @@
 import numpy as np
+from .plotting import plt
+
+def hist_by_step_intervals(dbsim, data, type='time',weight=None, **kwargs):
+	t = []
+	z = []
+	for step in dbsim.timesteps:
+		t.append(step.time_gyr)
+		z.append(step.redshift)
+	t = np.array(t)
+	z = np.array(z[::-1])
+	if weight is not None:
+		if type(weight)!=list and type(weight)!=np.ndarray:
+			weight = np.ones(len(data))*weight
+	if type=='time':
+		binedge = t
+	if type=='redshift':
+		binedge=z
+
+	plt.hist(data,bins=binedge,weight=weight,**kwargs)
 
 
-def property_array(simname, step, haloids, keylist):
-	import halo_db as db
-	uhids, inv = np.unique(haloids, return_inverse=True)
-	outputlist = {}
-	udatalist = {}
-	for key in keylist:
-		udatalist[key] = []
-
-	for ii in range(len(uhids)):
-		id = uhids[ii]
-		if id < 0:
-			for key in keylist:
-				udatalist[key].append(np.nan)
-			continue
-		h = db.get_halo(simname + '/%' + str(step) + '/' + str(id))
-		for key in keylist:
-			try:
-				udatalist[key].append(h[key])
-			except KeyError:
-				udatalist[key].append(np.nan)
-	for key in keylist:
-		if type(udatalist[key][0]) == np.ndarray:
-			outputlist[key] = np.vstack(udatalist[key])[inv]
-		else:
-			outputlist[key] = np.array(udatalist[key])[inv]
-
-	return tuple([outputlist[key] for key in outputlist.keys()])
