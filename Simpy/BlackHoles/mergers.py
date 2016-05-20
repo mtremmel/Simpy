@@ -98,7 +98,7 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
         dtz = (tzrange[1]-tzrange[0])/float(bins)
         tzbins = np.arange(tzrange[0],tzrange[1]+dtz,dtz)
     else:
-        txbins = bins
+        tzbins = bins
     if pltredshift:
         tedges = np.array([cosmology.getTime(z,sim) for z in tzbins])
     else:
