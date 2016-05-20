@@ -93,7 +93,6 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
             return
     else:
         vol_weights = np.ones(len(time))*vol_weights
-    print type(bins)
     if type(bins)!= list and type(bins)!=np.ndarray:
         dtz = (tzrange[1]-tzrange[0])/float(bins)
         tzbins = np.arange(tzrange[0],tzrange[1]+dtz,dtz)
