@@ -274,18 +274,20 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
         return Mvir, Mstar, grp
 
 
-def mergerhist(dbsim,*moreprops, ret_totals=False, nsteps = None):
+def mergerhist(dbsim,moreprops=None, ret_totals=False, nsteps = None):
     data = {'time': [], 'Mstar1':[], 'Mstar2':[], 'Mstarf':[],'Mvir1':[], 'Mvir2':[], 'Mvirf':[],
             'Mgas1':[], 'Mgas2':[], 'Mgasf':[], 'nMerge':[],
             'N1':[], 'N2':[], 'Nf':[]}
     allprops = ['t()', 'halo_number()','later(1).halo_number()', 'Mvir', 'later(1).Mvir',
                 'Mstar', 'later(1).Mstar', 'Mgas', 'later(1).Mgas']
-    for p in moreprops:
-        data[p+'1'] = []
-        data[p+'2'] = []
-        data[p+'f'] = []
-        allprops.append(p)
-        allprops.append('later(1).'+p)
+    if moreprops is not None:
+        for p in moreprops:
+            data[p+'1'] = []
+            data[p+'2'] = []
+            data[p+'f'] = []
+            allprops.append(p)
+            allprops.append('later(1).'+p)
+    else morepropse = []
 
     nmergers = []
     redshifts = []
