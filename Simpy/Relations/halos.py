@@ -332,6 +332,9 @@ def mergerhist(dbsim,moreprops=None, ret_totals=False, nsteps = None):
         Mgas = Mgas[order]
         Mgasf = Mgasf[order]
 
+        for i in range(len(data)-9):
+            data[9+i] = data[9+i][order]
+
         uNf, ind, inv, cnt = np.unique(Nf,return_index=True, return_inverse=True,return_counts=True)
 
         mm = np.where(cnt > 1)[0]
