@@ -274,10 +274,18 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
         return Mvir, Mstar, grp
 
 
-def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False, nsteps = None):
+def mergerhist(dbsim,*moreprops, ret_totals=False, nsteps = None):
     data = {'time': [], 'Mstar1':[], 'Mstar2':[], 'Mstarf':[],'Mvir1':[], 'Mvir2':[], 'Mvirf':[],
             'Mgas1':[], 'Mgas2':[], 'Mgasf':[], 'nMerge':[],
             'N1':[], 'N2':[], 'Nf':[]}
+    allprops = ['t()', 'halo_number()','later(1).halo_number()', 'Mvir', 'later(1).Mvir',
+                'Mstar', 'later(1).Mstar', 'Mgas', 'later(1).Mgas']
+    for p in moreprops:
+        data[p+'1'] = []
+        data[p+'2'] = []
+        data[p+'f'] = []
+        allprops.append(p)
+        allprops.append('later(1).'+p)
 
     nmergers = []
     redshifts = []
@@ -291,15 +299,23 @@ def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False, nsteps = None)
         loopcnt +=1
         print step
         try:
-            time, N, Nf, Mvir, Mvirf, Mstar, Mstarf, Mgas, Mgasf = \
-                step.gather_property('t()', 'halo_number()','later(1).halo_number()', 'Mvir', 'later(1).Mvir',
-                                    'Mstar', 'later(1).Mstar', 'Mgas', 'later(1).Mgas')
+            dbdata = step.gather_property(allprops)
+
         except:
             print "No halo data this step"
             nmergers.append(0)
             times.append(step.time_gyr)
             redshifts.append(step.redshift)
             continue
+        time = dbdata[0]
+        N = dbdata[1]
+        Nf = dbdata[2]
+        Mvir = dbdata[3]
+        Mvirf = dbdata[4]
+        Mstar = dbdata[5]
+        Mstarf = dbdata[6]
+        Mgas = dbdata[7]
+        Mgasf = dbdata[8]
 
         ziparr = np.array(zip(Nf,1./Mvir),dtype=[('nf','int64'),('mv','float')])
         order = np.argsort(ziparr,order=('nf','mv'))
@@ -343,6 +359,13 @@ def mergerhist(dbsim,volume=25**3,mfconv=False, ret_totals=False, nsteps = None)
         data['Mgas2'].extend(Mgas[indm+1])
         data['N1'].extend(N[indm])
         data['N2'].extend(N[indm+1])
+
+        indtrack = 9
+        for p in moreprops:
+            data[p+'1'].extend(dbdata[indtrack][indm])
+            data[p+'2'].extend(dbdata[indtrack][indm+1])
+            data[p+'f'].extend(dbdata[indtrack+1][indm])
+            indtrack = indtrack+2
 
         data['nMerge'].extend(cnt[mm])
     for key in data.keys():
