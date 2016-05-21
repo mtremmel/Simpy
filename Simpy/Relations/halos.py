@@ -302,7 +302,7 @@ def mergerhist(dbsim,moreprops=None, ret_totals=False, nsteps = None):
         loopcnt +=1
         print step
         try:
-            dbdata = step.gather_property(allprops)
+            dbdata = step.gather_property(*allprops)
 
         except:
             print "No halo data this step"
