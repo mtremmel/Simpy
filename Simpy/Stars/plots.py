@@ -139,18 +139,18 @@ def cosmicSFH(sim, style, lw=3, bins=50, zrange=None, label=None, ret_hist=True,
 		fitH,sigH = dat.CSFRFit(zfits,type='hop')
 		if xlog is True:
 			plotting.plt.plot(zfits+1,fitB,'k-',label='Behroozi+ 13')
-			plotting.plt.plot(zfits+1,fitH,'k--',label='Hopkins+ 06')
+			#plotting.plt.plot(zfits+1,fitH,'k--',label='Hopkins+ 06')
 			plotting.plt.fill_between(zfits+1,10**(np.log10(fitB)-sigB),10**(np.log10(fitB)+sigB),linewidth=1.5,facecolor='grey',alpha=0.2)
-			plotting.plt.fill_between(zfits+1,10**(np.log10(fitH)-sigH),10**(np.log10(fitH)+sigH),linewidth=1.5,facecolor='grey',alpha=0.2)
+			#plotting.plt.fill_between(zfits+1,10**(np.log10(fitH)-sigH),10**(np.log10(fitH)+sigH),linewidth=1.5,facecolor='grey',alpha=0.2)
 
-			plotting.plt.scatter(np.array(dat.duncan_z)+1, 10**dat.duncan_sf, color='r', marker='D', label='Duncan+ 14', s=100)
+			plotting.plt.scatter(np.array(dat.duncan_z)+1, 10**dat.duncan_sf, color='k', marker='D', label='Duncan+ 14', s=100)
 			plotting.plt.errorbar(np.array(dat.kist_zhigh)+1, dat.kist_sfr, fmt='o',markersize=10, yerr=[dat.kist_sfrminus, dat.kist_sfrplus], xerr=[dat.kist_zhighminus, dat.kist_zhighplus], ls='None', linewidth=1.5, color='k', label='Kistler+ 13')
 
 		else:
 			plotting.plt.plot(zfits,fitB,'k-',label='Behroozi+ 13')
-			plotting.plt.plot(zfits,fitH,'k--',label='Hopkins+ 06')
+			#plotting.plt.plot(zfits,fitH,'k--',label='Hopkins+ 06')
 			plotting.plt.fill_between(zfits,10**(np.log10(fitB)-sigB),10**(np.log10(fitB)+sigB),linewidth=1.5,facecolor='grey',alpha=0.2)
-			plotting.plt.fill_between(zfits,10**(np.log10(fitH)-sigH),10**(np.log10(fitH)+sigH),linewidth=1.5,facecolor='grey',alpha=0.2)
+			#plotting.plt.fill_between(zfits,10**(np.log10(fitH)-sigH),10**(np.log10(fitH)+sigH),linewidth=1.5,facecolor='grey',alpha=0.2)
 
 			plotting.plt.scatter(dat.duncan_z, 10**dat.duncan_sf, color='r', marker='D', label='Duncan+ 14', s=100)
 			plotting.plt.errorbar(dat.kist_zhigh, dat.kist_sfr, fmt='o',markersize=10, yerr=[dat.kist_sfrminus, dat.kist_sfrplus], xerr=[dat.kist_zhighminus, dat.kist_zhighplus], ls='None', linewidth=1.5, color='k', label='Kistler+ 13')
