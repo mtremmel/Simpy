@@ -1,4 +1,4 @@
-from .. import readcol
+from ..readcol import readcol
 import numpy as np
 import os
 
