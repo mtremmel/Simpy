@@ -40,8 +40,10 @@ def plt_BHMStar(simname, step, marker='o', size = 100, color='blue', label=None,
     if fit is True:
         lmstar = np.arange(np.log10(Mstar[(Mstar > 0)]).min() - 1., np.log10(Mstar[(Mstar > 0)]).max() + 1., 0.1)
         bhmass = BHMstar(lmstar)
-        plotting.plt.plot(10**lmstar, 10**bhmass,'k-')
+        plotting.plt.plot(10**lmstar, 10**bhmass,'k-', label='Schramm+Silverman 13')
         if fiterr is True:
             plotting.plt.fill_between(10**lmstar,10**(bhmass+0.3),10**(bhmass-0.3),color='Grey',alpha=0.5)
 
     plotting.plt.yscale('log',base=10)
+    plotting.plt.xscale('log',base=10)
+    plt.legend(loc='upper left')
