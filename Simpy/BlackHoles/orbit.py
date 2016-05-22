@@ -532,9 +532,9 @@ class Orbit(object):
 										yerr=0.5*dat.Treister13,uplims=[True,True,True], label='Treister+ 13')
 					plotting.plt.errorbar(dat.Hopkins07zp1,10**dat.Hopkins07,
 										color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
-					plotting.plt.plot(dat.Lacy15zBF+1,dat.Lacy15rhoBF,color='grey', linestyle='-',lw=3)
-					plotting.plt.plot(dat.Lacy15zBF_eps06+1,dat.Lacy15rhoBF_eps06,color='grey', linestyle='-',lw=3)
-					plotting.plt.fill_between(dat.Lacy15zBF+1, dat.Lacy15rhoBF, dat.Lacy15rhoBF_eps06, facecolor='grey',alpha=0.2)
+					plotting.plt.plot(dat.Lacy15zBF+1,10**dat.Lacy15rhoBF,color='grey', linestyle='-',lw=3, label='Lacy+ 15')
+					plotting.plt.plot(dat.Lacy15zBF_eps06+1,10**dat.Lacy15rhoBF_eps06,color='grey', linestyle='-',lw=3)
+					plotting.plt.fill_between(dat.Lacy15zBF+1, 10**dat.Lacy15rhoBF, dat.Lacy15rhoBF_eps06, facecolor='grey',alpha=0.2)
 				else:
 					plotting.plt.plot(dat.Uneda14z-1,dat.Uneda14rho,'k^',label='Ueda+ 14')
 					plotting.plt.errorbar([0.03],[dat.shankar09],yerr=[err],
@@ -547,9 +547,9 @@ class Orbit(object):
 										yerr=0.5*dat.Treister13,uplims=[True,True,True], label='Treister+ 13')
 					plotting.plt.errorbar(dat.Hopkins07zp1-1,10**dat.Hopkins07,
 										color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
-					plotting.plt.plot(dat.Lacy15zBF,dat.Lacy15rhoBF,color='grey', linestyle='-',lw=3)
-					plotting.plt.plot(dat.Lacy15zBF_eps06,dat.Lacy15rhoBF_eps06,color='grey', linestyle='-',lw=3)
-					plotting.plt.fill_between(dat.Lacy15zBF, dat.Lacy15rhoBF, dat.Lacy15rhoBF_eps06, facecolor='grey',alpha=0.2)
+					plotting.plt.plot(dat.Lacy15zBF,10**dat.Lacy15rhoBF,color='grey', linestyle='-',lw=3, label='Lacy+ 15')
+					plotting.plt.plot(dat.Lacy15zBF_eps06,10**dat.Lacy15rhoBF_eps06,color='grey', linestyle='-',lw=3)
+					plotting.plt.fill_between(dat.Lacy15zBF, 10**dat.Lacy15rhoBF, dat.Lacy15rhoBF_eps06, facecolor='grey',alpha=0.2)
 
 		if type == 'time' and plotdata is True:
 			print "WARNING! Data only valid for redshift plotting. Ignoring keyword for time plot"
@@ -561,10 +561,10 @@ class Orbit(object):
 				plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10,11],['0','1','2','3','4','5','6','7','8','9','10'])
 			if ylog is True: plotting.plt.yscale('log',base=10)
 			if type == 'redshift':
-				plotting.plt.xlabel('z',fontsize=30)
+				plotting.plt.xlabel('Redshift',fontsize=30)
 			if type == 'time':
 				plotting.plt.xlabel('Time (Gyr)',fontsize=30)
-			plotting.plt.ylabel(r'$\rho_{acc}$ [M$_{\odot}$ Mpc$^{-3}$]',fontsize=30)
+			plotting.plt.ylabel(r'$\rho_{acc}$ [M$_{\odot}$ cMpc$^{-3}$]',fontsize=30)
 		if label is not None or plotdata is True: plotting.plt.legend(fontsize=20)
 		return
 
