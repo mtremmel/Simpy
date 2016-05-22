@@ -534,7 +534,7 @@ class Orbit(object):
 										color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
 					plotting.plt.plot(dat.Lacy15zBF+1,10**dat.Lacy15rhoBF,color='grey', linestyle='-',lw=3, label='Lacy+ 15', alpha=0.3)
 					#plotting.plt.plot(dat.Lacy15zBF_eps06+1,10**dat.Lacy15rhoBF_eps06,color='grey', linestyle='-',lw=3)
-					plotting.plt.fill_between(dat.Lacy15zBF+1, 10**dat.Lacy15rhoBF, 10**dat.Lacy15rhoBF_eps06, facecolor='grey',alpha=0.3)
+					plotting.plt.fill_between(dat.Lacy15zBF+1, 10**dat.Lacy15rhoBF, 10**dat.Lacy15rhoBF_eps06, facecolor='grey',alpha=0.2)
 				else:
 					plotting.plt.plot(dat.Uneda14z-1,dat.Uneda14rho,'k^',label='Ueda+ 14')
 					plotting.plt.errorbar([0.03],[dat.shankar09],yerr=[err],
@@ -549,7 +549,7 @@ class Orbit(object):
 										color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
 					plotting.plt.plot(dat.Lacy15zBF,10**dat.Lacy15rhoBF,color='grey', linestyle='-',lw=3, label='Lacy+ 15', alpha=0.3)
 					#plotting.plt.plot(dat.Lacy15zBF_eps06,10**dat.Lacy15rhoBF_eps06,color='grey', linestyle='-',lw=3)
-					plotting.plt.fill_between(dat.Lacy15zBF, 10**dat.Lacy15rhoBF, 10**dat.Lacy15rhoBF_eps06, facecolor='grey',alpha=0.3)
+					plotting.plt.fill_between(dat.Lacy15zBF, 10**dat.Lacy15rhoBF, 10**dat.Lacy15rhoBF_eps06, facecolor='grey',alpha=0.2)
 
 		if type == 'time' and plotdata is True:
 			print "WARNING! Data only valid for redshift plotting. Ignoring keyword for time plot"
