@@ -35,7 +35,7 @@ def plt_BHMStar(simname, step, marker='o', size = 100, color='blue', label=None,
     from .. import plotting
     import halo_db as db
     print "getting data from database..."
-    bhdata, Mstar = db.get_timestep(simname+'/%'+step).gather_property(bh().BH_mass, 'Mstar')
+    bhdata, Mstar = db.get_timestep(simname+'/%'+step).gather_property('bh().BH_mass', 'Mstar')
     plotting.plt.scatter(Mstar, bhdata, marker=marker, s=size, color=color, label=label)
     if fit is True:
         lmstar = np.arange(np.log10(Mstar[(Mstar > 0)]).min() - 1., np.log10(Mstar[(Mstar > 0)]).max() + 1., 0.1)
