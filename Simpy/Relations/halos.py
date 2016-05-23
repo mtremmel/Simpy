@@ -365,7 +365,7 @@ def mergerhist(dbsim,moreprops=None, ret_totals=False, nsteps = None):
         data['Mgas2'].extend(Mgas[indm+1])
         data['N1'].extend(N[indm])
         data['N2'].extend(N[indm+1])
-        data['redshift'].extend(np.ones(len(indm)*step.redshift))
+        data['redshift'].extend(np.ones(len(indm))*step.redshift)
         fextent = np.zeros(len(indm)).astype(dtype='S64')
         fextent[:] = step.relative_filename
         data['dbstep'].extend(fextent)
