@@ -385,6 +385,76 @@ def mergerhist(dbsim,moreprops=None, ret_totals=False, nsteps = None):
     else:
         return data
 
+class HaloMergers(object):
+    def __init__(self, dbsim, mhist=None):
+        if dbsim and not mhist:
+            self.data = mergerhist(dbsim,moreprops)
+        if mhist:
+            self.data = mhist
+        if not mhist and not dbsim:
+            print "ERROR requires either a dbsim object or an already made merger data structure"
+
+    def __getitem__(self, item):
+        return self.data[item]
+
+    def dtBHmerge(self):
+        import halo_db as db
+        self.data['dtBHmerge'] = np.ones(len(self.data['time']))*-1
+        self.data['dtBHmerge_min'] = np.ones(len(self.data['time']))*-1
+        for ii in range(len(self.data['time'])):
+            bh1 = db.get_halo(self.data['dbstep'][ii]+'/1.'+str(self.data['bh().halo_number()1'][ii]))
+            bh2 = db.get_halo(self.data['dbstep'][ii]+'/1.'+str(self.data['bh().halo_number()2'][ii]))
+            bhc1, time1 = bh2.property_cascade('halo_number()', 't()')
+            bhc2, time2 = bh2.property_cascade('halo_number()', 't()')
+            im = np.where(bhc1==bhc2)[0]
+            if len(im)>0:
+                tmerge = time1[im[0]]
+                if tmerge != time2[im[0]]:
+                    print "WEIRD ONE"
+                self.data['dtBHmerge'][ii] = tmerge - self.data['time'][ii]
+
+        if 'time_next' not in self.data.keys():
+            self.get_tnext(self)
+        self.data['dtMerge_min'][ii] = tmerge - self.data['time_next']
+
+    def get_tnext(self):
+        import halo_db as db
+        for ii in range(len(self.data['time'])):
+            step = db.get_timestep(self.data['dbstep'][ii])
+            self.data['time_next'] = step.next.time_gyr
+            self.data['redshift_next'] = step.next.redshift
+
+    def get_tstart(self):
+        import halo_db as db
+        self.data['tstart'] = np.ones(len(self.data['time']))*-1
+        self.data['Mvir1_start'] = np.ones(len(self.data['time']))*-1
+        self.data['Mvir2_start'] = np.ones(len(self.data['time']))*-1
+        self.data['Mstar1_start'] = np.ones(len(self.data['time']))*-1
+        self.data['Mstar2_start'] = np.ones(len(self.data['time']))*-1
+        self.data['Mgas1_start'] = np.ones(len(self.data['time']))*-1
+        self.data['Mgas2_start'] = np.ones(len(self.data['time']))*-1
+        for ii in range(len(self.data['time'])):
+            h1 = db.get_halo(self.data['dbstep'][ii]+'/'+str(self.data['N1'][ii]))
+            h2 = db.get_halo(self.data['dbstep'][ii]+'/'+str(self.data['N2'][ii]))
+
+            pos1, Rvir1, time1, Mvir1, Mstar1, Mgas1 = h1.reverse_property_cascade('SSC', 'Rvir', 't()', 'Mvir', 'Mstar', 'Mgas')
+            pos2, Rvir2, time2, Mvir2, Mstar2, Mgas2 = h2.reverse_property_cascade('SSC', 'Rvir', 't()', 'Mvir', 'Mstar', 'Mgas')
+            len = min(len(time1), len(time2))
+            dist = np.sqrt(np.sum((pos1[0:len] - pos2[0:len])**2,axis=1))
+            sep = np.where(dist>Rvir1[0:len]+Rvir2[0:len])[0]
+            if len(sep)==0:
+                print "cannot find output when objects were not close"
+                continue
+            self.data['tstart'][ii] = time1[sep[0]]
+            self.data['Mvir1_start'][ii] = Mvir1[sep[0]]
+            self.data['Mvir2_start'][ii] = Mvir2[sep[0]]
+            self.data['Mstar1_start'][ii] = Mstar1[sep[0]]
+            self.data['Mstar2_start'][ii] = Mstar2[sep[0]]
+            self.data['Mgas1_start'][ii] = Mgas1[sep[0]]
+            self.data['Mgas2_start'][ii] = Mgas2[sep[0]]
+
+
+
 
 
 
