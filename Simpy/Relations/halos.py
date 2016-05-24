@@ -397,6 +397,9 @@ class HaloMergers(object):
     def __getitem__(self, item):
         return self.data[item]
 
+    def keys(self):
+        return self.data.keys()
+
     def dtBHmerge(self):
         import halo_db as db
         self.data['dtBHmerge'] = np.ones(len(self.data['time']))*-1
