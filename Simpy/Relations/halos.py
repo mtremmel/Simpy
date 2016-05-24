@@ -419,7 +419,7 @@ class HaloMergers(object):
                 if tmerge != time2[im[0]]:
                     print "WEIRD ONE"
                 self.data['dtBHmerge'][ii] = tmerge - self.data['time'][ii]
-            self.data['dtBHmerge_min'][ii] = self.data['dtBHmerge'][ii] - self.data['time_next']
+            self.data['dtBHmerge_min'][ii] = self.data['dtBHmerge'][ii] - self.data['time_next'][ii]
 
 
     def get_tnext(self):
