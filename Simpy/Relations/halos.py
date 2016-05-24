@@ -448,7 +448,7 @@ class HaloMergers(object):
             pos1, Rvir1, time1, Mvir1, Mstar1, Mgas1 = h1.reverse_property_cascade('SSC', 'Rvir', 't()', 'Mvir', 'Mstar', 'Mgas')
             pos2, Rvir2, time2, Mvir2, Mstar2, Mgas2 = h2.reverse_property_cascade('SSC', 'Rvir', 't()', 'Mvir', 'Mstar', 'Mgas')
             ll = min(len(time1), len(time2))
-            dist = np.sqrt(np.sum((pos1[0:len] - pos2[0:len])**2,axis=1))
+            dist = np.sqrt(np.sum((pos1[0:ll] - pos2[0:ll])**2,axis=1))
             sep = np.where(dist>Rvir1[0:ll]+Rvir2[0:ll])[0]
             if len(sep)==0:
                 print "cannot find output when objects were not close"
