@@ -451,7 +451,7 @@ class HaloMergers(object):
             dist = np.sqrt(np.sum((pos1[0:ll] - pos2[0:ll])**2,axis=1))
             sep = np.where(dist>Rvir1[0:ll]+Rvir2[0:ll])[0]
             if len(sep)==0:
-                print "cannot find output when objects were not close"
+                #print "cannot find output when objects were not close"
                 continue
             self.data['tstart'][ii] = time1[sep[0]]
             self.data['Mvir1_start'][ii] = Mvir1[sep[0]]
