@@ -411,7 +411,7 @@ class HaloMergers(object):
                 print float(ii)/float(len(self.data['time'])) * 100, "% done"
             bh1 = db.get_halo(self.data['dbstep'][ii]+'/1.'+str(self.data['bh().halo_number()1'][ii]))
             bh2 = db.get_halo(self.data['dbstep'][ii]+'/1.'+str(self.data['bh().halo_number()2'][ii]))
-            bhc1, time1 = bh2.property_cascade('halo_number()', 't()')
+            bhc1, time1 = bh1.property_cascade('halo_number()', 't()')
             bhc2, time2 = bh2.property_cascade('halo_number()', 't()')
             im = np.where(bhc1==bhc2)[0]
             if len(im)>0:
