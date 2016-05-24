@@ -401,6 +401,8 @@ class HaloMergers(object):
         import halo_db as db
         self.data['dtBHmerge'] = np.ones(len(self.data['time']))*-1
         self.data['dtBHmerge_min'] = np.ones(len(self.data['time']))*-1
+        if 'time_next' not in self.data.keys():
+            self.get_tnext(self)
         for ii in range(len(self.data['time'])):
             if ii % 100 == 0:
                 print float(ii)/float(len(self.data['time'])) * 100, "% done"
@@ -414,19 +416,19 @@ class HaloMergers(object):
                 if tmerge != time2[im[0]]:
                     print "WEIRD ONE"
                 self.data['dtBHmerge'][ii] = tmerge - self.data['time'][ii]
+            self.data['dtMerge_min'][ii] = self.data['dtBHmerge'][ii] - self.data['tstart']
 
-        if 'time_next' not in self.data.keys():
-            self.get_tnext(self)
-        self.data['dtMerge_min'][ii] = tmerge - self.data['time_next']
 
     def get_tnext(self):
         import halo_db as db
+        self.data['time_next'] = np.ones(len(self.data['time']))*-1
+        self.data['redshift_next'] = np.ones(len(self.data['time']))*-1
         for ii in range(len(self.data['time'])):
             if ii % 100 == 0:
                 print float(ii)/float(len(self.data['time'])) * 100, "% done"
             step = db.get_timestep(self.data['dbstep'][ii])
-            self.data['time_next'] = step.next.time_gyr
-            self.data['redshift_next'] = step.next.redshift
+            self.data['time_next'][ii] = step.next.time_gyr
+            self.data['redshift_next'][ii] = step.next.redshift
 
     def get_tstart(self):
         import halo_db as db
@@ -445,9 +447,9 @@ class HaloMergers(object):
 
             pos1, Rvir1, time1, Mvir1, Mstar1, Mgas1 = h1.reverse_property_cascade('SSC', 'Rvir', 't()', 'Mvir', 'Mstar', 'Mgas')
             pos2, Rvir2, time2, Mvir2, Mstar2, Mgas2 = h2.reverse_property_cascade('SSC', 'Rvir', 't()', 'Mvir', 'Mstar', 'Mgas')
-            len = min(len(time1), len(time2))
+            ll = min(len(time1), len(time2))
             dist = np.sqrt(np.sum((pos1[0:len] - pos2[0:len])**2,axis=1))
-            sep = np.where(dist>Rvir1[0:len]+Rvir2[0:len])[0]
+            sep = np.where(dist>Rvir1[0:ll]+Rvir2[0:ll])[0]
             if len(sep)==0:
                 print "cannot find output when objects were not close"
                 continue
