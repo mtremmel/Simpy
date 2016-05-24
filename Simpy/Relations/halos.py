@@ -402,6 +402,8 @@ class HaloMergers(object):
         self.data['dtBHmerge'] = np.ones(len(self.data['time']))*-1
         self.data['dtBHmerge_min'] = np.ones(len(self.data['time']))*-1
         for ii in range(len(self.data['time'])):
+            if ii % 100 == 0:
+                print float(ii)/float(len(self.data['time'])) * 100, "% done"
             bh1 = db.get_halo(self.data['dbstep'][ii]+'/1.'+str(self.data['bh().halo_number()1'][ii]))
             bh2 = db.get_halo(self.data['dbstep'][ii]+'/1.'+str(self.data['bh().halo_number()2'][ii]))
             bhc1, time1 = bh2.property_cascade('halo_number()', 't()')
@@ -420,6 +422,8 @@ class HaloMergers(object):
     def get_tnext(self):
         import halo_db as db
         for ii in range(len(self.data['time'])):
+            if ii % 100 == 0:
+                print float(ii)/float(len(self.data['time'])) * 100, "% done"
             step = db.get_timestep(self.data['dbstep'][ii])
             self.data['time_next'] = step.next.time_gyr
             self.data['redshift_next'] = step.next.redshift
@@ -434,6 +438,8 @@ class HaloMergers(object):
         self.data['Mgas1_start'] = np.ones(len(self.data['time']))*-1
         self.data['Mgas2_start'] = np.ones(len(self.data['time']))*-1
         for ii in range(len(self.data['time'])):
+            if ii % 100 == 0:
+                print float(ii)/float(len(self.data['time'])) * 100, "% done"
             h1 = db.get_halo(self.data['dbstep'][ii]+'/'+str(self.data['N1'][ii]))
             h2 = db.get_halo(self.data['dbstep'][ii]+'/'+str(self.data['N2'][ii]))
 
