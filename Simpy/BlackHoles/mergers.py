@@ -379,7 +379,8 @@ class mergerCat(object):
 
             time1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'time')
             time2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'time')
-            print len(time1), len(time2)
+            if len(time1) == 0 or len(time2) == 0:
+                continue
 
             mint = np.min([time1.min(),time2.min()])
             maxt = self.rawdat['time'][i]
