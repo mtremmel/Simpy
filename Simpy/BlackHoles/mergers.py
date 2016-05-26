@@ -388,13 +388,29 @@ class mergerCat(object):
 
             dist = np.sqrt((x1[use1]-x2[use2])**2 + (y1[use1]-y2[use2])**2 + (z1[use1]-z2[use2])**2)
             close = np.where(dist<maxD)[0]
-            dt = time1[use1[close[-1]]] - time1[use1[close[0]]]
+            dt = np.sum(time1[use1[close]] - time1[use1[close]+1])
             self.rawdat['t_'+str(maxD)][i] = dt
             dual = np.where((lum1[use1[close]]>minL)&(lum2[use2[close]]>minL))
             self.rawdat['frdual_'+str(minL)+'_'+str(maxD)][i] = float(len(dual))/float(len(close))
 
         self._match_data_to_raw('t_'+str(maxD), 'frdual_'+str(minL)+'_'+str(maxD))
 
+    def get_halo_merger(self,simname):
+        import halo_db as db
+        self.data['dt_hmerger'] = np.ones(len(self.data['ID1']))*-1
+        for i in range(len(self.data['ID1'])):
+            if i%100 == 0:
+                print float(i)/float(len(self.data['ID1']))*100, '% done'
+
+            bh1 = db.get_halo(simname+'/%'+ str(self.data['snap_prev'][i]) + '/1.'+self.data['ID1'][i])
+            bh2 = db.get_halo(simname+'/%'+ str(self.data['snap_prev'][i]) + '/1.'+self.data['ID2'][i])
+            time1, hn1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()')
+            time2, hn2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()')
+            same = np.where(hn1 != hn2)[0]
+            if len(same)==0:
+                continue
+            th = time1[same[0]]
+            self.data['dt_hmerger'][i] = self.data['time'][i] - th
 
 
 
