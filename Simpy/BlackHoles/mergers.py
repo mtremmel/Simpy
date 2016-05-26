@@ -403,7 +403,7 @@ class mergerCat(object):
                 print float(i)/float(len(self.data['ID1']))*100, '% done'
             if self.data['snap_prev'][i]<1000:
                 strsnap = '0'+str(self.data['snap_prev'][i])
-            else
+            else:
                 strsnap = str(self.data['snap_prev'][i])
             bh1 = db.get_halo(simname+'/00%'+ strsnap + '/1.'+str(self.data['ID1'][i]))
             bh2 = db.get_halo(simname+'/00%'+ strsnap + '/1.'+str(self.data['ID2'][i]))
