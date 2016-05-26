@@ -405,8 +405,8 @@ class mergerCat(object):
                 strsnap = '0'+str(self.data['snap_prev'][i])
             else:
                 strsnap = str(self.data['snap_prev'][i])
-            bh1 = db.get_halo(simname+'/00%'+ strsnap + '/1.'+str(self.data['ID1'][i]))
-            bh2 = db.get_halo(simname+'/00%'+ strsnap + '/1.'+str(self.data['ID2'][i]))
+            bh1 = db.get_halo(simname+'/00'+ strsnap + '/1.'+str(self.data['ID1'][i]))
+            bh2 = db.get_halo(simname+'/00'+ strsnap + '/1.'+str(self.data['ID2'][i]))
             time1, hn1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()')
             time2, hn2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()')
             length = np.min([len(time1),len(time2)])
