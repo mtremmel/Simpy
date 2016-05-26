@@ -382,10 +382,8 @@ class mergerCat(object):
             if len(time1) == 0 or len(time2) == 0:
                 continue
 
-            mint = np.min([time1.min(),time2.min()])
+            mint = np.max([time1.min(),time2.min()])
             maxt = self.rawdat['time'][i]
-            if time2.max()<maxt:
-                maxt = time2.max()
 
             use1 = np.where((time1<maxt)&(time1>mint))[0]
             use2 = np.where((time2<maxt)&(time2>mint))[0]
