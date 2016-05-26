@@ -399,7 +399,7 @@ class mergerCat(object):
         import halo_db as db
         self.data['dt_hmerger'] = np.ones(len(self.data['ID1']))*-1
         for i in range(len(self.data['ID1'])):
-            if i%100 == 0:
+            if i%30 == 0:
                 print float(i)/float(len(self.data['ID1']))*100, '% done'
 
             bh1 = db.get_halo(simname+'/%'+ str(self.data['snap_prev'][i]) + '/1.'+str(self.data['ID1'][i]))
