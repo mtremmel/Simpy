@@ -364,6 +364,9 @@ class mergerCat(object):
         self.rawdat['frdual_'+str(minL)+'_'+str(maxD)] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['t_'+str(maxD)] = np.ones(len(self.rawdat['ID1']))*-1
         for i in range(len(self.rawdat['ID1'])):
+            if i %100==0:
+                print float(i)/float(len(self.rawdat['ID1']))*100, '% done'
+
             x1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'x')
             x2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'x')
             y1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'y')
@@ -376,6 +379,7 @@ class mergerCat(object):
 
             time1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'time')
             time2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'time')
+            print len(time1), len(time2)
 
             mint = np.min([time1.min(),time2.min()])
             maxt = self.rawdat['time'][i]
