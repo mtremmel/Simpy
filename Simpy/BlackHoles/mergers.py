@@ -402,8 +402,8 @@ class mergerCat(object):
             if i%100 == 0:
                 print float(i)/float(len(self.data['ID1']))*100, '% done'
 
-            bh1 = db.get_halo(simname+'/%'+ str(self.data['snap_prev'][i]) + '/1.'+self.data['ID1'][i])
-            bh2 = db.get_halo(simname+'/%'+ str(self.data['snap_prev'][i]) + '/1.'+self.data['ID2'][i])
+            bh1 = db.get_halo(simname+'/%'+ str(self.data['snap_prev'][i]) + '/1.'+str(self.data['ID1'][i]))
+            bh2 = db.get_halo(simname+'/%'+ str(self.data['snap_prev'][i]) + '/1.'+str(self.data['ID2'][i]))
             time1, hn1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()')
             time2, hn2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()')
             same = np.where(hn1 != hn2)[0]
