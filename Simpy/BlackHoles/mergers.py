@@ -406,7 +406,8 @@ class mergerCat(object):
             bh2 = db.get_halo(simname+'/%'+ str(self.data['snap_prev'][i]) + '/1.'+str(self.data['ID2'][i]))
             time1, hn1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()')
             time2, hn2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()')
-            same = np.where(hn1 != hn2)[0]
+            length = np.min([len(time1),len(time2)])
+            same = np.where(hn1[:length] != hn2[:length])[0]
             if len(same)==0:
                 continue
             th = time1[same[0]]
