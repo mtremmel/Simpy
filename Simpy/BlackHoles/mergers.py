@@ -383,10 +383,10 @@ class mergerCat(object):
                 continue
 
             mint = np.max([time1.min(),time2.min()])
-            maxt = self.rawdat['time'][i]
+            maxt = time2.max()
 
-            use1 = np.where((time1<maxt)&(time1>mint))[0]
-            use2 = np.where((time2<maxt)&(time2>mint))[0]
+            use1 = np.where((time1<=maxt)&(time1>mint))[0]
+            use2 = np.where((time2<=maxt)&(time2>mint))[0]
 
             if len(use1) != len(use2):
                 print self.rawdat['ID1'][i], self.rawdat['ID2'][i]
