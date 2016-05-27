@@ -392,7 +392,7 @@ class mergerCat(object):
                 if len(use1)< len(use2):
                     use1 = np.append(use1,use1[-1])
                     if len(use1) != len(use2):
-                        print "SHIIIIIIT""
+                        print "SHIIIIIIT"
                 else:
                     print "SHIIIIIT"
 
