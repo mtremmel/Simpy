@@ -435,8 +435,13 @@ class mergerCat(object):
                 else:
                     time1_all = time1_all[0]
                     time2_all = time2_all[0]
-                th1 = time1_all[(time1_all < time1.min())][0]
-                th2 = time2_all[(time2_all < time2.min())][0]
+                th1 = time1_all[(time1_all < time1.min())]
+                th2 = time2_all[(time2_all < time2.min())]
+                if len(th1)==0 or len(th2)==0:
+                    continue
+                else:
+                    th1 = th1[0]
+                    th2 = th2[0]
                 self.data['dt_hmerger'][i] = self.data['time'][i] - max(th1,th2)
                 self.data['dt_hmerger_min'][i] = time1.min()
                 continue
