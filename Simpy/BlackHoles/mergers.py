@@ -423,7 +423,11 @@ class mergerCat(object):
             match2 = np.where(np.in1d(time2,time1))[0]
             if not np.array_equal(time1[match1],time2[match2]):
                 print "WARNING time arrays don't match!"
+            if len(match1)==0 or len(match2)==0:
+                continue
             diff = np.where(hn1[match1]!=hn2[match2])[0]
+            if len(diff)==0:
+                continue
             th1 = time1[match1[diff[0]]]
             th2 = time2[match2[diff[0]]]
             if diff[0] != 0:
