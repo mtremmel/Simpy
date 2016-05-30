@@ -408,6 +408,7 @@ class mergerCat(object):
     def get_halo_merger(self,simname):
         import halo_db as db
         self.data['dt_hmerger'] = np.ones(len(self.data['ID1']))*-1
+        self.data['dt_hmerger_min'] = np.ones(len(self.data['ID1']))*-1
         for i in range(len(self.data['ID1'])):
             if i%30 == 0:
                 print float(i)/float(len(self.data['ID1']))*100, '% done'
