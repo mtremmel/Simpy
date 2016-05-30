@@ -428,7 +428,12 @@ class mergerCat(object):
                 continue
             diff = np.where(hn1[match1]!=hn2[match2])[0]
             if len(diff)==0:
-                continue
+                time1_all =  bh1.reverse_property_cascade('t()')
+                time2_all =  bh2.reverse_property_cascade('t()')
+                th1 = time1_all[(time1_all < time1.min())][0]
+                th2 = time2_all[(time2_all < time2.min())][0]
+                self.data['dt_hmerger'][i] = self.data['time'][i] - max(th1,th2)
+                self.data['dt_hmerger_min'][i] = time1.min()
             th1 = time1[match1[diff[0]]]
             th2 = time2[match2[diff[0]]]
             if diff[0] != 0:
