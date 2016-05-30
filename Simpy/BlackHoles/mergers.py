@@ -419,12 +419,26 @@ class mergerCat(object):
             bh2 = db.get_halo(simname+'/%00'+ strsnap + '/1.'+str(self.data['ID2'][i]))
             time1, hn1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()')
             time2, hn2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()')
-            length = np.min([len(time1),len(time2)])
-            same = np.where(hn1[:length] != hn2[:length])[0]
-            if len(same)==0:
-                continue
-            th = time1[same[0]]
-            self.data['dt_hmerger'][i] = self.data['time'][i] - th
+            match1 = np.where(np.in1d(time1,time2))[0]
+            match2 = np.where(np.in1d(time2,time1))[0]
+            if not np.array_equal(time1[match1],time2[match2]):
+                print "WARNING time arrays don't match!"
+            diff = np.where(hn1[match1]!=hn2[match2])[0]
+            th1 = time1[match1[diff[0]]]
+            th2 = time2[match2[diff[0]]]
+            if diff[0] != 0:
+                th1p = time1[match1[diff[0]-1]]
+            else:
+                th1p = self.data['time'][i]
+            if th1 != th2:
+                print "WARNING halo merge times not correct"
+
+
+            self.data['dt_hmerger'][i] = self.data['time'][i] - th1
+            if self.data['time'][i] - th1p > 0:
+                self.data['dt_hmerger_min'][i] = self.data['time'][i] - th1p
+            else:
+                self.data['dt_hmerger_min'][i] = 0
 
 
 
