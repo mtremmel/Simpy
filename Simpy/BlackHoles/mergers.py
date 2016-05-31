@@ -443,7 +443,7 @@ class mergerCat(object):
                     th1 = th1[0]
                     th2 = th2[0]
                 self.data['dt_hmerger'][i] = self.data['time'][i] - max(th1,th2)
-                self.data['dt_hmerger_min'][i] = time1.min()
+                self.data['dt_hmerger_min'][i] = self.data['time'][i] - time1.min()
                 continue
             th1 = time1[match1[diff[0]]]
             th2 = time2[match2[diff[0]]]
