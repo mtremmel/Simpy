@@ -407,13 +407,13 @@ class mergerCat(object):
 
     def get_halo_merger(self,simname,overwrite=False):
         import halo_db as db
-        if 'dt_merger' not in self.data.keys() or overwrite==True:
+        if 'dt_hmerger' not in self.data.keys() or overwrite==True:
             self.data['dt_hmerger'] = np.ones(len(self.data['ID1']))*-1
             self.data['dt_hmerger_min'] = np.ones(len(self.data['ID1']))*-1
         for i in range(len(self.data['ID1'])):
             if i%30 == 0:
                 print float(i)/float(len(self.data['ID1']))*100, '% done'
-            if self.data['dt_merger'] > 0 and overwrite == False:
+            if self.data['dt_hmerger'] > 0 and overwrite == False:
                 continue
             if self.data['snap_prev'][i]<1000:
                 strsnap = '0'+str(self.data['snap_prev'][i])
