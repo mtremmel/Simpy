@@ -405,13 +405,16 @@ class mergerCat(object):
 
         self._match_data_to_raw('t_'+str(maxD), 'frdual_'+str(minL)+'_'+str(maxD))
 
-    def get_halo_merger(self,simname):
+    def get_halo_merger(self,simname,overwrite=False):
         import halo_db as db
-        self.data['dt_hmerger'] = np.ones(len(self.data['ID1']))*-1
-        self.data['dt_hmerger_min'] = np.ones(len(self.data['ID1']))*-1
+        if 'dt_merger' not in self.data.keys() or overwrite==True:
+            self.data['dt_hmerger'] = np.ones(len(self.data['ID1']))*-1
+            self.data['dt_hmerger_min'] = np.ones(len(self.data['ID1']))*-1
         for i in range(len(self.data['ID1'])):
             if i%30 == 0:
                 print float(i)/float(len(self.data['ID1']))*100, '% done'
+            if self.data['dt_merger'] > 0 and overwrite == False:
+                continue
             if self.data['snap_prev'][i]<1000:
                 strsnap = '0'+str(self.data['snap_prev'][i])
             else:
@@ -422,12 +425,12 @@ class mergerCat(object):
             time2, hn2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()')
             match1 = np.where(np.in1d(time1,time2))[0]
             match2 = np.where(np.in1d(time2,time1))[0]
+            if len(time1)==0 or len(time2)==0:
+                continue
             if not np.array_equal(time1[match1],time2[match2]):
                 print "WARNING time arrays don't match!"
-            if len(match1)==0 or len(match2)==0:
-                continue
             diff = np.where(hn1[match1]!=hn2[match2])[0]
-            if len(diff)==0:
+            if len(diff)==0 or len(match1)==0 or len(match2)==0:
                 time1_all =  bh1.reverse_property_cascade('t()')
                 time2_all =  bh2.reverse_property_cascade('t()')
                 if len(time1_all)==0 or len(time2_all)==0:
