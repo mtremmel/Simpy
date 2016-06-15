@@ -430,7 +430,7 @@ class mergerCat(object):
                 except:
                     dt = np.sum(time1[use1[close]] - time1[use1[close]+1])
                 self.rawdat['t_'+str(maxD)][i] = dt
-                dual = np.where((lum1[use1[close]]>minL)&(lum2[use2[close]]>minL))
+                dual = np.where((lum1[use1[close]]>minL)&(lum2[use2[close]]>minL))[0]
                 self.rawdat['frdual_'+str(minL)+'_'+str(maxD)][i] = float(len(dual))/float(len(close))
 
         self._match_data_to_raw('t_'+str(maxD), 'frdual_'+str(minL)+'_'+str(maxD))
