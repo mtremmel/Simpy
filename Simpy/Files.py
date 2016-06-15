@@ -105,13 +105,13 @@ def create_halo_tree_files(dbsim, add_props=[]):
 		data = step.gather_property(*properties)
 		desc = np.ones(len(data[0]))*-1
 		n, nn = step.gather_property('halo_number()','later(1).halo_number()')
-		desc[(np.in1d(data[0],n)] = nn
+		desc[(np.in1d(data[0],n))] = nn
 		tofile = [data[0],desc,data[1], data[2], np.zeros(len(data[0])), data[3], np.zeros(len(data[0])), data[4]+data[5],+data[6],
 				  data[7][:,0], data[7][:,1], data[7][:,2], data[8][:,0], data[8][:,1], data[8][:,2],
 				  np.zeros(len(data[0])), np.zeros(len(data[0])), np.zeros(len(data[0])), np.zeros(len(data[0]))]
 
 		np.savetxt(outf, np.column_stack(tofile),
-				   fmt = fmt=['%d', '%d', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f','%e'])
+				   fmt=['%d', '%d', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f','%e'])
 
 
 
