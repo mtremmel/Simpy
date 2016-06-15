@@ -403,15 +403,17 @@ class mergerCat(object):
             yd = y1[use1]-y2[use2]
             zd = z1[use1]-z2[use2]
 
-            badx = np.where(xd > boxsize*scale1[use1]/2)
+            bphys = boxsize*scale1[use1]
+            badx = np.where(xd > bphys/2)
             xd[badx] = -1.0 * (xd[badx]/np.abs(xd[badx])) * \
-                              (boxsize*scale1[use1] - np.abs(xd[badx]))
-            bady = np.where(yd > boxsize*scale1[use1]/2)
+                              (bphys[badx] - np.abs(xd[badx]))
+
+            bady = np.where(yd > bphys/2)
             yd[bady] = -1.0 * (yd[bady]/np.abs(yd[bady])) * \
-                              (boxsize*scale1[use1] - np.abs(yd[bady]))
-            badz = np.where(zd > boxsize*scale1[use1]/2)
+                              (bphys[bady] - np.abs(yd[bady]))
+            badz = np.where(zd > bphys/2)
             zd[badz] = -1.0 * (zd[badz]/np.abs(zd[badz])) * \
-                              (boxsize*scale1[use1] - np.abs(zd[badz]))
+                              (bphys[badz] - np.abs(zd[badz]))
 
             dist = np.sqrt(xd**2 + yd**2 + zd**2)
 
