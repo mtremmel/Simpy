@@ -388,8 +388,8 @@ class mergerCat(object):
             mint = np.max([time1.min(),time2.min()])
             maxt = time2.max()
 
-            use1 = np.where((time1<=maxt)&(time1>mint))[0]
-            use2 = np.where((time2<=maxt)&(time2>mint))[0]
+            use1 = np.where((time1<=maxt)&(time1>=mint))[0]
+            use2 = np.where((time2<=maxt)&(time2>=mint))[0]
 
             if len(use1) != len(use2):
                 if len(use1)< len(use2):
