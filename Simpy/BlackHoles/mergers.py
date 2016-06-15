@@ -360,7 +360,7 @@ class mergerCat(object):
         self._match_data_to_raw('merge_mass_1', 'merge_mass_2', 'merge_mdot_1', 'merge_mdot_2',
                                 'merge_lum_1', 'merge_lum_2', 'tform1','tform2')
 
-    def get_dual_frac(self,bhorbit,minL=1e43,maxD=10):
+    def get_dual_frac(self,bhorbit,minL=1e43,maxD=10,boxsize=25):
         self.rawdat['frdual_'+str(minL)+'_'+str(maxD)] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['t_'+str(maxD)] = np.ones(len(self.rawdat['ID1']))*-1
         for i in range(len(self.rawdat['ID1'])):
@@ -379,6 +379,9 @@ class mergerCat(object):
 
             time1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'time')
             time2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'time')
+
+            scale1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'scalefac')
+            scale2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'scalefac')
             if len(time1) == 0 or len(time2) == 0:
                 continue
 
@@ -396,7 +399,22 @@ class mergerCat(object):
                 else:
                     print "SHIIIIIT"
 
-            dist = np.sqrt((x1[use1]-x2[use2])**2 + (y1[use1]-y2[use2])**2 + (z1[use1]-z2[use2])**2)
+            xd = x1[use1]-x2[use2]
+            yd = y1[use1]-y2[use2]
+            zd = z1[use1]-z2[use2]
+
+            badx = np.where(xd > boxsize*scale1[use1]/2)
+            xd[badx] = -1.0 * (xd[badx]/np.abs(xd[badx])) * \
+                              (boxsize*scale1[use1] - np.abs(xd[badx]))
+            bady = np.where(yd > boxsize*scale1[use1]/2)
+            yd[bady] = -1.0 * (yd[bady]/np.abs(yd[bady])) * \
+                              (boxsize*scale1[use1] - np.abs(yd[bady]))
+            badz = np.where(zd > boxsize*scale1[use1]/2)
+            zd[badz] = -1.0 * (zd[badz]/np.abs(zd[badz])) * \
+                              (boxsize*scale1[use1] - np.abs(zd[badz]))
+
+            dist = np.sqrt(xd**2 + yd**2 + zd**2)
+
             close = np.where(dist<maxD)[0]
             dt = np.sum(time1[use1[close]] - time1[use1[close]+1])
             self.rawdat['t_'+str(maxD)][i] = dt
