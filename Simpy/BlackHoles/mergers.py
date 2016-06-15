@@ -397,7 +397,8 @@ class mergerCat(object):
                     if len(use1) != len(use2):
                         print "SHIIIIIIT"
                 else:
-                    print "SHIIIIIT"
+                    print "SHIIIIIIIT"
+                    print self.rawdat['ID1'][i], self.rawdat['ID2'][i]
 
             xd = x1[use1]-x2[use2]
             yd = y1[use1]-y2[use2]
