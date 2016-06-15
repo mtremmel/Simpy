@@ -392,8 +392,6 @@ class mergerCat(object):
             use2 = np.where((time2<=maxt)&(time2>=mint))[0]
 
             if len(use1) == 0 or len(use2) == 0:
-                print "weird"
-                print self.rawdat['ID1'][i], self.rawdat['ID2'][i]
                 continue
 
             if len(use1) != len(use2):
