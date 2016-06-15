@@ -404,24 +404,26 @@ class mergerCat(object):
             zd = z1[use1]-z2[use2]
 
             bphys = boxsize*scale1[use1]
-            badx = np.where(xd > bphys/2)
+            badx = np.where(xd > bphys/2)[0]
             xd[badx] = -1.0 * (xd[badx]/np.abs(xd[badx])) * \
                               (bphys[badx] - np.abs(xd[badx]))
 
-            bady = np.where(yd > bphys/2)
+            bady = np.where(yd > bphys/2)[0]
             yd[bady] = -1.0 * (yd[bady]/np.abs(yd[bady])) * \
                               (bphys[bady] - np.abs(yd[bady]))
-            badz = np.where(zd > bphys/2)
+            badz = np.where(zd > bphys/2)[0]
             zd[badz] = -1.0 * (zd[badz]/np.abs(zd[badz])) * \
                               (bphys[badz] - np.abs(zd[badz]))
 
             dist = np.sqrt(xd**2 + yd**2 + zd**2)
+            if len(use1) != len(dist) or len(use2) != len(dist):
+                print len(use1), len(use2), len(dist)
 
             close = np.where(dist<maxD)[0]
-            dt = np.sum(time1[use1[close]] - time1[use1[close]+1])
-            self.rawdat['t_'+str(maxD)][i] = dt
-            dual = np.where((lum1[use1[close]]>minL)&(lum2[use2[close]]>minL))
             if len(close) > 0:
+                dt = np.sum(time1[use1[close]] - time1[use1[close]+1])
+                self.rawdat['t_'+str(maxD)][i] = dt
+                dual = np.where((lum1[use1[close]]>minL)&(lum2[use2[close]]>minL))
                 self.rawdat['frdual_'+str(minL)+'_'+str(maxD)][i] = float(len(dual))/float(len(close))
 
         self._match_data_to_raw('t_'+str(maxD), 'frdual_'+str(minL)+'_'+str(maxD))
