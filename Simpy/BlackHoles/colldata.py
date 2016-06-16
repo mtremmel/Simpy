@@ -53,4 +53,4 @@ fio_bhlf_L6Fp = 46.2 - 45.55
 
 #BH mergers from Klein 16 (SAMs)
 K16_z, K16_nobs = readcol(os.path.join(os.path.dirname(__file__),'data/Klein16_BHmerge_MBHd.csv'),twod=False)
-
+K16_z_nod, K16_nobs_nod = readcol(os.path.join(os.path.dirname(__file__),'data/Klein16_BHmerge_MBHnod.csv'),twod=False)
