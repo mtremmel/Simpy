@@ -407,7 +407,7 @@ class mergerCat(object):
             yd = y1[use1]-y2[use2]
             zd = z1[use1]-z2[use2]
 
-            bphys = boxsize*scale1[use1]
+            bphys = boxsize*scale1[use1]*1e3
             badx = np.where(xd > bphys/2)[0]
             xd[badx] = -1.0 * (xd[badx]/np.abs(xd[badx])) * \
                               (bphys[badx] - np.abs(xd[badx]))
