@@ -50,3 +50,7 @@ fio_bhlf_errphi6Fm = fio_bhlf_phi6F - np.log10(0.66e-5-0.5e-5)
 fio_bhlf_L6F = 45.55
 fio_bhlf_L6Fm = 45.55 - 44.9
 fio_bhlf_L6Fp = 46.2 - 45.55
+
+#BH mergers from Klein 16 (SAMs)
+K16_z, K16_nobs = readcol(os.path.join(os.path.dirname(__file__),'data/Klein16_BHmerge_MBHd.csv',twod=False)
+
