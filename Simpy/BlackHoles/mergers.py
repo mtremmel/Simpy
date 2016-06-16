@@ -92,6 +92,7 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
             print "ERROR do not understand vol_weights format... aborting"
             return
     else:
+        print "here"
         vol_weights = np.ones(len(time))*vol_weights
     if type(bins)!= list and type(bins)!=np.ndarray:
         dtz = (tzrange[1]-tzrange[0])/float(bins)
