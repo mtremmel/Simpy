@@ -360,9 +360,13 @@ class mergerCat(object):
         self._match_data_to_raw('merge_mass_1', 'merge_mass_2', 'merge_mdot_1', 'merge_mdot_2',
                                 'merge_lum_1', 'merge_lum_2', 'tform1','tform2')
 
-    def get_dual_frac(self,bhorbit,minL=1e43,maxD=10,boxsize=25):
-        self.rawdat['frdual_'+str(minL)+'_'+str(maxD)] = np.ones(len(self.rawdat['ID1']))*-1
-        self.rawdat['t_'+str(maxD)] = np.ones(len(self.rawdat['ID1']))*-1
+    def get_dual_frac(self,bhorbit,minL=1e43,maxD=10,boxsize=25,comove=True):
+        if comove:
+            tstr = 't_'+str(maxD)+'c'
+            fstr = 'frdual_'+str(minL)+'_'+str(maxD)+'c'
+
+        self.rawdat[fstr] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat[tstr] = np.ones(len(self.rawdat['ID1']))*-1
         for i in range(len(self.rawdat['ID1'])):
             if i %100==0:
                 print float(i)/float(len(self.rawdat['ID1']))*100, '% done'
@@ -422,18 +426,19 @@ class mergerCat(object):
             dist = np.sqrt(xd**2 + yd**2 + zd**2)
             if len(use1) != len(dist) or len(use2) != len(dist):
                 print len(use1), len(use2), len(dist)
-
+            if comove:
+                dist /= scale1[use1]
             close = np.where(dist<maxD)[0]
             if len(close) > 0:
                 try:
                     dt = np.sum(time1[use1[close]] - time1[use1[close]-1])
                 except:
                     dt = np.sum(time1[use1[close]] - time1[use1[close]+1])
-                self.rawdat['t_'+str(maxD)][i] = dt
+                self.rawdat[tstr][i] = dt
                 dual = np.where((lum1[use1[close]]>minL)&(lum2[use2[close]]>minL))[0]
-                self.rawdat['frdual_'+str(minL)+'_'+str(maxD)][i] = float(len(dual))/float(len(close))
+                self.rawdat[fstr][i] = float(len(dual))/float(len(close))
 
-        self._match_data_to_raw('t_'+str(maxD), 'frdual_'+str(minL)+'_'+str(maxD))
+        self._match_data_to_raw(tstr, fstr)
 
     def get_halo_merger(self,simname,overwrite=False):
         import halo_db as db
