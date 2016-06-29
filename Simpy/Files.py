@@ -92,26 +92,47 @@ def mkXML(startstep=None, endstep=None):
 		os.chdir(wdir)
 	return
 
-def create_halo_tree_files(dbsim, add_props=[]):
+def create_halo_tree_files(dbsim, h=0.6776931508813172):
 	import numpy as np
-	properties = ['halo_number()','Mvir', 'Vmax', 'Rvir', 'NDM()', 'NStar()', 'NGas()', 'SSC', 'Vcom']
-	if len(add_props)>0:
-		properties = properties.extend(add_props)
-
 	cnt = 0
+	desc = open('DescScales.txt','w')
+	desc.close()
+	import pynbody
 	for step in dbsim.timesteps:
+		halodat = step.gather_property('halo_number()', 'Mvir', 'Vmax()', 'Rvir', 'NDM()', 'NStar()', 'NGas()', 'SSC', 'Vcom')
+		halo_linkdat = step.gather_property('halo_number()','Vmax()','later(1).halo_number()','later(1).Vmax()')
+		desc = np.ones(len(halodat[0]))*-1
+		desc[(np.in1d(halodat[0],halo_linkdat[0]))] = halo_linkdat[2]
+		ID = halodat[0]
+		Mvir = halodat[1] * h
+		Vmax = halodat[2]
+		Rvir = halodat[3] * h
+		Np = halodat[4]+halodat[5]+halodat[6]
+		Xc = pynbody.array.SimArray(halodat[5][:,0], 'kpc')
+		Yc = pynbody.array.SimArray(halodat[5][:,1], 'kpc')
+		Zc = pynbody.array.SimArray(halodat[5][:,2], 'kpc')
+		VXc = halodat[6][:,0]
+		VYc = halodat[6][:,1]
+		VZc = halodat[6][:,2]
+		Jx = np.zeros(len(halodat[0]))
+		Jy = np.zeros(len(halodat[0]))
+		Jz = np.zeros(len(halodat[0]))
+		Spin = np.zeros(len(halodat[0]))
+		Rs = np.zeros(len(halodat[0]))
+		Vrms = np.zeros(len(halodat[0]))
+
 		outf = open('out_'+str(cnt)+'.list','w')
-
-		data = step.gather_property(*properties)
-		desc = np.ones(len(data[0]))*-1
-		n, nn = step.gather_property('halo_number()','later(1).halo_number()')
-		desc[(np.in1d(data[0],n))] = nn
-		tofile = [data[0],desc,data[1], data[2], np.zeros(len(data[0])), data[3], np.zeros(len(data[0])), data[4]+data[5],+data[6],
-				  data[7][:,0], data[7][:,1], data[7][:,2], data[8][:,0], data[8][:,1], data[8][:,2],
-				  np.zeros(len(data[0])), np.zeros(len(data[0])), np.zeros(len(data[0])), np.zeros(len(data[0]))]
-
+		tofile = [ID, desc, Mvir, Vmax, Vrms, Rvir, Rs, Np,
+				  Xc.in_units('Mpc')*h, Yc.in_units('Mpc') * h, Zc.in_units('Mpc') * h, VXc, VYc, VZc, Jx, Jy, Jz, Spin]
 		np.savetxt(outf, np.column_stack(tofile),
 				   fmt=['%d', '%d', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f','%e'])
+		outf.close()
+
+		desc = open('DescScales.txt','a')
+		desc.write(str(cnt)+' '+str(1./(1+step.redshift))+'\n')
+		desc.close()
+
+		cnt += 1
 
 
 
