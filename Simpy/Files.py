@@ -70,7 +70,7 @@ def makelinks(parentdir, simname):
 	return
 
 
-def mkXML(startstep=None, endstep=None):
+def mkXML(startstep=None, endstep=None, path='~trq/bin/'):
 	wdir = os.getcwd()
 	f = open('files.list','r')
 	files = f.readlines()
@@ -88,7 +88,7 @@ def mkXML(startstep=None, endstep=None):
 			print "xml file found!"
 			os.chdir(wdir)
 			continue
-		os.system('~trq/bin/make_xml.pl')
+		os.system(path+'/make_xml.pl')
 		os.chdir(wdir)
 	return
 
