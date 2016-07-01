@@ -92,7 +92,7 @@ def mkXML(startstep=None, endstep=None, path='~trq/bin/'):
 		os.chdir(wdir)
 	return
 
-def create_halo_tree_files(dbsim, h=0.6776931508813172):
+def create_halo_tree_files(dbsim, h=0.6776931508813172, nmax=None):
 	import numpy as np
 	cnt = 0
 	desc = open('DescScales.txt','w')
@@ -101,6 +101,7 @@ def create_halo_tree_files(dbsim, h=0.6776931508813172):
 	for step in dbsim.timesteps:
 		halodat = step.gather_property('halo_number()', 'Mvir', 'Vmax()', 'Rvir', 'NDM()', 'NStar()', 'NGas()', 'SSC', 'Vcom')
 		halo_linkdat = step.gather_property('halo_number()','Vmax()','later(1).halo_number()','later(1).Vmax()')
+
 		desc = np.ones(len(halodat[0]))*-1
 		desc[(np.in1d(halodat[0],halo_linkdat[0]))] = halo_linkdat[2]
 		ID = halodat[0]
@@ -122,10 +123,22 @@ def create_halo_tree_files(dbsim, h=0.6776931508813172):
 		Vrms = np.zeros(len(halodat[0]))
 
 		outf = open('out_'+str(cnt)+'.list','w')
-		tofile = [ID, desc, Mvir, Vmax, Vrms, Rvir, Rs, Np,
-				  Xc.in_units('Mpc')*h, Yc.in_units('Mpc') * h, Zc.in_units('Mpc') * h, VXc, VYc, VZc, Jx, Jy, Jz, Spin]
+
+		if nmax:
+			ok = np.where((ID<nmax)&(desc<nmax))[0]
+
+			tofile = [ID[ok], desc[ok], Mvir[ok], Vmax[ok], Vrms[ok], Rvir[ok], Rs[ok], Np[ok],
+				  Xc.in_units('Mpc')[ok]*h, Yc.in_units('Mpc')[ok] * h, Zc.in_units('Mpc')[ok] * h,
+				  VXc[ok], VYc[ok], VZc[ok], Jx[ok], Jy[ok], Jz[ok], Spin[ok]]
+
+		else:
+			tofile = [ID, desc, Mvir, Vmax, Vrms, Rvir, Rs, Np,
+				  Xc.in_units('Mpc')*h, Yc.in_units('Mpc') * h, Zc.in_units('Mpc') * h,
+				  VXc, VYc, VZc, Jx, Jy, Jz, Spin]
+
 		np.savetxt(outf, np.column_stack(tofile),
-				   fmt=['%d', '%d', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f','%e'])
+				   header="#ID DescID Mvir Vmax Vrms Rvir Rs Np X Y Z VX VY VZ JX JY JZ Spin",
+				   fmt=['%d', '%d', '%e', '%f', '%f', '%f', '%f', '%d', '%f', '%f', '%f', '%f', '%f', '%f','%e', '%e','%e','%f'])
 		outf.close()
 
 		desc = open('DescScales.txt','a')
