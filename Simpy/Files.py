@@ -92,6 +92,27 @@ def mkXML(startstep=None, endstep=None, path='~trq/bin/'):
 		os.chdir(wdir)
 	return
 
+def run_NCHIL_to_TIPSY(target_dir='TipsyFiles', exec_path='~/utility/TreeDataFormat/', overwrite=False):
+	if not os.path.exists(target_dir):
+		os.system('mkdir ' + target_dir)
+	f = open('files.list')
+	lines = f.readlines()
+	ntodo = len(lines)
+	f.close()
+	cnt = 0
+	for ll in lines:
+		print ll
+		print cnt/float(ntodo)*100, '% done'
+		if os.path.exists(target_dir+'/'+ll.strip('\n')):
+			if overwrite is False:
+				print "file already found! skipping"
+				cnt += 1
+				continue
+			else:
+				print "file already found! overwrite flag is on, so proceeding anyway"
+		os.system(exec_path+'salsa2tipsy '+ll.strip('\n') + ' ' + target_dir+'/'+ll.strip('\n'))
+		cnt += 1
+
 def create_halo_tree_files(dbsim, h=0.6776931508813172, nmax=None):
 	import numpy as np
 	cnt = 0
