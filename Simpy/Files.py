@@ -92,15 +92,22 @@ def mkXML(startstep=None, endstep=None, path='~trq/bin/'):
 		os.chdir(wdir)
 	return
 
-def run_NCHIL_to_TIPSY(target_dir='TipsyFiles', exec_path='~/utility/TreeDataFormat/', overwrite=False):
+def run_NCHIL_to_TIPSY(target_dir='TipsyFiles', exec_path='~/utility/TreeDataFormat/', overwrite=False, nstart=0, nend=-1):
 	if not os.path.exists(target_dir):
 		os.system('mkdir ' + target_dir)
 	f = open('files.list')
 	lines = f.readlines()
 	ntodo = len(lines)
+	if nend>0:
+		ntodo = nend-nstart
 	f.close()
 	cnt = 0
 	for ll in lines:
+		if cnt < nstart:
+			cnt +=1
+			continue
+		if cnt > nend:
+			break
 		print ll
 		print cnt/float(ntodo)*100, '% done'
 		if os.path.exists(target_dir+'/'+ll.strip('\n')):
