@@ -52,7 +52,7 @@ def lum_distance(z, omegaM, omegaL, h):
 
 def event_count(N, z, omegaM, omegaL, h):
         dc = comoving_dist(z, omegaM, omegaL, h)
-        return 4*np.pi*util.c*3.24078e-25*N*dc**2
+        return 4*np.pi*util.c*1.02269032e-17*N*dc**2
 
 
 
