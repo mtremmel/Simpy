@@ -109,7 +109,7 @@ def run_NCHIL_to_TIPSY(target_dir='TipsyFiles', exec_path='~/utility/TreeDataFor
 		if cnt > nend:
 			break
 		print ll
-		print cnt/float(ntodo)*100, '% done'
+		print (cnt-nstart)/float(ntodo)*100, '% done'
 		if os.path.exists(target_dir+'/'+ll.strip('\n')):
 			if overwrite is False:
 				print "file already found! skipping"
