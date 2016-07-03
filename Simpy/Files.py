@@ -127,8 +127,8 @@ def create_halo_tree_files(dbsim, h=0.6776931508813172, nmax=None):
 	desc.close()
 	import pynbody
 	for step in dbsim.timesteps:
-		halodat = step.gather_property('halo_number()', 'Mvir', 'Vmax()', 'Rvir', 'NDM()', 'NStar()', 'NGas()', 'SSC', 'Vcom')
-		halo_linkdat = step.gather_property('halo_number()','Vmax()','later(1).halo_number()','later(1).Vmax()')
+		halodat = step.gather_property('halo_number()', 'Mvir', 'vmax_dm_global()', 'Rvir', 'NDM()', 'NStar()', 'NGas()', 'SSC', 'Vcom')
+		halo_linkdat = step.gather_property('halo_number()','vmax_dm_global()','later(1).halo_number()','later(1).vmax_dm_global()')
 
 		desc = np.ones(len(halodat[0]))*-1
 		desc[(np.in1d(halodat[0],halo_linkdat[0]))] = halo_linkdat[2]
