@@ -169,6 +169,91 @@ def eLisaLimit(fobs):
 
     return np.sqrt(sn(fobs)*fobs)
 
+#GW emission approx. without spin given by Ajith+ 2008
+# (http://journals.aps.org/prd/pdf/10.1103/PhysRevD.77.104017)
+def freq(a, b, c, M1, M2):
+    M = M1 + M2
+    n = M1*M1/M**2
+
+    return (a*n**2 + b*n + c)/(np.pi*M) * util.c.in_units('cm s**-1')**3/util.G.in_units('Msol**-1 cm**3 s**-1')
+
+def freq_merge(M1, M2):
+    a = 2.9740e-1
+    b = 4.4810e-2
+    c = 9.5560e-2
+    return freq(a,b,c,M1, M2)
+
+def freq_ring(M1, M2):
+    a = 5.94110e-1
+    b = 8.97940e-2
+    c = 1.91110e-1
+    return freq(a,b,c,M1, M2)
+
+def freq_cut(M1, M2):
+    a = 8.49450e-1
+    b = 1.28480e-1
+    c = 2.72990e-1
+    return freq(a,b,c,M1, M2)
+
+def sigfreq(M1, M2):
+    a = 5.08010e-1
+    b = 7.75150e-2
+    c = 2.23690e-1
+    return freq(a,b,c,M1, M2)
+
+def ampGW(M1, M2, z, f, omegaM, omegaL, h0):
+    M = M1 + M2
+    n = M1*M2/M**2
+    dL = cosmology.lum_distance(z,omegaM, omegaL, h0)
+    dL *= 3.086e+24
+
+    C = (util.G.in_units('Mpc**3 Msol**-1 s**-2')/util.c.in_untits('Mpc s**-1')) * \
+        M**(5./6.) * freq_merge(M1,M2)**(-7./6.) * (5.*n/24.)**0.5 / (dL*np.pi**(2./3.))
+
+    fm = freq_merge(M1,M2)
+    fr = freq_ring(M1,M2)
+    fc = freq_cut(M1,M2)
+    sig = sigfreq(M1,M2)
+
+    def LL(sig,freq,fr):
+        return (1/2.*np.pi)*sig/((f-fr)**2 + sig**2/4.)
+
+    if f < fm:
+        return C * (f/fm)**(-7./6.)
+    if f >= fm and f < fr:
+        return C * (f/fm)**(-2./3.)
+    if f >= fr and f < fc:
+        return C * np.pi*sig/2. * (fr/fm)**(-2./3.) * LL(sig,f,fr)
+    if f >=fc:
+        print "ERROR frequency > f_cut"
+        raise RuntimeError
+
+
+
+#from private communications with Marta, taken based off of latest Pathfinder data
+def eLisaLimitLPF(fobs, config=1, dogal=False):
+    def sacc(fobs):
+        return 1.551245e-29*(1 + (4.48833e-4/fobs)**2 + (fobs/0.0636734)**4) / (2*np.pi*fobs)**4
+
+    somn = 8.65e-24
+
+    if config == 1:
+        ssn = 4.39e-23
+    if config == 2:
+        ssn =  3.90e-23
+    if config == 5:
+        ssn = 5.86e-23
+
+    L = config * 1.0e6
+
+    def sn(fobs):
+        return 20./3. * (4.*sacc(fobs)+ssn+somn)/L**2 * (1+(fobs/(0.41*(util.c/(1.0e2*2.0*L))))**2)
+
+    return np.sqrt(sn(fobs)*fobs)
+
+
+
+
 
 
 

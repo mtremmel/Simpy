@@ -1,10 +1,11 @@
 import numpy as np
 import scipy
+import pynbody
 
 #useful constants
-c = 2.99792458e10
+c = pynbody.array.SimArray(2.99792458e10,'cm s**-1')
 lbol_sun = 3.9e33
-G = 6.67259e-8
+G = pynbody.array.SimArray(6.67259e-8,'cm**3 s**-2 g**-1')
 M_sun_g = 1.988547e33
 loglbol_sun = np.log10(lbol_sun)
 
