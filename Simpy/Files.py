@@ -1,4 +1,5 @@
 import os
+import glob
 
 
 def getFileLists(simname, NCHILADA=True):
