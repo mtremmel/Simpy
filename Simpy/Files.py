@@ -30,6 +30,23 @@ def cklists(simname,NCHILADA=True):
 		getFileLists(simname, NCHILADA=NCHILADA)
 	return
 
+def concatenate_ahf(cleanup=False):
+	f = open('files.list')
+	files = f.readlines()
+	f.close()
+	for ff in files:
+		fileext = glob.glob(ff+'.*AHF_halos')[0].split('z')[1]
+		os.system('cat '+ff+'.????.z'+fileext+' > '+ff+'.z'+fileext)
+		fileext = glob.glob(ff+'.*AHF_particles')[0].split('z')[1]
+		os.system('cat '+ff+'.????.z'+fileext+' > '+ff+'.z'+fileext)
+		fileext = glob.glob(ff+'.*AHF_profiles')[0].split('z')[1]
+		os.system('cat '+ff+'.????.z'+fileext+' > '+ff+'.z'+fileext)
+		fileext = glob.glob(ff+'.*AHF_substructure')[0].split('z')[1]
+		os.system('cat '+ff+'.????.z'+fileext+' > '+ff+'.z'+fileext)
+
+		if cleanup is True:
+			os.system('rm '+ff+'.????.z*AHF*')
+
 
 def mkAbridge(filename,columns=[1,2,3,4],condition=None,suffix=None):
 	if suffix==None:
