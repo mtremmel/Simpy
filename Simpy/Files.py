@@ -36,6 +36,7 @@ def concatenate_ahf(cleanup=False):
 	files = f.readlines()
 	f.close()
 	for ff in files:
+		print ff
 		name = ff.strip('\n')
 		fileext = glob.glob(name+'.*AHF_halos')[0].split('z')[1]
 		os.system('cat '+name+'.????.z'+fileext+' > '+name+'.z'+fileext)
