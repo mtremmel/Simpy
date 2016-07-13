@@ -38,12 +38,20 @@ def concatenate_ahf(cleanup=False):
 	for ff in files:
 		print ff
 		name = ff.strip('\n')
+		print "halos"
+		ahffiles = glob.glob(name+'.*AHF_halos')
+		if len(ahffiles) == 0:
+			print "No AHF files foudn, skipping"
+			continue
 		fileext = glob.glob(name+'.*AHF_halos')[0].split('z')[1]
 		os.system('cat '+name+'.????.z'+fileext+' > '+name+'.z'+fileext)
+		print "particles"
 		fileext = glob.glob(name+'.*AHF_particles')[0].split('z')[1]
 		os.system('cat '+name+'.????.z'+fileext+' > '+name+'.z'+fileext)
+		print "profiles"
 		fileext = glob.glob(name+'.*AHF_profiles')[0].split('z')[1]
 		os.system('cat '+name+'.????.z'+fileext+' > '+name+'.z'+fileext)
+		print "substructrue"
 		fileext = glob.glob(name+'.*AHF_substructure')[0].split('z')[1]
 		os.system('cat '+name+'.????.z'+fileext+' > '+name+'.z'+fileext)
 
