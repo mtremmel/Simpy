@@ -39,10 +39,10 @@ def concatenate_ahf(cleanup=False):
 		print ff
 		name = ff.strip('\n')
 		print "halos"
-		ahffiles = glob.glob(name+'.*AHF_halos')
+		ahffiles = glob.glob(name+'.????.z*AHF_halos')
 		if len(ahffiles) == 0:
 			print "No AHF files foudn, skipping"
-			continue
+			continue"
 		fileext = glob.glob(name+'.*AHF_halos')[0].split('z')[1]
 		os.system('cat '+name+'.????.z'+fileext+' > '+name+'.z'+fileext)
 		print "particles"
