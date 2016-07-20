@@ -148,6 +148,21 @@ def run_NCHIL_to_TIPSY(target_dir='TipsyFiles', exec_path='~/utility/TreeDataFor
 		os.system(exec_path+'salsa2tipsy '+ll.strip('\n') + ' ' + target_dir+'/'+ll.strip('\n'))
 		cnt += 1
 
+def init_ahf_fpos():
+	f = open('files.list')
+	files = f.readlines()
+	f.close()
+	for ff in files:
+		print ff
+		name = ff.strip('\n')
+		if len(glob.glob(name+'*AHF_fpos')) != 0:
+			print "fpos file found!"
+			continue
+		print name
+		s = pynbody.load(name)
+		h = s.halos(write_fpos=True)
+
+
 def create_halo_tree_files(dbsim, h=0.6776931508813172, nmax=None):
 	import numpy as np
 	cnt = 0
