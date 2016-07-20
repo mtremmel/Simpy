@@ -149,6 +149,7 @@ def run_NCHIL_to_TIPSY(target_dir='TipsyFiles', exec_path='~/utility/TreeDataFor
 		cnt += 1
 
 def init_ahf_fpos():
+	import pynbody
 	f = open('files.list')
 	files = f.readlines()
 	f.close()
