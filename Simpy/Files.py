@@ -164,6 +164,7 @@ def init_ahf_fpos(istart=0,iend=None):
 		name = ff.strip('\n')
 		if len(glob.glob(name+'*AHF_fpos')) != 0:
 			print "fpos file found!"
+			cnt += 1
 			continue
 		print name
 		s = pynbody.load(name)
