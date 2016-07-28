@@ -106,7 +106,7 @@ def getstats(simname, step):
 
 def SMHM_db(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None,
             maxmass=None, markersize=5,label=None, correct=True, error=True):
-    import halo_db as db
+    import tangos as db
     step = db.get_timestep(sim+'/%'+str(step))
     Mvir, Mstar = step.gather_property('Mvir', 'Mstar')
 
@@ -159,7 +159,7 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
          markersize=5,label=None, correct=True, usedb=False, remove_sats=True, only_sats=False, error=True, alpha=1.0,
          remove_sats_hard=False, boxsize=25, ret_data=False):
     if usedb is True:
-        import halo_db as db
+        import tangos as db
         dbstep = db.get_timestep(sim+'/%'+step)
         if remove_sats or only_sats:
             Mvir, Mstar, sub = dbstep.gather_property('Mvir', 'Mstar', 'Sub')
@@ -401,7 +401,7 @@ class HaloMergers(object):
         return self.data.keys()
 
     def dtBHmerge(self):
-        import halo_db as db
+        import tangos as db
         self.data['dtBHmerge'] = np.ones(len(self.data['time']))*-1
         self.data['dtBHmerge_min'] = np.ones(len(self.data['time']))*-1
         if 'time_next' not in self.data.keys():
@@ -423,7 +423,7 @@ class HaloMergers(object):
 
 
     def get_tnext(self):
-        import halo_db as db
+        import tangos as db
         self.data['time_next'] = np.ones(len(self.data['time']))*-1
         self.data['redshift_next'] = np.ones(len(self.data['time']))*-1
         for ii in range(len(self.data['time'])):
@@ -434,7 +434,7 @@ class HaloMergers(object):
             self.data['redshift_next'][ii] = step.next.redshift
 
     def get_tstart(self):
-        import halo_db as db
+        import tangos as db
         self.data['tstart'] = np.ones(len(self.data['time']))*-1
         self.data['Mvir1_start'] = np.ones(len(self.data['time']))*-1
         self.data['Mvir2_start'] = np.ones(len(self.data['time']))*-1

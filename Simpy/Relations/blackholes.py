@@ -33,7 +33,7 @@ def BHMBulge(logMbulge):
 
 def plt_BHMStar(simname, step, marker='o', size = 100, color='blue', label=None, fit=True, fiterr=True):
     from .. import plotting
-    import halo_db as db
+    import tangos as db
     print "getting data from database..."
     bhdata, Mstar = db.get_timestep(simname+'/%'+step).gather_property('bh().BH_mass', 'Mstar')
     plotting.plt.scatter(Mstar, bhdata, marker=marker, s=size, color=color, label=label)
