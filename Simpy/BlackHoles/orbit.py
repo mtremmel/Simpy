@@ -317,6 +317,8 @@ class Orbit(object):
 			ok, = np.where(np.in1d(self.data['iord'], slbhiords))
 			self.data['fake?'] = np.ones(len(self.data['iord'])) * -1
 			self.data['fake?'][ok] = 1
+		else:
+			sl = None
 
 		self.data['iord'][(self.data['iord']<0)] = 2*2147483648 + self.data['iord'][(self.data['iord']<0)]
 		# convert comoving quantities to physical units
@@ -412,13 +414,19 @@ class Orbit(object):
 
 	def get_all_BH_tform(self, sl):
 		# sl = pynbody.tipsy.StarLog(self.simname+'.starlog')
-		sliords = sl['iord'].astype(np.int64)
-		sliords[(sliords<0)] = 2*2147483648 + sliords[(sliords<0)]
-		ord = np.argsort(sliords)
-		bhind, = np.where(np.in1d(sliords[ord], self.bhiords))
-		self.tform = sl['tform'][ord][bhind] * -1
-		if self.tform.min() < 0: print "WARNING! Positive tforms were found for BHs!"
-		gc.collect()
+		if sl is not None:
+			sliords = sl['iord'].astype(np.int64)
+			sliords[(sliords<0)] = 2*2147483648 + sliords[(sliords<0)]
+			ord = np.argsort(sliords)
+			bhind, = np.where(np.in1d(sliords[ord], self.bhiords))
+			self.tform = sl['tform'][ord][bhind] * -1
+			if self.tform.min() < 0: print "WARNING! Positive tforms were found for BHs!"
+			gc.collect()
+		else:
+			cnt = 0
+			self.tform = np.ones(len(self.bhiords)) * -1
+			for id in self.bhiords:
+				self.tform[cnt] = self.singe_BH_data(id,'time').min()
 
 	def getprogbhs(self):
 		time, step, ID, IDeat, ratio, kick = readcol(self.simname + '.mergers', twod=False)
