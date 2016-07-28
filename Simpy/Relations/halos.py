@@ -389,9 +389,9 @@ def mergerhist(dbsim, moreprops=None, names=None, ret_totals=False, nsteps = Non
         return data
 
 class HaloMergers(object):
-    def __init__(self, dbsim, mhist=None, moreprops=None):
+    def __init__(self, dbsim, mhist=None, moreprops=None, names=None):
         if dbsim and not mhist:
-            self.data = mergerhist(dbsim,moreprops)
+            self.data = mergerhist(dbsim, moreprops, names)
         if mhist:
             self.data = mhist
         if not mhist and not dbsim:
