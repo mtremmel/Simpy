@@ -54,7 +54,22 @@ def event_count(N, z, omegaM, omegaL, h):
         dc = comoving_dist(z, omegaM, omegaL, h)
         return 4*np.pi*util.c*1.02269032e-17*N*dc**2
 
-def
+def make_hmf(simpath,**kwargs):
+        import pynbody
+        import scipy
+        sim = pynbody.load(simpath)
+        sim.properties['sigma8'] = 0.77
+        mass, sig, phi = pynbody.analysis.halo_mass_function(sim,pspec=pynbody.analysis.hmf.PowerSpectrumCAMBLive,**kwargs)
+        return scipy.interpolate.interp1d(mass,phi)
+
+def make_hmf_all_snaps(**kwargs):
+        f = open('files.list','r')
+        hmf = {}
+        for l in f:
+                name = l.strip('\n')
+                print name
+                hmf[name] = make_hmf(name,**kwargs)
+        return hmf
 
 
 
