@@ -171,7 +171,7 @@ class mergerCat(object):
 
         self.data = {'ID1':[], 'ID2':[], 'ratio':[], 'kick':[], 'step':[],
                     'time':[], 'tsnap_prev':[], 'tsnap_after':[], 'snap_prev':[], 'snap_after':[],
-                    'host_N_1':[], 'host_N_2':[], 'host_N_f':[]}
+                    'host_N_1':[], 'host_N_2':[], 'host_N_f':[], 'redshift':[]}
 
         for p in properties:
             self.data[p+'_1'] = []
@@ -225,7 +225,7 @@ class mergerCat(object):
         for key in self.data.keys():
             self.data[key] = np.array(self.data[key])
 
-        self._match_data_to_raw('ratio', 'kick', 'time','step')
+        self._match_data_to_raw('ratio', 'kick', 'time','step', 'redshift')
 
     def __getitem__(self, item):
         return self.data[item]
