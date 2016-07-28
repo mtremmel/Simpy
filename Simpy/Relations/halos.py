@@ -294,6 +294,9 @@ def mergerhist(dbsim, moreprops=None, names=None, ret_totals=False, nsteps = Non
 
     for p in moreprops:
         allprops.append(p)
+        allprops.append('later(1)'+p)
+
+    print allprops
 
     nmergers = []
     redshifts = []
