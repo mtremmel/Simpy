@@ -292,6 +292,9 @@ def mergerhist(dbsim, moreprops=None, names=None, ret_totals=False, nsteps = Non
     else:
         names = []
 
+    for p in moreprops:
+        allprops.append(p)
+
     nmergers = []
     redshifts = []
     times = []
