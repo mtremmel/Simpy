@@ -313,8 +313,9 @@ class Orbit(object):
 		sl = pynbody.tipsy.StarLog(self.simname + '.starlog')
 		slbhiords = sl['iord'][(sl['tform'] < 0)]
 		ok, = np.where(np.in1d(self.data['iord'], slbhiords))
-		for key in self.data.keys():
-			self.data[key] = self.data[key][ok]
+		self.data['fake?'] = np.ones(len(self.data['iord'])) * -1
+		self.data['fake?'][ok] = 1
+
 		self.data['iord'][(self.data['iord']<0)] = 2*2147483648 + self.data['iord'][(self.data['iord']<0)]
 		# convert comoving quantities to physical units
 		for key in ['x', 'y', 'z', 'vx', 'vy', 'vz']:
