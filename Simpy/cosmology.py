@@ -60,7 +60,7 @@ def make_hmf(simpath,**kwargs):
         sim = pynbody.load(simpath)
         sim.properties['sigma8'] = 0.77
         mass, sig, phi = pynbody.analysis.halo_mass_function(sim,pspec=pynbody.analysis.hmf.PowerSpectrumCAMBLive,**kwargs)
-        return scipy.interpolate.interp1d(mass,phi)
+        return scipy.interpolate.interp1d(np.log1(mass),phi)
 
 def make_hmf_all_snaps(**kwargs):
         f = open('files.list','r')
