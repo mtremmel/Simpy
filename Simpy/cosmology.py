@@ -54,15 +54,14 @@ def event_count(N, z, omegaM, omegaL, h):
         dc = comoving_dist(z, omegaM, omegaL, h)
         return 4*np.pi*util.c*1.02269032e-17*N*dc**2
 
-def make_hmf(simpath,**kwargs):
+def get_hmf_data(simpath,**kwargs):
         import pynbody
-        import scipy
         sim = pynbody.load(simpath)
         sim.properties['sigma8'] = 0.77
         mass, sig, phi = pynbody.analysis.halo_mass_function(sim,pspec=pynbody.analysis.hmf.PowerSpectrumCAMBLive,**kwargs)
-        return scipy.interpolate.interp1d(np.log10(mass),phi)
+        return np.log10(mass),phi
 
-def make_hmf_all_snaps(**kwargs):
+def get_hmf_data_all(**kwargs):
         f = open('files.list','r')
         hmf = {}
         for l in f:
@@ -70,6 +69,24 @@ def make_hmf_all_snaps(**kwargs):
                 print name
                 hmf[name] = make_hmf(name,**kwargs)
         return hmf
+
+class HMF(object):
+        def __init__(self,**kwargs):
+                self.data = get_hmf_data_all(**kwargs)
+                self.hmf = {}
+
+        def __getitem__(self,item):
+                if len(self.hmf.keys())==0:
+                        print "initializing functions..."
+                        self.create_functions()
+                return self.hmf[item]
+
+        def create_functions(self):
+                import scipy
+                for k in self.data.keys():
+                        self.hmf[key] = scipy.interpolate.interp1d(self.data[k][0],self.data[k][1])
+
+
 
 
 
