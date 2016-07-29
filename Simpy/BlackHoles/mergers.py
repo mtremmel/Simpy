@@ -136,7 +136,7 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
 
 
 class mergerCat(object):
-    def __init__(self, dbsim, simname, properties=['Mvir', 'Mstar', 'Mgas']):
+    def __init__(self, dbsim, simname, properties=['host_halo.Mvir', 'host_halo.Mstar', 'host_halo.Mgas']):
         proplist = ['halo_number()', 'BH_merger_next.halo_number()', 'host_halo.halo_number()',
                     'BH_merger_next.host_halo.halo_number()', 'BH_merger_next.earlier(1).host_halo.halo_number()']
         for prop in properties:
@@ -163,6 +163,8 @@ class mergerCat(object):
         util.cutdict(self.rawdat,ordr)
 
         s = dbsim.timesteps[0].load()
+        time = pynbody.array.SimArray(time,s.infer_original_units('s'))
+        time = time.in_units('Gyr')
         scale, red = cosmology.getScaleFactor(self.rawdat['time'],s)
 
         uIDeat, cnt = np.unique(self.rawdat['ID2'], return_counts=True)
