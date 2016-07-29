@@ -163,7 +163,7 @@ class mergerCat(object):
         util.cutdict(self.rawdat,ordr)
 
         s = dbsim.timesteps[0].load()
-        scale, red = cosmology.getScaleFactor(pynbody.array.SimArray(self.rawdat['time']),s)
+        scale, red = cosmology.getScaleFactor(pynbody.array.SimArray(self.rawdat['time'],'Gyr'),s)
         self.rawdat['redshift'] = red
 
         uIDeat, cnt = np.unique(self.rawdat['ID2'], return_counts=True)
