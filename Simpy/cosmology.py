@@ -67,7 +67,7 @@ def get_hmf_data_all(**kwargs):
         for l in f:
                 name = l.strip('\n')
                 print name
-                hmf[name] = make_hmf(name,**kwargs)
+                hmf[name] = get_hmf_data(name,**kwargs)
         return hmf
 
 class HMF(object):
@@ -84,7 +84,7 @@ class HMF(object):
         def create_functions(self):
                 import scipy
                 for k in self.data.keys():
-                        self.hmf[key] = scipy.interpolate.interp1d(self.data[k][0],self.data[k][1])
+                        self.hmf[k] = scipy.interpolate.interp1d(self.data[k][0],self.data[k][1])
 
 
 
