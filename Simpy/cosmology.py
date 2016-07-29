@@ -59,7 +59,7 @@ def get_hmf_data(simpath,**kwargs):
         sim = pynbody.load(simpath)
         sim.properties['sigma8'] = 0.77
         mass, sig, phi = pynbody.analysis.halo_mass_function(sim,pspec=pynbody.analysis.hmf.PowerSpectrumCAMBLive,**kwargs)
-        return np.log10(mass),np.log10(phi)
+        return np.log10(mass),phi
 
 def get_hmf_data_all(**kwargs):
         f = open('files.list','r')
@@ -71,20 +71,22 @@ def get_hmf_data_all(**kwargs):
         return hmf
 
 class HMF(object):
-        def __init__(self,**kwargs):
-                self.data = get_hmf_data_all(**kwargs)
-                self.hmf = {}
+        def __init__(self,lMmin=8.0, lMmax=15.0,delta_lM=0.1,**kwargs):
+                self.hmf = get_hmf_data_all(log_M_min=lMmin, log_M_max=lMmax,delta_log_M=delta_lM,**kwargs)
+                self.minlm = lMmin
+                self.maxlm = lMmax
+                self.delta = delta_lM
 
         def __getitem__(self,item):
-                if len(self.hmf.keys())==0:
-                        print "initializing functions..."
-                        self.create_functions()
                 return self.hmf[item]
 
-        def create_functions(self):
-                import scipy
-                for k in self.data.keys():
-                        self.hmf[k] = scipy.interpolate.interp1d(self.data[k][0],self.data[k][1])
+        def calc_rho(self,logm,step):
+                i = int((logm - self.minlm)/self.delta)
+                return self.hmf[step][i]*self.delta
+
+
+
+
 
 
 
