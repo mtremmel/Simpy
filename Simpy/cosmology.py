@@ -71,16 +71,19 @@ def get_hmf_data_all(**kwargs):
         return hmf
 
 class HMF(object):
-        def __init__(self,lMmin=8.0, lMmax=15.0,delta_lM=0.1,**kwargs):
-                self.hmf = get_hmf_data_all(log_M_min=lMmin, log_M_max=lMmax,delta_log_M=delta_lM,**kwargs)
-                self.minlm = lMmin
-                self.maxlm = lMmax
-                self.delta = delta_lM
+        def __init__(self,log_M_min=8.0, log_M_max=15.0,delta_log_M=0.1,**kwargs):
+                self.hmf = get_hmf_data_all(log_M_min=log_M_min, log_M_max=log_M_max,delta_log_M=delta_log_M,**kwargs)
+                self.minlm = log_M_min
+                self.maxlm = log_M_max
+                self.delta = delta_log_M
 
         def __getitem__(self,item):
                 return self.hmf[item]
 
         def calc_rho(self,logm,step):
+                if logm > maxlm:
+                        print "value for logM excedes maximum value calculated"
+                        raise ValueError
                 i = int((logm - self.minlm)/self.delta)
                 return self.hmf[step][i]*self.delta
 
