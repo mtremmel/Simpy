@@ -426,7 +426,7 @@ class Orbit(object):
 			cnt = 0
 			self.tform = np.ones(len(self.bhiords)) * -1
 			for id in self.bhiords:
-				self.tform[cnt] = self.singe_BH_data(id,'time').min()
+				self.tform[cnt] = self.single_BH_data(id,'time').min()
 
 	def getprogbhs(self):
 		time, step, ID, IDeat, ratio, kick = readcol(self.simname + '.mergers', twod=False)
