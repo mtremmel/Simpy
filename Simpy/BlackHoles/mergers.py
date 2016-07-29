@@ -162,7 +162,7 @@ class mergerCat(object):
         ordr = np.argsort(self.rawdat['ID2'])
         util.cutdict(self.rawdat,ordr)
 
-        s = dbsim.timestep[0].load()
+        s = dbsim.timesteps[0].load()
         scale, red = cosmology.getScaleFactor(self.rawdat['time'],s)
 
         uIDeat, cnt = np.unique(self.rawdat['ID2'], return_counts=True)
