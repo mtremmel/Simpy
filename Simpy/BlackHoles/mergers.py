@@ -136,13 +136,9 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
 
 
 class mergerCat(object):
-    def __init__(self, dbsim, simname, properties=['host_halo.Mvir', 'host_halo.Mstar', 'host_halo.Mgas']):
-        proplist = ['halo_number()', 'BH_merger_next.halo_number()', 'host_halo.halo_number()',
-                    'BH_merger_next.host_halo.halo_number()', 'BH_merger_next.earlier(1).host_halo.halo_number()']
-        for prop in properties:
-            proplist.append(prop)
-            proplist.append('BH_merger_next.'+prop)
-            proplist.append('BH_merger_next.earlier(1).'+prop)
+    def __init__(self,simname):
+
+        self.data = {}
         mergerfile = simname+'.mergers'
         print "reading .mergers file..."
         time, step, ID, IDeat, ratio, kick = readcol(mergerfile,twod=False)
@@ -162,13 +158,23 @@ class mergerCat(object):
         ordr = np.argsort(self.rawdat['ID2'])
         util.cutdict(self.rawdat,ordr)
 
-        s = dbsim.timesteps[0].load()
+        f = open('files.list','r')
+        s = pynbody.load(f.readline().strip('\n'))
+        f.close()
         scale, red = cosmology.getScaleFactor(pynbody.array.SimArray(self.rawdat['time'],'Gyr'),s)
         self.rawdat['redshift'] = red
 
         uIDeat, cnt = np.unique(self.rawdat['ID2'], return_counts=True)
         if len(np.where(cnt>1)[0])>0:
             print "SHIIIIIIT"
+
+    def get_db_data(self,dbsim,properties=['host_halo.Mvir', 'host_halo.Mstar', 'host_halo.Mgas']):
+        proplist = ['halo_number()', 'BH_merger_next.halo_number()', 'host_halo.halo_number()',
+                    'BH_merger_next.host_halo.halo_number()', 'BH_merger_next.earlier(1).host_halo.halo_number()']
+        for prop in properties:
+            proplist.append(prop)
+            proplist.append('BH_merger_next.'+prop)
+            proplist.append('BH_merger_next.earlier(1).'+prop)
 
         self.data = {'ID1':[], 'ID2':[], 'ratio':[], 'kick':[], 'step':[],
                     'time':[], 'tsnap_prev':[], 'tsnap_after':[], 'snap_prev':[], 'snap_after':[],
@@ -325,8 +331,8 @@ class mergerCat(object):
                 self.rawdat['merge_mass_1'][i] = mass1[argm]
                 self.rawdat['merge_mdot_1'][i] = mdot1[argm]
                 self.rawdat['merge_lum_1'][i] = lum1[argm]
-
-        self._match_data_to_raw('merge_mass_1', 'merge_mass_2', 'merge_mdot_1', 'merge_mdot_2',
+        if len(self.data.keys()) > 0:
+            self._match_data_to_raw('merge_mass_1', 'merge_mass_2', 'merge_mdot_1', 'merge_mdot_2',
                                 'merge_lum_1', 'merge_lum_2', 'tform1','tform2')
 
     def get_dual_frac(self,bhorbit,minL=1e43,maxD=10,boxsize=25,comove=True):
@@ -410,7 +416,7 @@ class mergerCat(object):
         self._match_data_to_raw(tstr, fstr)
 
     def get_halo_merger(self,simname,overwrite=False):
-        import halo_db as db
+        import tangos as db
         if 'dt_hmerger' not in self.data.keys() or overwrite==True:
             self.data['dt_hmerger'] = np.ones(len(self.data['ID1']))*-1
             self.data['dt_hmerger_min'] = np.ones(len(self.data['ID1']))*-1
