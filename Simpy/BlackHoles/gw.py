@@ -15,7 +15,7 @@ class GWemit(object):
 		M = self.masses[0]+self.masses[1]
 		n = self.masses[0]*self.masses[1]/M**2
 
-		return (a*n**2 + b*n + c)/(np.pi*M) * util.c.in_units('cm s**-1')**3/util.G.in_units('Msol**-1 cm**3 s**-1')
+		return (a*n**2 + b*n + c)/(np.pi*M) * util.c.in_units('cm s**-1')**3/util.G.in_units('Msol**-1 cm**3 s**-2')
 
 	def freq_merge(self):
 		a = 2.9740e-1
