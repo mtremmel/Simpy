@@ -58,15 +58,16 @@ class GWemit(object):
 		def LL(sig,f,fr):
 			return (1/2.*np.pi)*sig/((f-fr)**2 + sig**2/4.)
 
-		if f < fm:
-			return C * (f/fm)**(-7./6.)
-		if f >= fm and f < fr:
-			return C * (f/fm)**(-2./3.)
-		if f >= fr and f < fc:
-			return C * np.pi*sig/2. * (fr/fm)**(-2./3.) * LL(sig,f,fr)
-		if f >=fc:
-			print "ERROR frequency > f_cut"
-			raise RuntimeError
+		output = np.ones(len(f)) * -1
+		bfmerger = np.where(f < fm)[0]
+		merger = np.where(f >= fm and f < fr)[0]
+		ring = np.where(f >= fr and f < fc)[0]
+
+		output[bfmerger] = C * (f/fm)**(-7./6.)
+		output[merger] = C * (f/fm)**(-2./3.)
+		output[ring] = C * np.pi*sig/2. * (fr/fm)**(-2./3.) * LL(sig,f,fr)
+
+		return output
 
 	def ampGW_merger(self):
 		return self.ampGW(self.freq_merge())
