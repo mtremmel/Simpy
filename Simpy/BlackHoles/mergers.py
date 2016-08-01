@@ -185,18 +185,23 @@ class mergerCat(object):
             self.rawdat['snap_after'][i] = dbsim.timesteps[ind].extension
             if ind > 0:
                 self.rawdat['snap_before'][i] = dbsim.timesteps[ind-1].extension
-            bh = db.get_halo(str(dbsim.timesteps[ind].path)+'/'+str(id1))
+            bh = db.get_halo(str(dbsim.timesteps[ind].path)+'/1.'+str(id1))
             if bh is None:
-                bh = db.get_halo(str(dbsim.timesteps[ind-1].path)+'/1.'+str(id1))
+                if ind > 0:
+                    bh = db.get_halo(str(dbsim.timesteps[ind-1].path)+'/1.'+str(id1))
             if bh is None:
-                bh = db.get_halo(str(dbsim.timesteps[ind-1].path)+'/1.'+str(id2))
+                if ind > 0:
+                    bh = db.get_halo(str(dbsim.timesteps[ind-1].path)+'/1.'+str(id2))
             if bh is None:
                 continue
             for p in halo_props:
                 try:
                     self.rawdat[p][i] = bh.calculate('host_halo.'+p)
                 except:
-                    continue
+                    try:
+                        self.rawdat[p][i] = bh.later(1).calculate('host_halo.'+p)
+                    except:
+                        continue
 
 
     def get_db_data(self,dbsim,properties=['host_halo.Mvir', 'host_halo.Mstar', 'host_halo.Mgas']):
