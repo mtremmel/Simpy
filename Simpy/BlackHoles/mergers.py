@@ -337,6 +337,20 @@ class mergerCat(object):
         self.rawdat['GW_strain_merge'][ok] = self.gwemit.ampGW_merger() * 2.0 * self.rawdat['GW_freq_merge'][ok]
         self.rawdat['GW_strain_ring'][ok] = self.gwemit.ampGW_ring() * 2.0 * self.rawdat['GW_freq_ring'][ok]
 
+    def get_vol_weight_hmf(self,hmf):
+        self.rawdat['volweight'] = np.ones(len(self.rawdat['ID1'])) * -1
+        if 'Mvir' not in self.rawdat.keys():
+            print "halo information not found!"
+            raise RuntimeError
+        if 'stepname' not in self.rawdat.keys():
+            self.get_snap_name()
+        for i in range(len(self.rawdat['ID1'])):
+            if self.rawdat['Mvir'][i] < 0:
+                continue
+            if self.rawdat['stepname'][i] == '0':
+                continue
+            self.rawdat['vol_weight'][i] = hmf.calc_rho(np.log10*self.rawdat['Mvir'][i],self.rawdat['stepname'])
+
     def get_final_values(self,bhorbit):
         self.rawdat['merge_mass_2'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['merge_mass_1'] = np.ones(len(self.rawdat['ID1']))*-1
