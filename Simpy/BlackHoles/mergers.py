@@ -333,10 +333,11 @@ class mergerCat(object):
 
         self.rawdat['GW_freq_merge'][ok] = self.gwemit.freq_merge()
         self.rawdat['GW_freq_ring'][ok] = self.gwemit.freq_ring()
-        self.rawdat['GW_strain_merge'][ok] = self.gwemit.ampGW_merger()
-        self.rawdat['GW_strain_ring'][ok] = self.gwemit.ampGW_ring()
+        self.rawdat['GW_strain_merge'][ok] = self.gwemit.ampGW_merger() * 2.0 * self.rawdat['GW_freq_merge'][ok]
+        self.rawdat['GW_strain_ring'][ok] = self.gwemit.ampGW_ring() * 2.0 * self.rawdat['GW_freq_ring'][ok]
 
-        self._match_data_to_raw('GW_freq_merge', 'GW_freq_ring', 'GW_strain_merge', 'GW_strain_ring')
+        if len(self.db_mergers.keys()) > 0:
+            self._match_data_to_raw('GW_freq_merge', 'GW_freq_ring', 'GW_strain_merge', 'GW_strain_ring')
 
     def get_final_values(self,bhorbit):
         self.rawdat['merge_mass_2'] = np.ones(len(self.rawdat['ID1']))*-1
@@ -467,11 +468,12 @@ class mergerCat(object):
                 dual = np.where((lum1[use1[close]]>minL)&(lum2[use2[close]]>minL))[0]
                 self.rawdat[fstr][i] = float(len(dual))/float(len(close))
 
-        self._match_data_to_raw(tstr, fstr)
+        if len(self.db_mergers.keys()) > 0:
+            self._match_data_to_raw(tstr, fstr)
 
     def get_halo_merger(self,dbsim,overwrite=False):
         import tangos as db
-        if 'dt_hmerger' not in self.data.keys() or overwrite==True:
+        if 'dt_hmerger' not in self.rawdat.keys() or overwrite==True:
             self.rawdat['dt_hmerger'] = np.ones(len(self.rawdat['ID1']))*-1
             self.rawdat['dt_hmerger_min'] = np.ones(len(self.rawdat['ID1']))*-1
         nodiff = 0
@@ -485,8 +487,8 @@ class mergerCat(object):
             bh2 = db.get_halo(str(dbsim.path)+'/%'+str(self.rawdat['step_before'])+'/'+str(self.rawdat['ID2']))
 
             if bh1 is None or bh2 is None:
-                self.data['dt_hmerger'][i] = self.data['time'][i] - min(self.rawdat['tform1'][i],self.rawdat['tform2'][i])
-                self.data['dt_hmerger_min'][i] = 0
+                self.rawdat['dt_hmerger'][i] = self.rawdat['time'][i] - min(self.rawdat['tform1'][i],self.rawdat['tform2'][i])
+                self.rawdat['dt_hmerger_min'][i] = 0
                 continue
 
             time1, hn1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()')
@@ -501,23 +503,23 @@ class mergerCat(object):
             diff = np.where(hn1[match1]!=hn2[match2])[0]
             if len(diff)==0:
                 nodiff += 1
-                self.data['dt_hmerger'][i] = self.data['time'][i] - min(self.rawdat['tform1'][i],self.rawdat['tform2'][i])
-                self.data['dt_hmerger_min'][i] = self.data['time'][i] - max(time1.min(),time2.min())
+                self.rawdat['dt_hmerger'][i] = self.rawdat['time'][i] - min(self.rawdat['tform1'][i],self.rawdat['tform2'][i])
+                self.rawdat['dt_hmerger_min'][i] = self.rawdat['time'][i] - max(time1.min(),time2.min())
                 continue
             th1 = time1[match1[diff[0]]]
             th2 = time2[match2[diff[0]]]
             if diff[0] != 0:
                 th1p = time1[match1[diff[0]-1]]
             else:
-                th1p = self.data['time'][i]
+                th1p = self.rawdat['time'][i]
             if th1 != th2:
                 print "WARNING halo merge times not correct"
 
-            self.data['dt_hmerger'][i] = self.data['time'][i] - th1
-            if self.data['time'][i] - th1p > 0:
-                self.data['dt_hmerger_min'][i] = self.data['time'][i] - th1p
+            self.rawdat['dt_hmerger'][i] = self.rawdat['time'][i] - th1
+            if self.rawdat['time'][i] - th1p > 0:
+                self.rawdat['dt_hmerger_min'][i] = self.rawdat['time'][i] - th1p
             else:
-                self.data['dt_hmerger_min'][i] = 0
+                self.rawdat['dt_hmerger_min'][i] = 0
         print "finished with ", nodiff, "BHs having never been in different halos"
 
 
