@@ -137,7 +137,7 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
 
 class mergerCat(object):
     def __init__(self,simname):
-
+        self.simname = simname
         self.data = {}
         mergerfile = simname+'.mergers'
         print "reading .mergers file..."
@@ -239,6 +239,21 @@ class mergerCat(object):
 
     def keys(self):
         return self.data.keys()
+
+    def get_snap_name(self):
+        if 'step' not in self.data.keys():
+            print "ERROR 'step' is not a property that has been calculated"
+            raise RuntimeError
+        small = np.where(self.data['step_after']<100)[0]
+        med = np.where(self.data['step_after']<1000)[0]
+        big = np.where(self.data['step_after']>=1000)[0]
+        self.data['stepname'] = np.zeros(len(self.data['ID1'])).astype('S100')
+        if len(small)>0:
+            self.data['stepname'][small] = self.simname+'.0000'+self.data['step_after'][small]
+        if len(med)>0:
+            self.data['stepname'][med] = self.simname+'.000'+self.data['step_after'][med]
+        if len(big)>0:
+            self.data['stepname'][big] = self.simname+'.00'+self.data['step_after'][big]
 
     def _match_data_to_raw(self,*properties):
         ordee = np.argsort(self.data['ID2'])
