@@ -324,7 +324,8 @@ class mergerCat(object):
 
         ok = np.where((self.rawdat['merge_mass_1'] > 0)&(self.rawdat['merge_mass_2']>0))[0]
 
-        self.gwemit = gw.GWemit(self.rawdat['merge_mass_1'][ok], self.rawdat['merge_mass_2'][ok],self.rawdat['redshift'])
+        self.gwemit = gw.GWemit(self.rawdat['merge_mass_1'][ok], self.rawdat['merge_mass_2'][ok],self.rawdat['redshift'],
+                                sim.properties['omegaM0'], sim.properties['omegaL0'], sim.properties['h'])
 
         self.rawdat['GW_freq_merge'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['GW_strain_merge'] = np.ones(len(self.rawdat['ID1']))*-1
