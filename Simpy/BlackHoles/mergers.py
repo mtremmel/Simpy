@@ -176,6 +176,7 @@ class mergerCat(object):
         for p in halo_props:
             self.rawdat[p] = np.ones(len(self.rawdat['ID1'])) * -1
         for i in range(len(self.rawdat['ID1'])):
+            if i%100 == 0: print float(i)/len(self.rawdat['ID1']) * 100, '% done'
             id1 = self.rawdat['ID1'][i]
             id2 = self.rawdat['ID2'][i]
             ind = np.where(self.rawdat['step'][i]<steps)[0][0]
