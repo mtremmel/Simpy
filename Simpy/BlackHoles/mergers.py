@@ -193,7 +193,10 @@ class mergerCat(object):
             if bh is None:
                 continue
             for p in halo_props:
-                self.rawdat[p][i] = bh.calculate('host_halo.'+p)
+                try:
+                    self.rawdat[p][i] = bh.calculate('host_halo.'+p)
+                except:
+                    continue
 
 
     def get_db_data(self,dbsim,properties=['host_halo.Mvir', 'host_halo.Mstar', 'host_halo.Mgas']):
