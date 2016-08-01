@@ -337,9 +337,6 @@ class mergerCat(object):
         self.rawdat['GW_strain_merge'][ok] = self.gwemit.ampGW_merger() * 2.0 * self.rawdat['GW_freq_merge'][ok]
         self.rawdat['GW_strain_ring'][ok] = self.gwemit.ampGW_ring() * 2.0 * self.rawdat['GW_freq_ring'][ok]
 
-        if len(self.db_mergers.keys()) > 0:
-            self._match_data_to_raw('GW_freq_merge', 'GW_freq_ring', 'GW_strain_merge', 'GW_strain_ring')
-
     def get_final_values(self,bhorbit):
         self.rawdat['merge_mass_2'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['merge_mass_1'] = np.ones(len(self.rawdat['ID1']))*-1
@@ -387,9 +384,6 @@ class mergerCat(object):
                 self.rawdat['merge_mass_1'][i] = mass1[argm]
                 self.rawdat['merge_mdot_1'][i] = mdot1[argm]
                 self.rawdat['merge_lum_1'][i] = lum1[argm]
-        if len(self.db_mergers.keys()) > 0:
-            self._match_data_to_raw('merge_mass_1', 'merge_mass_2', 'merge_mdot_1', 'merge_mdot_2',
-                                'merge_lum_1', 'merge_lum_2', 'tform1','tform2')
 
     def get_dual_frac(self,bhorbit,minL=1e43,maxD=10,boxsize=25,comove=True):
         if comove:
@@ -468,9 +462,6 @@ class mergerCat(object):
                 self.rawdat[tstr][i] = dt
                 dual = np.where((lum1[use1[close]]>minL)&(lum2[use2[close]]>minL))[0]
                 self.rawdat[fstr][i] = float(len(dual))/float(len(close))
-
-        if len(self.db_mergers.keys()) > 0:
-            self._match_data_to_raw(tstr, fstr)
 
     def get_halo_merger(self,dbsim,overwrite=False):
         import tangos as db
