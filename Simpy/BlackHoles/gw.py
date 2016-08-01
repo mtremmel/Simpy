@@ -60,8 +60,8 @@ class GWemit(object):
 
 		output = np.ones(len(f)) * -1
 		bfmerger = np.where(f < fm)[0]
-		merger = np.where(f >= fm and f < fr)[0]
-		ring = np.where(f >= fr and f < fc)[0]
+		merger = np.where((f >= fm)&(f < fr))[0]
+		ring = np.where((f >= fr)&(f < fc))[0]
 
 		output[bfmerger] = C * (f/fm)**(-7./6.)
 		output[merger] = C * (f/fm)**(-2./3.)
