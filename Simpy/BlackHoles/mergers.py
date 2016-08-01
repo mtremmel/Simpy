@@ -138,7 +138,7 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
 class mergerCat(object):
     def __init__(self,simname):
         self.simname = simname
-        self.data = {}
+        self.db_mergers = {}
         mergerfile = simname+'.mergers'
         print "reading .mergers file..."
         time, step, ID, IDeat, ratio, kick = readcol(mergerfile,twod=False)
@@ -168,6 +168,31 @@ class mergerCat(object):
         if len(np.where(cnt>1)[0])>0:
             print "SHIIIIIIT"
 
+    def get_halo_info(self,dbsim,halo_props = ['halo_number()','Mvir', 'Mstar', 'Mgas']):
+        steps = readcol('steps.list',twod=False)
+        import tangos as db
+        self.rawdat['snap_after'] = np.zeros(len(self.rawdat['ID1'])).astype('S100')
+        self.rawdat['snap_before'] = np.zeros(len(self.rawdat['ID1'])).astype('S100')
+        for p in halo_props:
+            self.rawdat[p] = np.ones(len(self.rawdat['ID1'])) * -1
+        for i in range(len(self.rawdat['ID1'])):
+            id1 = self.rawdat['ID1'][i]
+            id2 = self.rawdat['ID2'][i]
+            ind = np.where(self.rawdat['step'][i]<steps)[0][0]
+            self.rawdat['snap_after'][i] = dbsim.timesteps[ind].extension
+            if ind > 0:
+                self.rawdat['snap_before'][i] = dbsim.timesteps[ind-1].extension
+            bh = db.get_halo(str(dbsim.timesteps[ind].path)+'/'+str(id1))
+            if bh is None:
+                bh = db.get_halo(str(dbsim.timesteps[ind-1].path)+'/'+str(id1))
+            if bh is None:
+                bh = db.get_halo(str(dbsim.timesteps[ind-1].path)+'/'+str(id2))
+            if bh is None:
+                continue
+            for p in halo_props:
+                self.rawdat[p][i] = bh.calculate('host_halo.'+p)
+
+
     def get_db_data(self,dbsim,properties=['host_halo.Mvir', 'host_halo.Mstar', 'host_halo.Mgas']):
         proplist = ['halo_number()', 'BH_merger_next.halo_number()', 'host_halo.halo_number()',
                     'BH_merger_next.host_halo.halo_number()', 'BH_merger_next.earlier(1).host_halo.halo_number()']
@@ -176,14 +201,14 @@ class mergerCat(object):
             proplist.append('BH_merger_next.'+prop)
             proplist.append('BH_merger_next.earlier(1).'+prop)
 
-        self.data = {'ID1':[], 'ID2':[], 'ratio':[], 'kick':[], 'step':[],
+        self.db_mergers = {'ID1':[], 'ID2':[], 'ratio':[], 'kick':[], 'step':[],
                     'time':[], 'tsnap_prev':[], 'tsnap_after':[], 'snap_prev':[], 'snap_after':[],
                     'host_N_1':[], 'host_N_2':[], 'host_N_f':[], 'redshift':[]}
 
         for p in properties:
-            self.data[p+'_1'] = []
-            self.data[p+'_2'] = []
-            self.data[p+'_f'] = []
+            self.db_mergers[p+'_1'] = []
+            self.db_mergers[p+'_2'] = []
+            self.db_mergers[p+'_f'] = []
 
 
         self.nmergers = []
@@ -205,40 +230,40 @@ class mergerCat(object):
             self.nmergers.append(len(data[0]))
             self.steptimes.append(step.time_gyr)
 
-            self.data['ID1'].extend(data[1])
-            self.data['ID2'].extend(data[0])
+            self.db_mergers['ID1'].extend(data[1])
+            self.db_mergers['ID2'].extend(data[0])
 
             tt1, tt2 = np.unique(data[0],return_counts=True)
             if len(np.where(tt2>1)[0])>0:
                 print "Double counted IDs: ", tt1[(tt2>1)]
                 raise RuntimeError("ERROR double counted IDeat in database analysis")
 
-            self.data['host_N_1'].extend(data[4])
-            self.data['host_N_2'].extend(data[2])
-            self.data['host_N_f'].extend(data[3])
+            self.db_mergers['host_N_1'].extend(data[4])
+            self.db_mergers['host_N_2'].extend(data[2])
+            self.dadb_mergersta['host_N_f'].extend(data[3])
 
-            self.data['snap_after'].extend(int(stepnumA) * np.ones(len(data[1])).astype(np.int))
-            self.data['snap_prev'].extend(int(stepnum) * np.ones(len(data[1])).astype(np.int))
-            self.data['tsnap_after'].extend(step.next.time_gyr * np.ones(len(data[1])))
-            self.data['tsnap_prev'].extend(step.time_gyr * np.ones(len(data[1])))
+            self.db_mergers['snap_after'].extend(int(stepnumA) * np.ones(len(data[1])).astype(np.int))
+            self.db_mergers['snap_prev'].extend(int(stepnum) * np.ones(len(data[1])).astype(np.int))
+            self.db_mergers['tsnap_after'].extend(step.next.time_gyr * np.ones(len(data[1])))
+            self.db_mergers['tsnap_prev'].extend(step.time_gyr * np.ones(len(data[1])))
 
             index = 5
             for i in range(len(properties)):
-                self.data[properties[i]+'_1'].extend(data[index+2])
-                self.data[properties[i]+'_2'].extend(data[index])
-                self.data[properties[i]+'_f'].extend(data[index+1])
+                self.db_mergers[properties[i]+'_1'].extend(data[index+2])
+                self.db_mergers[properties[i]+'_2'].extend(data[index])
+                self.db_mergers[properties[i]+'_f'].extend(data[index+1])
                 index += 3
 
-        for key in self.data.keys():
-            self.data[key] = np.array(self.data[key])
+        for key in self.db_mergers.keys():
+            self.db_mergers[key] = np.array(self.db_mergers[key])
 
         self._match_data_to_raw('ratio', 'kick', 'time','step', 'redshift')
 
     def __getitem__(self, item):
-        return self.data[item]
+        return self.rawdat[item]
 
     def keys(self):
-        return self.data.keys()
+        return self.rawdat.keys()
 
     def get_snap_name(self):
         if 'step' not in self.data.keys():
@@ -256,22 +281,22 @@ class mergerCat(object):
             self.data['stepname'][big] = self.simname+'.00'+self.data['step_after'][big]
 
     def _match_data_to_raw(self,*properties):
-        ordee = np.argsort(self.data['ID2'])
-        match = np.where(np.in1d(self.data['ID2'][ordee],self.rawdat['ID2']))[0]
+        ordee = np.argsort(self.db_mergers['ID2'])
+        match = np.where(np.in1d(self.db_mergers['ID2'][ordee],self.rawdat['ID2']))[0]
         match2 = np.where(np.in1d(self.rawdat['ID2'],self.data['ID2'][ordee]))[0]
 
         if len(match) != len(match2):
-            print self.data['ID2'][ordee], self.rawdat['ID2']
+            print self.db_mergers['ID2'][ordee], self.rawdat['ID2']
             print match, match2
             raise RuntimeError("ERROR match not returning same number of elements")
 
-        if len(np.where(np.equal(self.data['ID2'][ordee[match]],self.rawdat['ID2'][match2]) is False)[0])>0:
+        if len(np.where(np.equal(self.db_mergers['ID2'][ordee[match]],self.rawdat['ID2'][match2]) is False)[0])>0:
             raise RuntimeError("ERROR something wrong with array matching")
 
 
         for p in properties:
-            self.data[p] = np.ones(len(self.data['ID2'])) * -1
-            self.data[p][ordee[match]] = self.rawdat[p][match2]
+            self.db_mergers[p] = np.ones(len(self.db_mergers['ID2'])) * -1
+            self.db_mergers[p][ordee[match]] = self.rawdat[p][match2]
 
 
     def calc_GW_emission(self, sim):
@@ -296,8 +321,6 @@ class mergerCat(object):
         self.rawdat['GW_strain_ring'][ok] = self.gwemit.ampGW_ring()
 
         self._match_data_to_raw('GW_freq_merge', 'GW_freq_ring', 'GW_strain_merge', 'GW_strain_ring')
-
-
 
     def get_final_values(self,bhorbit):
         self.rawdat['merge_mass_2'] = np.ones(len(self.rawdat['ID1']))*-1
@@ -346,7 +369,7 @@ class mergerCat(object):
                 self.rawdat['merge_mass_1'][i] = mass1[argm]
                 self.rawdat['merge_mdot_1'][i] = mdot1[argm]
                 self.rawdat['merge_lum_1'][i] = lum1[argm]
-        if len(self.data.keys()) > 0:
+        if len(self.db_mergers.keys()) > 0:
             self._match_data_to_raw('merge_mass_1', 'merge_mass_2', 'merge_mdot_1', 'merge_mdot_2',
                                 'merge_lum_1', 'merge_lum_2', 'tform1','tform2')
 
@@ -430,50 +453,40 @@ class mergerCat(object):
 
         self._match_data_to_raw(tstr, fstr)
 
-    def get_halo_merger(self,simname,overwrite=False):
+    def get_halo_merger(self,dbsim,overwrite=False):
         import tangos as db
         if 'dt_hmerger' not in self.data.keys() or overwrite==True:
-            self.data['dt_hmerger'] = np.ones(len(self.data['ID1']))*-1
-            self.data['dt_hmerger_min'] = np.ones(len(self.data['ID1']))*-1
+            self.rawdat['dt_hmerger'] = np.ones(len(self.rawdat['ID1']))*-1
+            self.rawdat['dt_hmerger_min'] = np.ones(len(self.rawdat['ID1']))*-1
         nodiff = 0
-        for i in range(len(self.data['ID1'])):
+        badmatch = 0
+        for i in range(len(self.rawdat['ID1'])):
             if i%30 == 0:
-                print float(i)/float(len(self.data['ID1']))*100, '% done'
-            if self.data['dt_hmerger'][i] > 0 and overwrite == False:
+                print float(i)/float(len(self.rawdat['ID1']))*100, '% done'
+            if self.rawdat['dt_hmerger'][i] >= 0 and overwrite == False:
                 continue
-            if self.data['snap_prev'][i]<1000:
-                strsnap = '0'+str(self.data['snap_prev'][i])
-            else:
-                strsnap = str(self.data['snap_prev'][i])
-            bh1 = db.get_halo(simname+'/%00'+ strsnap + '/1.'+str(self.data['ID1'][i]))
-            bh2 = db.get_halo(simname+'/%00'+ strsnap + '/1.'+str(self.data['ID2'][i]))
+            bh1 = db.get_halo(str(dbsim.path)+'/%'+str(self.rawdat['step_before'])+'/'+str(self.rawdat['ID1']))
+            bh2 = db.get_halo(str(dbsim.path)+'/%'+str(self.rawdat['step_before'])+'/'+str(self.rawdat['ID2']))
+
+            if bh1 is None or bh2 is None:
+                self.data['dt_hmerger'][i] = self.data['time'][i] - min(self.rawdat['tform1'][i],self.rawdat['tform2'][i])
+                self.data['dt_hmerger_min'][i] = 0
+                continue
+
             time1, hn1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()')
             time2, hn2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()')
             match1 = np.where(np.in1d(time1,time2))[0]
             match2 = np.where(np.in1d(time2,time1))[0]
-            if len(time1)==0 or len(time2)==0:
-                continue
             if not np.array_equal(time1[match1],time2[match2]):
                 print "WARNING time arrays don't match!"
+            if len(match1)==0 or len(match2)==0:
+                badmatch += 1
+                continue
             diff = np.where(hn1[match1]!=hn2[match2])[0]
-            if len(diff)==0 or len(match1)==0 or len(match2)==0:
+            if len(diff)==0:
                 nodiff += 1
-                time1_all =  bh1.reverse_property_cascade('t()')
-                time2_all =  bh2.reverse_property_cascade('t()')
-                if len(time1_all)==0 or len(time2_all)==0:
-                    continue
-                else:
-                    time1_all = time1_all[0]
-                    time2_all = time2_all[0]
-                th1 = time1_all[(time1_all < time1.min())]
-                th2 = time2_all[(time2_all < time2.min())]
-                if len(th1)==0 or len(th2)==0:
-                    continue
-                else:
-                    th1 = th1[0]
-                    th2 = th2[0]
-                self.data['dt_hmerger'][i] = self.data['time'][i] - max(th1,th2)
-                self.data['dt_hmerger_min'][i] = self.data['time'][i] - time1.min()
+                self.data['dt_hmerger'][i] = self.data['time'][i] - min(self.rawdat['tform1'][i],self.rawdat['tform2'][i])
+                self.data['dt_hmerger_min'][i] = self.data['time'][i] - max(time1.min(),time2.min())
                 continue
             th1 = time1[match1[diff[0]]]
             th2 = time2[match2[diff[0]]]
@@ -483,7 +496,6 @@ class mergerCat(object):
                 th1p = self.data['time'][i]
             if th1 != th2:
                 print "WARNING halo merge times not correct"
-
 
             self.data['dt_hmerger'][i] = self.data['time'][i] - th1
             if self.data['time'][i] - th1p > 0:
