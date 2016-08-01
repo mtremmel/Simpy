@@ -179,7 +179,7 @@ class mergerCat(object):
             if i%100 == 0: print float(i)/len(self.rawdat['ID1']) * 100, '% done'
             id1 = self.rawdat['ID1'][i]
             id2 = self.rawdat['ID2'][i]
-            if self.rawdat['step']>steps.max():
+            if self.rawdat['step']>max(steps):
                 continue
             ind = np.where(self.rawdat['step'][i]<=steps)[0][0]
             self.rawdat['snap_after'][i] = dbsim.timesteps[ind].extension
