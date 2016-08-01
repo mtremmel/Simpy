@@ -47,7 +47,7 @@ class GWemit(object):
 		dL = cosmology.lum_distance(self.z,self.cosmology['omegaM'], self.cosmology['omegaL'],self.cosmology['h'])
 
 		#dL *= 3.086e+24
-		C = (util.G.in_units('Mpc**3 Msol**-1 s**-2')**(5./6.)/util.c.in_untits('Mpc s**-1')**(3./2.)) * \
+		C = (util.G.in_units('Mpc**3 Msol**-1 s**-2')**(5./6.)/util.c.in_units('Mpc s**-1')**(3./2.)) * \
 			M**(5./6.) * self.freq_merge()**(-7./6.) * (5.*n/24.)**0.5 / (dL*np.pi**(2./3.))
 
 		fm = self.freq_merge()
