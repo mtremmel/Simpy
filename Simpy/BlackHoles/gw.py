@@ -114,7 +114,7 @@ def eLisaLimitKlein(fobs, config=1):
 	somn = 2.65e-23
 
 	def sacc(fobs):
-		return 9e-30 * (1./2.*np.pi*fobs)**4 * (1 + (1e-4)/fobs)
+		return 9e-30 * (1./(2.*np.pi*fobs)**4) * (1 + (1e-4)/fobs)
 	if config == 1:
 		ssn = 1.98e-23
 	if config == 2:
@@ -122,10 +122,11 @@ def eLisaLimitKlein(fobs, config=1):
 	if config == 5:
 		ssn = 2.96e-23
 
-	L = config * 1.0e6
+	L = config * 1.0e9
 
 	def sn(fobs):
 		return 20./3. * (4.*sacc(fobs)+ssn+somn)/L**2 * (1+(fobs/(0.41*(util.c/(1.0e2*2.0*L))))**2)
+
 	return np.sqrt(sn(fobs)*fobs)
 
 def eLisaLimitLPF(fobs, config=1):
@@ -144,7 +145,7 @@ def eLisaLimitLPF(fobs, config=1):
 	if config == 5:
 		ssn = 5.86e-23
 
-	L = config * 1.0e6
+	L = config * 1.0e9
 
 	def sn(fobs):
 		return 20./3. * (4.*sacc(fobs)+ssn+somn)/L**2 * (1+(fobs/(0.41*(util.c/(1.0e2*2.0*L))))**2)
