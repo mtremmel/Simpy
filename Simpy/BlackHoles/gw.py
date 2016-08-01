@@ -30,7 +30,7 @@ class GWemit(object):
 		return self.freq(a,b,c)
 
 	def freq_cut(self):
-		a = 8.49450e-1
+		a = 8.48450e-1
 		b = 1.28480e-1
 		c = 2.72990e-1
 		return self.freq(a,b,c)
@@ -38,7 +38,7 @@ class GWemit(object):
 	def sigfreq(self):
 		a = 5.08010e-1
 		b = 7.75150e-2
-		c = 2.23690e-1
+		c = 2.23690e-2
 		return self.freq(a,b,c)
 
 	def ampGW(self, f):
