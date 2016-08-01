@@ -110,7 +110,8 @@ class SalcidoGW(object):
 
 def eLisaLimitKlein(fobs, config=1):
 	#Klein 2016, N2 curve
-	somn =  2.65e−23
+
+	somn = 2.65e-23
 
 	def sacc(fobs):
 		return 9e-30 * (1./2.*np.pi*fobs)**4 * (1 + (1e-4)/fobs)
