@@ -345,8 +345,6 @@ class mergerCat(object):
         for i in range(len(self.rawdat['ID1'])):
             if self.rawdat['Mvir'][i] < 0:
                 continue
-            if self.rawdat['stepname'][i] == '0':
-                continue
             self.rawdat['vol_weight'][i] = hmf.calc_rho(np.log10*self.rawdat['Mvir'][i],self.rawdat['snap_after'])
 
     def get_final_values(self,bhorbit):
