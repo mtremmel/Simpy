@@ -193,6 +193,11 @@ class mergerCat(object):
                 if ind > 0:
                     bh = db.get_halo(str(dbsim.timesteps[ind-1].path)+'/1.'+str(id2))
             if bh is None:
+                ii = np.where(self.rawdat['ID2']==self.rawdat['ID1'][i])[0]
+                if len(ii)>0:
+                    id3 = self.rawdat['ID1'][ii]
+                    bh = db.get_halo(str(dbsim.timesteps[ind].path)+'/1.'+str(id3))
+            if bh is None:
                 continue
             for p in halo_props:
                 try:
