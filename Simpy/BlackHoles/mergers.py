@@ -179,7 +179,7 @@ class mergerCat(object):
             if i%100 == 0: print float(i)/len(self.rawdat['ID1']) * 100, '% done'
             id1 = self.rawdat['ID1'][i]
             id2 = self.rawdat['ID2'][i]
-            if self.rawdat['step']>steps.max():
+            if self.rawdat['step'][i]>steps.max():
                 continue
             ind = np.where(self.rawdat['step'][i]<=steps)[0][0]
             self.rawdat['snap_after'][i] = dbsim.timesteps[ind].extension
@@ -187,9 +187,9 @@ class mergerCat(object):
                 self.rawdat['snap_before'][i] = dbsim.timesteps[ind-1].extension
             bh = db.get_halo(str(dbsim.timesteps[ind].path)+'/'+str(id1))
             if bh is None:
-                bh = db.get_halo(str(dbsim.timesteps[ind-1].path)+'/'+str(id1))
+                bh = db.get_halo(str(dbsim.timesteps[ind-1].path)+'/1.'+str(id1))
             if bh is None:
-                bh = db.get_halo(str(dbsim.timesteps[ind-1].path)+'/'+str(id2))
+                bh = db.get_halo(str(dbsim.timesteps[ind-1].path)+'/1.'+str(id2))
             if bh is None:
                 continue
             for p in halo_props:
