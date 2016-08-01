@@ -44,7 +44,7 @@ class GWemit(object):
 	def ampGW(self, f):
 		M = self.masses[0]+self.masses[1]
 		n = self.masses[0]*self.masses[1]/M**2
-		dL = cosmology.lum_distance(self.z,self.cosmolggy['omegaM'], self.cosmolgoy['omegaL'],self.cosmology['h'])
+		dL = cosmology.lum_distance(self.z,self.cosmology['omegaM'], self.cosmology['omegaL'],self.cosmology['h'])
 
 		#dL *= 3.086e+24
 		C = (util.G.in_units('Mpc**3 Msol**-1 s**-2')**(5./6.)/util.c.in_untits('Mpc s**-1')**(3./2.)) * \
