@@ -56,7 +56,7 @@ class GWemit(object):
 		sig = self.sigfreq()
 
 		def LL(sig,f,fr):
-			return (1/2.*np.pi)*sig/((f-fr)**2 + sig**2/4.)
+			return (1/(2.*np.pi))*sig/((f-fr)**2 + (sig**2)/4.)
 
 		output = np.ones(len(f)) * -1
 		bfmerger = np.where(f < fm)[0]
