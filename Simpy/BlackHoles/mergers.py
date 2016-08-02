@@ -188,10 +188,14 @@ class mergerCat(object):
             bh = db.get_halo(str(dbsim.timesteps[ind].path)+'/1.'+str(id1))
             if bh is None:
                 if ind > 0:
-                    bh = db.get_halo(str(dbsim.timesteps[ind-1].path)+'/1.'+str(id1)).next
+                    bh = db.get_halo(str(dbsim.timesteps[ind-1].path)+'/1.'+str(id1))
+                    if bh is not none:
+                        bh = bh.next
             if bh is None:
                 if ind > 0:
-                    bh = db.get_halo(str(dbsim.timesteps[ind-1].path)+'/1.'+str(id2)).next
+                    bh = db.get_halo(str(dbsim.timesteps[ind-1].path)+'/1.'+str(id2))
+                    if bh is not None:
+                        bh = bh.next
             if bh is None:
                 ii = np.where(self.rawdat['ID2']==self.rawdat['ID1'][i])[0]
                 if len(ii)>0:
