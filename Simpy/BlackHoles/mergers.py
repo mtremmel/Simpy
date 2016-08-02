@@ -189,7 +189,7 @@ class mergerCat(object):
             if bh is None:
                 if ind > 0:
                     bh = db.get_halo(str(dbsim.timesteps[ind-1].path)+'/1.'+str(id1))
-                    if bh is not none:
+                    if bh is not None:
                         bh = bh.next
             if bh is None:
                 if ind > 0:
