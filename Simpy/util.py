@@ -67,4 +67,14 @@ def smoothdata(rawdat,nsteps=20,ret_std=False):
         std = rawdat.std(axis=1)
         return meandat, std
 
+def get_rates_by_z(zin,s,range=[0,20],nbins=40,units='yr**-1',weights=None):
+    import numpy as np
+    from . import cosmology
+    n,zbins = np.histogram(zin,weights=weights,range=range,bins=nbins)
+    tedges = pynbody.array.SimArray([cosmology.getTime(z,s) for z in zbins],'Gyr')
+    tedges = tedges.in_units(units)
+    dt = np.abs(tedges[0:-1]-tedges[1:])
+    n = n/dt
+    return n, zbins
+
 
