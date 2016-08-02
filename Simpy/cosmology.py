@@ -59,7 +59,7 @@ def get_hmf_data(simpath,**kwargs):
         sim = pynbody.load(simpath)
         sim.properties['sigma8'] = 0.77
         mass, sig, phi = pynbody.analysis.halo_mass_function(sim,pspec=pynbody.analysis.hmf.PowerSpectrumCAMBLive,**kwargs)
-        return np.log10(mass),phi
+        return np.log10(mass/sim.properties['h']),phi*sim.properties['h']**3
 
 def get_hmf_data_all(**kwargs):
         f = open('files.list','r')
