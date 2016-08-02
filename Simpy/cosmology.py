@@ -85,7 +85,7 @@ class HMF(object):
                         print "value for logM excedes maximum value calculated"
                         raise ValueError
                 i = int((logm - self.minlm)/self.delta)
-                return self.hmf[step][i][1]*self.delta
+                return self.hmf[step][i][i]*self.delta
 
 
 
