@@ -81,8 +81,8 @@ class HMF(object):
                 return self.hmf[item]
 
         def calc_rho(self,logm,step):
-                if logm > self.maxlm:
-                        print "value for logM excedes maximum value calculated"
+                if logm > self.maxlm or logm < self.minlm:
+                        print "value for logM excedes maximum or is less than minimum value calculated"
                         raise ValueError
                 i = int((logm - self.minlm)/self.delta)
                 return self.hmf[step][1][i]*self.delta
