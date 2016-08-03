@@ -144,7 +144,7 @@ def mass_binned_counts(redshift,Mvir,hmf,s,zrange=[0,10],dz=0.5,tnorm=True):
     mbin_total = np.zeros((len(zbins),len(Mbins)-1))
 
     for i in range(len(zbins)-1):
-        o, = np.where((redshift>=zbins[i])&(redshift<zbins[i+1]))
+        o, = np.where((redshift>=zmid[i])&(redshift<zbins[i+1]))
         n,b = np.histogram(np.log10(Mvir[o]),bins=Mbins)
         mbin_counts[i,:] = n
         zind = np.where(hmf.z < zmid[i])[0]
@@ -154,7 +154,7 @@ def mass_binned_counts(redshift,Mvir,hmf,s,zrange=[0,10],dz=0.5,tnorm=True):
             zind = zind[0]
             if zind > 0:
                 mbin_total[i,:] = hmf.nhalos[zind-1] + \
-                                  (hmf.nhalos[zind]-hmf.nhalos[zind-1])/(hmf.z[zind]-hmf.z[zind-1]) * dz
+                                  (hmf.nhalos[zind]-hmf.nhalos[zind-1])/(hmf.z[zind]-hmf.z[zind-1]) * (zmid-hmf.z[zind-1])
             else:
                     mbin_total[i,:] = hmf.nhalos[zind]
 
