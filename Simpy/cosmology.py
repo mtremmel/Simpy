@@ -59,15 +59,19 @@ def get_hmf_data(simpath,**kwargs):
         sim = pynbody.load(simpath)
         sim.properties['sigma8'] = 0.77
         mass, sig, phi = pynbody.analysis.halo_mass_function(sim,pspec=pynbody.analysis.hmf.PowerSpectrumCAMBLive,**kwargs)
-        return np.log10(mass/sim.properties['h']),phi*sim.properties['h']**3
+        return np.log10(mass/sim.properties['h']),phi*sim.properties['h']**3, sim.properties['z']
 
 def get_hmf_data_all(**kwargs):
         f = open('files.list','r')
-        hmf = {}
+        hmf = {'z':[], 'mass':[], 'phi':[]}
         for l in f:
                 name = l.strip('\n')
                 print name
-                hmf[name] = get_hmf_data(name,**kwargs)
+                lm, phi, z = get_hmf_data(name,**kwargs)
+                hmf['z'].append(z)
+                hmf['mass'].append(lm)
+                hmf['phi'].append(phi)
+        hmf['z'] = np.array(hmf['z'])
         return hmf
 
 class HMF(object):
@@ -77,15 +81,37 @@ class HMF(object):
                 self.maxlm = log_M_max
                 self.delta = delta_log_M
 
-        def __getitem__(self,item):
-                return self.hmf[item]
-
-        def calc_rho(self,logm,step):
+        def calc_rho(self,logm,z):
+                j, = np.where(z>self.hmf['z'])
                 if logm > self.maxlm or logm < self.minlm:
                         print "value for logM excedes maximum or is less than minimum value calculated"
                         raise ValueError
                 i = int((logm - self.minlm)/self.delta)
-                return self.hmf[step][1][i]*self.delta
+                if len(j) ==0:
+                        return self.hmf['phi'][-1][i] * self.delta
+                else:
+                        if j > 0:
+                                return (self.hmf['phi'][j-1][i] + \
+                                        (self.hmf['phi'][j][i]-self.hmf['phi'][j-1][i])/(self.z[j]-self.z[j-1]) * (z - self.z[j-1]))*self.delta
+                        else:
+                                return self.hmf['phi'][j]*self.delta
+
+        def get_N_halos(self,dbsim):
+                self.z = []
+                self.mbins = range(self.minlm, self.maxlm+self.delta, self.delta)
+                self.nhalos = np.zeros((len(dbsim.timesteps),len(self.mbins)-1))
+                cnt = 0
+                for step in dbsim.timesteps:
+                        print step.extension
+                        Mvir, = step.gather_property('Mvir')
+                        N, bins = np.histogram(Mvir,bins=self.mbins)
+                        self.nhalos[cnt,:] = N
+                        self.z.append(step.redshift)
+                        cnt += 1
+                self.z = np.array(self.z)
+
+
+
 
 
 

@@ -134,6 +134,39 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
     if ret_data is True:
         return rate, tzbins,tedges
 
+def mass_binned_counts(redshift,Mvir,hmf,s,zbins=None,tnorm=True):
+    if zbins is None:
+        dz = 0.5
+        zbins = np.range(0,10.5,dz)
+        zmid = zbins[0:-1]+dz/2.
+    Mbins = range(hmf.minlm,hmf.maxlm+hmf.delta,hmf.delta)
+
+    mbin_counts = np.zeros((len(zbins),len(Mbins)-1))
+    mbin_total = np.zeros((len(zbins),len(Mbins)-1))
+
+    for i in range(len(zbins)-1):
+        o, = np.where((redshift>=zbins[i])&(redshift<zbins[i+1]))
+        n,b = np.histogram(np.log10(Mvir[o]),bins=Mbins)
+        mbin_counts[i,:] = n
+        zind = np.where(hmf.z < zmid[i])[0]
+        if len(zind) == 0:
+            mbin_total[i,:] = hmf.nhalos[-1]
+        else:
+            zind = zind[0]
+            if zind > 0:
+                mbin_total[i,:] = hmf.nhalos[zind-1] + \
+                                  (hmf.nhalos[zind]-hmf.nhalos[zind-1])/(hmf.z[zind]-hmf.z[zind-1]) * dz
+            else:
+                    mbin_total[i,:] = hmf.nhalos[zind]
+
+    if tnorm is True:
+        tedges = pynbody.array.SimArray([cosmology.getTime(z,s) for z in zbins],'Gyr')
+        dt = np.abs(tedges[0:-1]-tedges[1:])
+    else:
+        dt = None
+
+    return mbin_counts, mbin_total, dt
+
 
 class mergerCat(object):
     def __init__(self,simname):
