@@ -137,9 +137,9 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
 def mass_binned_counts(redshift,Mvir,hmf,s,zbins=None,tnorm=True):
     if zbins is None:
         dz = 0.5
-        zbins = np.range(0,10.5,dz)
-        zmid = zbins[0:-1]+dz/2.
-    Mbins = range(hmf.minlm,hmf.maxlm+hmf.delta,hmf.delta)
+        zbins = np.arange(0,10.5,dz)
+    zmid = zbins[0:-1]+dz/2.
+    Mbins = np.arange(hmf.minlm,hmf.maxlm+hmf.delta,hmf.delta)
 
     mbin_counts = np.zeros((len(zbins),len(Mbins)-1))
     mbin_total = np.zeros((len(zbins),len(Mbins)-1))

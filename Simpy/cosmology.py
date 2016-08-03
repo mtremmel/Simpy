@@ -98,7 +98,7 @@ class HMF(object):
 
         def get_N_halos(self,dbsim):
                 self.z = []
-                self.mbins = range(self.minlm, self.maxlm+self.delta, self.delta)
+                self.mbins = np.arange(self.minlm, self.maxlm+self.delta, self.delta)
                 self.nhalos = np.zeros((len(dbsim.timesteps),len(self.mbins)-1))
                 cnt = 0
                 for step in dbsim.timesteps:
