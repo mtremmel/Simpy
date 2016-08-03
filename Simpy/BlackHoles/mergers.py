@@ -167,7 +167,7 @@ def mass_binned_counts(redshift,Mvir,hmf,s,zrange=[0,10],dz=0.5,tnorm=True):
     else:
         dt = None
 
-    return mbin_counts, mbin_total, dt, dz
+    return mbin_counts, mbin_total, dt, dz, zbins
 
 
 class mergerCat(object):
