@@ -135,7 +135,6 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
         return rate, tzbins,tedges
 
 def mass_binned_counts(redshift,Mvir,hmf,s,zrange=[0,10],dz=0.5,tnorm=True):
-    dz = 0.5
     zbins = np.arange(zrange[0],zrange[1]+dz,dz)
     zmid = zbins[0:-1]+dz/2.
     Mbins = np.arange(hmf.minlm,hmf.maxlm+hmf.delta,hmf.delta)
@@ -147,16 +146,20 @@ def mass_binned_counts(redshift,Mvir,hmf,s,zrange=[0,10],dz=0.5,tnorm=True):
         o, = np.where((redshift>=zbins[i])&(redshift<zbins[i+1]))
         n,b = np.histogram(np.log10(Mvir[o]),bins=Mbins)
         mbin_counts[i,:] = n
-        zind = np.where(hmf.z < zbins[i])[0]
+        zind = np.where((hmf.z >= zbins[i])&(hmf.z < zbins[i+1]))[0]
+        if len(zind) > 0:
+            mbin_total[i,:] = np.sum(hmf.nhalos[zind,:],axis=0)/float(len(zind))
         if len(zind) == 0:
-            mbin_total[i,:] = hmf.nhalos[-1]
-        else:
-            zind = zind[0]
-            if zind > 0:
-                mbin_total[i,:] = hmf.nhalos[zind-1] + \
-                                  (hmf.nhalos[zind]-hmf.nhalos[zind-1])/(hmf.z[zind]-hmf.z[zind-1]) * (zmid[i]-hmf.z[zind-1])
-            else:
-                    mbin_total[i,:] = hmf.nhalos[zind]
+            z1 = np.where(hmf.z > zmid[i])[0]
+            z2 = np.where(hmf.z < zmid[i])[0]
+            if len(z1)== 0 or len(z2) == 0:
+                print "ERROR make sure the z bins are within the available snapshot z range"
+                raise RuntimeError
+            z1 = z1[-1]
+            z2 = z2[0]
+
+            mbin_total[i,:] = hmf.nhalos[z1] + \
+                (hmf.nhalos[z2]-hmf.nhalos[z1])/(hmf.z[z2]-hmf.z[z1]) * (zmid[i]-hmf.z[z1])
 
     if tnorm is True:
         tedges = pynbody.array.SimArray([cosmology.getTime(z,s) for z in zbins],'Gyr')
