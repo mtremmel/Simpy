@@ -104,7 +104,7 @@ class HMF(object):
                 for step in dbsim.timesteps:
                         print step.extension
                         Mvir, = step.gather_property('Mvir')
-                        N, bins = np.histogram(Mvir,bins=self.mbins)
+                        N, bins = np.histogram(np.log10(Mvir),bins=self.mbins)
                         self.nhalos[cnt,:] = N
                         self.z.append(step.redshift)
                         cnt += 1
