@@ -134,10 +134,9 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
     if ret_data is True:
         return rate, tzbins,tedges
 
-def mass_binned_counts(redshift,Mvir,hmf,s,zbins=None,tnorm=True):
-    if zbins is None:
-        dz = 0.5
-        zbins = np.arange(0,10.5,dz)
+def mass_binned_counts(redshift,Mvir,hmf,s,zrange=[0,10],dz=0.5,tnorm=True):
+    dz = 0.5
+    zbins = np.arange(zrange[0],zrange[1]+dz,dz)
     zmid = zbins[0:-1]+dz/2.
     Mbins = np.arange(hmf.minlm,hmf.maxlm+hmf.delta,hmf.delta)
 
@@ -165,7 +164,7 @@ def mass_binned_counts(redshift,Mvir,hmf,s,zbins=None,tnorm=True):
     else:
         dt = None
 
-    return mbin_counts, mbin_total, dt
+    return mbin_counts, mbin_total, dt, dz
 
 
 class mergerCat(object):
