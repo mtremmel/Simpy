@@ -208,19 +208,22 @@ class mergerCat(object):
             print "SHIIIIIIT"
 
     def get_halo_info(self,dbsim,halo_props = ['halo_number()','Mvir', 'Mstar', 'Mgas']):
-        steps, = readcol('steps.list',twod=False)
         import tangos as db
         self.rawdat['snap_after'] = np.zeros(len(self.rawdat['ID1'])).astype('S100')
         self.rawdat['snap_before'] = np.zeros(len(self.rawdat['ID1'])).astype('S100')
+        zsteps = []
+        for step in dbsim.timesteps:
+            zsteps.append(step.redshift)
+        zsteps = np.array(zsteps)
         for p in halo_props:
             self.rawdat[p] = np.ones(len(self.rawdat['ID1'])) * -1
         for i in range(len(self.rawdat['ID1'])):
             if i%100 == 0: print float(i)/len(self.rawdat['ID1']) * 100, '% done'
             id1 = self.rawdat['ID1'][i]
             id2 = self.rawdat['ID2'][i]
-            if self.rawdat['step'][i]>steps.max():
+            if self.rawdat['redshift'][i]<zsteps.min():
                 continue
-            ind = np.where(self.rawdat['step'][i]<=steps)[0][0]
+            ind = np.where(self.rawdat['redshift'][i]>=zsteps)[0][0]
             self.rawdat['snap_after'][i] = dbsim.timesteps[ind].extension
             if ind > 0:
                 self.rawdat['snap_before'][i] = dbsim.timesteps[ind-1].extension
