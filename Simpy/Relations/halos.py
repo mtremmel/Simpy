@@ -278,6 +278,7 @@ def mergerhist(dbsim, moreprops=None, names=None, hmax=3000):
             'Mgas1':[], 'Mgas2':[], 'Mgasf':[], 'nMerge':[], 'dbstep':[],'redshift':[],
             'N1':[], 'N2':[], 'Nf':[]}
     for step in dbsim.timesteps:
+        print step
         N = []
         Nf = []
         Mvir = []
