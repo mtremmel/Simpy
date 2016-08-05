@@ -109,7 +109,7 @@ class HMF(object):
                         if not check_contam:
                                 Mvir, = step.gather_property('Mvir')
                         else:
-                                Mvir,contam =  step.gather_property('Mvir')
+                                Mvir,contam =  step.gather_property('Mvir','contamination_fraction')
                                 Mvir = Mvir[(contam<0.1)]
                         N, bins = np.histogram(np.log10(Mvir),bins=self.mbins)
                         self.nhalos[cnt,:] = N
