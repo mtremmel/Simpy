@@ -300,6 +300,7 @@ def mergerhist(dbsim, moreprops=None, names=None, hmax=3000):
             Mstarf.append(h.next.NStar)
             Mgas.append(h.NGas)
             Mgasf.append(h.next.NGas)
+            time.append(h.t())
             if cnt%200 == 0:
                 print cnt/2000.
             cnt += 1
@@ -316,7 +317,6 @@ def mergerhist(dbsim, moreprops=None, names=None, hmax=3000):
         ziparr = np.array(zip(Nf,1./Mvir),dtype=[('nf','int64'),('mv','float')])
         order = np.argsort(ziparr,order=('nf','mv'))
         Nf = Nf[order]
-        time = time[order]
         N = N[order]
         Mvir = Mvir[order]
         Mvirf = Mvirf[order]
@@ -333,7 +333,6 @@ def mergerhist(dbsim, moreprops=None, names=None, hmax=3000):
             print "No Mergers This Step"
         indm = ind[mm]
 
-        data['time'].extend(time[indm])
         data['Mvirf'].extend(Mvirf[indm])
         data['Mstarf'].extend(Mstarf[indm])
         data['Mgasf'].extend(Mgasf[indm])
