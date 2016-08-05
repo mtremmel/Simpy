@@ -273,8 +273,93 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
     if ret_data:
         return Mvir, Mstar, grp
 
+def mergerhist(dbsim, moreprops=None, names=None, hmax=3000)
+    data = {'time': [], 'Mstar1':[], 'Mstar2':[], 'Mstarf':[],'Mvir1':[], 'Mvir2':[], 'Mvirf':[],
+            'Mgas1':[], 'Mgas2':[], 'Mgasf':[], 'nMerge':[], 'dbstep':[],'redshift':[],
+            'N1':[], 'N2':[], 'Nf':[]}
+    for step in dbsim.timesteps:
+        N = []
+        Nf = []
+        Mvir = []
+        Mstar = []
+        Mgas = []
+        Mvirf = []
+        Mgasf = []
+        Mstarf = []
+        cnt = 0
+        for h in step.halos:
+            if h.halo_number > hmax: break
+            if h.next is None: continue
+            #if 'Mvir' not in h.keys() or 'Mvir' not in h.next.keys(): continue
+            if 'BH_central' not in h.keys() or 'BH_central' not in h.next.keys(): continue
+            N.append(h.halo_number)
+            Nf.append(h.next.halo_number)
+            Mvir.append(h.NDM*3.4e5)
+            Mvirf.append(h.next.NDM*3.4e5)
+            Mstar.append(h.NStar)
+            Mstarf.append(h.next.NStar)
+            Mgas.append(h.NGas)
+            Mgasf.append(h.next.NGas)
+            if cnt%200 == 0:
+                print cnt/2000.
+            cnt += 1
+        N = np.array(N)
+        Nf = np.array(Nf)
+        Mvir = np.array(Mvir)
+        Mvirf = np.array(Mvirf)
+        Mstar = np.array(Mstar)
+        Mstarf = np.array(Mstarf)
+        Mgas = np.array(Mgas)
+        Mgasf = np.array(Mgasf)
 
-def mergerhist(dbsim, moreprops=None, names=None, ret_totals=False, nsteps = None):
+
+        ziparr = np.array(zip(Nf,1./Mvir),dtype=[('nf','int64'),('mv','float')])
+        order = np.argsort(ziparr,order=('nf','mv'))
+        Nf = Nf[order]
+        time = time[order]
+        N = N[order]
+        Mvir = Mvir[order]
+        Mvirf = Mvirf[order]
+        Mstar = Mstar[order]
+        Mstarf = Mstarf[order]
+        Mgas = Mgas[order]
+        Mgasf = Mgasf[order]
+
+        uNf, ind, inv, cnt = np.unique(Nf,return_index=True, return_inverse=True,return_counts=True)
+
+        mm = np.where(cnt > 1)[0]
+
+        if len(mm)==0:
+            print "No Mergers This Step"
+        indm = ind[mm]
+
+        data['time'].extend(time[indm])
+        data['Mvirf'].extend(Mvirf[indm])
+        data['Mstarf'].extend(Mstarf[indm])
+        data['Mgasf'].extend(Mgasf[indm])
+        data['Nf'].extend(Nf[indm])
+
+        data['Mvir1'].extend(Mvir[indm])
+        data['Mvir2'].extend(Mvir[indm+1])
+        data['Mstar1'].extend(Mstar[indm])
+        data['Mstar2'].extend(Mstar[indm+1])
+        data['Mgas1'].extend(Mgas[indm])
+        data['Mgas2'].extend(Mgas[indm+1])
+        data['N1'].extend(N[indm])
+        data['N2'].extend(N[indm+1])
+        data['redshift'].extend(np.ones(len(indm))*step.redshift)
+        fextent = np.zeros(len(indm)).astype(dtype='S64')
+        fextent[:] = step.relative_filename
+        data['dbstep'].extend(fextent)
+
+        data['nMerge'].extend(cnt[mm])
+    for key in data.keys():
+        data[key] = np.array(data[key])
+
+    return data
+
+
+def mergerhist_slow(dbsim, moreprops=None, names=None, ret_totals=False, nsteps = None):
     data = {'time': [], 'Mstar1':[], 'Mstar2':[], 'Mstarf':[],'Mvir1':[], 'Mvir2':[], 'Mvirf':[],
             'Mgas1':[], 'Mgas2':[], 'Mgasf':[], 'nMerge':[], 'dbstep':[],'redshift':[],
             'N1':[], 'N2':[], 'Nf':[]}
