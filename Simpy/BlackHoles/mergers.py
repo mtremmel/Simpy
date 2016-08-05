@@ -529,8 +529,8 @@ class mergerCat(object):
             if self.rawdat['dt_hmerger'][i] >= 0 and overwrite == False:
                 continue
             try:
-                bh1 = db.get_halo(str(dbsim.path)+'/%'+str(self.rawdat['step_before'][i])+'/'+str(self.rawdat['ID1'][i]))
-                bh2 = db.get_halo(str(dbsim.path)+'/%'+str(self.rawdat['step_before'][i])+'/'+str(self.rawdat['ID2'][i]))
+                bh1 = db.get_halo(str(dbsim.path)+'/%'+str(self.rawdat['snap_before'][i])+'/'+str(self.rawdat['ID1'][i]))
+                bh2 = db.get_halo(str(dbsim.path)+'/%'+str(self.rawdat['snap_before'][i])+'/'+str(self.rawdat['ID2'][i]))
             except:
                 continue
 
