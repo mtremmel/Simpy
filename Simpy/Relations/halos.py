@@ -273,7 +273,7 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
     if ret_data:
         return Mvir, Mstar, grp
 
-def mergerhist(dbsim, moreprops=None, names=None, hmax=3000,nstart=0,nend=-1):
+def mergerhist(dbsim, moreprops=None, names=None, hmax=3000,nstart=0,nend=-1,savefile=None):
     data = {'time': [], 'Mstar1':[], 'Mstar2':[], 'Mstarf':[],'Mvir1':[], 'Mvir2':[], 'Mvirf':[],
             'Mgas1':[], 'Mgas2':[], 'Mgasf':[], 'nMerge':[], 'dbstep':[],'redshift':[],
             'N1':[], 'N2':[], 'Nf':[]}
@@ -354,6 +354,12 @@ def mergerhist(dbsim, moreprops=None, names=None, hmax=3000,nstart=0,nend=-1):
         data['nMerge'].extend(cnt[mm])
     for key in data.keys():
         data[key] = np.array(data[key])
+
+    if savefile is not None:
+        f = open(savefile,'wb')
+        import pickle
+        pickle.dump(data,f)
+        f.close()
 
     return data
 
