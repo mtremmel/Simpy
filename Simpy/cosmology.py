@@ -99,14 +99,18 @@ class HMF(object):
                         else:
                                 return self.hmf['phi'][j]*self.delta
 
-        def get_N_halos(self,dbsim):
+        def get_N_halos(self,dbsim, check_contam=True):
                 self.z = []
                 self.mbins = np.arange(self.minlm, self.maxlm+self.delta, self.delta)
                 self.nhalos = np.zeros((len(dbsim.timesteps),len(self.mbins)-1))
                 cnt = 0
                 for step in dbsim.timesteps:
                         print step.extension
-                        Mvir, = step.gather_property('Mvir')
+                        if not check_contam:
+                                Mvir, = step.gather_property('Mvir')
+                        else:
+                                Mvir,contam =  step.gather_property('Mvir')
+                                Mvir = Mvir[(contam<0.1)]
                         N, bins = np.histogram(np.log10(Mvir),bins=self.mbins)
                         self.nhalos[cnt,:] = N
                         self.z.append(step.redshift)
