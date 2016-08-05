@@ -54,20 +54,23 @@ def event_count(N, z, omegaM, omegaL, h):
         dc = comoving_dist(z, omegaM, omegaL, h)
         return 4*np.pi*util.c*1.02269032e-17*N*dc**2
 
-def get_hmf_data(simpath,**kwargs):
+def get_hmf_data(simpath,log_M_min=8., log_M_max=15.,**kwargs):
         import pynbody
         sim = pynbody.load(simpath)
         sim.properties['sigma8'] = 0.77
-        mass, sig, phi = pynbody.analysis.halo_mass_function(sim,pspec=pynbody.analysis.hmf.PowerSpectrumCAMBLive,**kwargs)
+        log_M_min += np.log10(sim.properties['h'])
+        log_M_max += np.log10(sim.properties['h'])
+        mass, sig, phi = pynbody.analysis.halo_mass_function(sim,pspec=pynbody.analysis.hmf.PowerSpectrumCAMBLive,
+                                                             log_M_max=log_M_max,log_M_min=log_M_min,**kwargs)
         return np.log10(mass/sim.properties['h']),phi*sim.properties['h']**3, sim.properties['z']
 
-def get_hmf_data_all(**kwargs):
+def get_hmf_data_all(log_M_min=8., log_M_max=15.,**kwargs):
         f = open('files.list','r')
         hmf = {'z':[], 'mass':[], 'phi':[]}
         for l in f:
                 name = l.strip('\n')
                 print name
-                lm, phi, z = get_hmf_data(name,**kwargs)
+                lm, phi, z = get_hmf_data(name,log_M_min=log_M_min, log_M_max=log_M_max,**kwargs)
                 hmf['z'].append(z)
                 hmf['mass'].append(lm)
                 hmf['phi'].append(phi)
