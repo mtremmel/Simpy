@@ -528,8 +528,11 @@ class mergerCat(object):
                 print float(i)/float(len(self.rawdat['ID1']))*100, '% done'
             if self.rawdat['dt_hmerger'][i] >= 0 and overwrite == False:
                 continue
-            bh1 = db.get_halo(str(dbsim.path)+'/%'+str(self.rawdat['step_before'])+'/'+str(self.rawdat['ID1']))
-            bh2 = db.get_halo(str(dbsim.path)+'/%'+str(self.rawdat['step_before'])+'/'+str(self.rawdat['ID2']))
+            try:
+                bh1 = db.get_halo(str(dbsim.path)+'/%'+str(self.rawdat['step_before'][i])+'/'+str(self.rawdat['ID1'][i]))
+                bh2 = db.get_halo(str(dbsim.path)+'/%'+str(self.rawdat['step_before'][i])+'/'+str(self.rawdat['ID2'][i]))
+            except:
+                continue
 
             if bh1 is None or bh2 is None:
                 self.rawdat['dt_hmerger'][i] = self.rawdat['time'][i] - min(self.rawdat['tform1'][i],self.rawdat['tform2'][i])
