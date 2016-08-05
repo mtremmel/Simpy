@@ -273,7 +273,7 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
     if ret_data:
         return Mvir, Mstar, grp
 
-def mergerhist(dbsim, moreprops=None, names=None, hmax=3000)
+def mergerhist(dbsim, moreprops=None, names=None, hmax=3000):
     data = {'time': [], 'Mstar1':[], 'Mstar2':[], 'Mstarf':[],'Mvir1':[], 'Mvir2':[], 'Mvirf':[],
             'Mgas1':[], 'Mgas2':[], 'Mgasf':[], 'nMerge':[], 'dbstep':[],'redshift':[],
             'N1':[], 'N2':[], 'Nf':[]}
