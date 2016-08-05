@@ -300,7 +300,6 @@ def mergerhist(dbsim, moreprops=None, names=None, hmax=3000):
             Mstarf.append(h.next.NStar)
             Mgas.append(h.NGas)
             Mgasf.append(h.next.NGas)
-            time.append(h.t())
             if cnt%200 == 0:
                 print cnt/2000.
             cnt += 1
