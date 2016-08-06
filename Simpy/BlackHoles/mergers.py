@@ -134,7 +134,7 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
     if ret_data is True:
         return rate, tzbins,tedges
 
-def mass_binned_counts(redshift,Mvir,hid,hmf,s,zrange=[0,10],dz=0.5,tnorm=True):
+def mass_binned_counts(redshift,Mvir,hmf,s,weights=None,zrange=[0,10],dz=0.5,tnorm=True):
     zbins = np.arange(zrange[0],zrange[1]+dz,dz)
     zmid = zbins[0:-1]+dz/2.
     Mbins = np.arange(hmf.minlm,hmf.maxlm+hmf.delta,hmf.delta)
@@ -144,7 +144,7 @@ def mass_binned_counts(redshift,Mvir,hid,hmf,s,zrange=[0,10],dz=0.5,tnorm=True):
 
     for i in range(len(zbins)-1):
         o, = np.where((redshift>=zbins[i])&(redshift<zbins[i+1]))
-        n,b = np.histogram(np.log10(Mvir[o]),bins=Mbins)
+        n,b = np.histogram(np.log10(Mvir[o]),bins=Mbins,weights=weights)
         mbin_counts[i,:] = n
         zind = np.where((hmf.z >= zbins[i])&(hmf.z < zbins[i+1]))[0]
         if len(zind) > 0:
