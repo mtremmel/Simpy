@@ -539,8 +539,12 @@ class mergerCat(object):
                 self.rawdat['dt_hmerger_min'][i] = 0
                 continue
 
-            time1, hn1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()')
-            time2, hn2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()')
+            try:
+                time1, hn1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()')
+                time2, hn2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()')
+            except:
+                badmatch +=1
+                continue
             match1 = np.where(np.in1d(time1,time2))[0]
             match2 = np.where(np.in1d(time2,time1))[0]
             if not np.array_equal(time1[match1],time2[match2]):
@@ -568,7 +572,7 @@ class mergerCat(object):
                 self.rawdat['dt_hmerger_min'][i] = self.rawdat['time'][i] - th1p
             else:
                 self.rawdat['dt_hmerger_min'][i] = 0
-        print "finished with ", nodiff, "BHs having never been in different halos"
+        print "finished with ", nodiff, "BHs having never been in different halos and ", badmatch, "bad matches"
 
 
 
