@@ -555,7 +555,7 @@ class mergerCat(object):
             diff = np.where(hn1[match1]!=hn2[match2])[0]
             if len(diff)==0:
                 nodiff += 1
-                self.rawdat['dt_hmerger'][i] = self.rawdat['time'][i] - min(self.rawdat['tform1'][i],self.rawdat['tform2'][i])
+                self.rawdat['dt_hmerger'][i] = self.rawdat['time'][i] - max(self.rawdat['tform1'][i],self.rawdat['tform2'][i])
                 self.rawdat['dt_hmerger_min'][i] = self.rawdat['time'][i] - max(time1.min(),time2.min())
                 continue
             th1 = time1[match1[diff[0]]]
