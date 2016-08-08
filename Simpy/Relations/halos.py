@@ -108,7 +108,17 @@ def SMHM_db(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmas
             maxmass=None, markersize=5,label=None, correct=True, error=True):
     import tangos as db
     step = db.get_timestep(sim+'/%'+str(step))
-    Mvir, Mstar = step.gather_property('Mvir', 'Mstar')
+    Mvir, Mstar, Rvir, cen = step.gather_property('Mvir', 'Mstar', 'Rvir','SSC')
+    sub = np.zeros(len(Mstar))
+    for i in range(len(Mvir)):
+        int = np.where((np.sqrt(np.sum((cen[i] - cen)**2,axis=1))<Rvir)&(np.sum((cen[i] - cen)**2,axis=1)>0))
+        if len(int[0])>0:
+            sub[i] = 1
+
+    ok = np.where(sub==0)
+    Mvir = Mvir[ok]
+    Mstar = Mstar[ok]
+    Rvir = Rvir[ok]
 
     if correct is True:
         Mstar *= 0.6
