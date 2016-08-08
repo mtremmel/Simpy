@@ -152,17 +152,17 @@ def SMHM_db(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmas
                 flabel = 'Kravtsov+ 14'
 
             ratio_fit = fitfunc(logmv_fit, step.redshift)
-            plotting.plt.plot(logmv_fit, np.log10(ratio_fit), fitstyle[cnt], label=flabel)
+            plotting.plt.plot(logmv_fit, np.log10(ratio_fit), fitstyle[cnt], label=flabel, lw=3)
             if ff in ['Mos','Moster'] and error is True:
                 sigma = errmoster13(logmv_fit, step.redshift)
-                plotting.plt.fill_between(logmv_fit,np.log10(ratio_fit-sigma),np.log10(ratio_fit+sigma),
-                                        facecolor='grey',alpha=0.5)
+                plotting.plt.fill_between(logmv_fit,np.log10(ratio_fit-sigma),np.log10(ratio_fit+sigma),facecolor='grey',
+                                          edgecolor='k', lw=1.5, alpha=0.5,zorder=10)
 
             cnt += 1
 
-    plotting.plt.ylabel(r'M$_{*,cen}$/M$_{vir}$',fontsize=40)
-    plotting.plt.xlabel(r'M$_{vir}$ [M$_{\odot}$]',fontsize=40)
-    plotting.plt.legend(loc='lower right',fontsize=30)
+    plotting.plt.ylabel(r'M$_{*}$/M$_{vir}$')
+    plotting.plt.xlabel(r'M$_{vir}$ [M$_{\odot}$]')
+    plotting.plt.legend(loc='lower right',fontsize=25)
 
 
 def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None,
