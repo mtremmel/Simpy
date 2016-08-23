@@ -90,9 +90,8 @@ def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None):
     match, = np.where((bhmergers['ID1'][useonly]==bhid)&(bhmergers['time'][useonly]<=tmax))
     if len(match)==0:
         return np.array([])
-    idlist = np.array([])
-    idnew = np.append(idlist,bhmergers['ID2'][useonly[match]])
-    idlist = np.append(idlist,idnew)
+    idnew = np.copy(bhmergers['ID2'][useonly[match]])
+    idlist = np.copy(idnew)
     deep = 0
     while len(idnew)>0:
         deep +=1
@@ -100,7 +99,7 @@ def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None):
         for eid in idnew:
             match, = np.where(bhmergers['ID1'][useonly]==eid)
             if len(match)>0:
-                idnext = np.append(idnext,bhmergers['ID1'][useonly[match]])
+                idnext = np.append(idnext,bhmergers['ID2'][useonly[match]])
         print len(idnew), len(idnext)
         idnew = idnext
         idlist = np.append(idlist,idnew)
