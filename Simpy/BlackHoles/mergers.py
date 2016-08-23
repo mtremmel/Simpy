@@ -56,32 +56,52 @@ def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt',
     else:
         return
 
-def get_complete_prog_list(bhorbit, bhid, tmax):
-    target, = np.where(bhorbit.bhiords == bhid)
-    bhorbit.getprogbhs()
-    idlist = np.array([])
-    if len(bhorbit.prog['iord'][target])==0:
-        return np.array([])
-    idnew = np.array(bhorbit.prog['iord'][target])[(np.array(bhorbit.prog['time'][target])<tmax)]
-    idlist = np.append(idlist,idnew)
+# def get_complete_prog_list(bhorbit, bhid, tmax):
+#     target, = np.where(bhorbit.bhiords == bhid)
+#     bhorbit.getprogbhs()
+#     idlist = np.array([])
+#     if len(bhorbit.prog['iord'][target])==0:
+#         return np.array([])
+#     idnew = np.array(bhorbit.prog['iord'][target])[(np.array(bhorbit.prog['time'][target])<tmax)]
+#     idlist = np.append(idlist,idnew)
+#
+#     deep = 0
+#     while len(idnew) > 0:
+#         deep += 1
+#         idnext = np.array([])
+#         for bid in idnew:
+#             newtarget, = np.where(bhorbit.bhiords==bid)
+#             if len(newtarget)>1:
+#                 print "Warning! multiple matches in bhiords found for ", bid
+#             if len(newtarget)==0:
+#                 print str(bid)+" not found in orbit object! moving on..."
+#                 continue
+#             newtarget = newtarget[0]
+#             newpart = np.array(bhorbit.prog['iord'][newtarget])
+#             idnext = np.append(idnext,newpart)
+#         idnew = idnext
+#         idlist = np.append(idlist,idnew)
+#     print "finished with ", deep, "steps\n"
+#     return idlist
 
+def get_complete_prog_list(bhmergers,bhid,tmax):
+    match, = np.where((bhmergers['ID1']==bhid)&(bhmergers['time']<=tmax))
+    if len(match)==0:
+        return np.array([])
+    idlist = np.array([])
+    idnew = np.append(idlist,bhmergers['ID2'][match])
+    idlist = np.append(idlist,idnew)
     deep = 0
-    while len(idnew) > 0:
-        deep += 1
+    while len(idnew)>0:
+        deep +=1
         idnext = np.array([])
-        for bid in idnew:
-            newtarget, = np.where(bhorbit.bhiords==bid)
-            if len(newtarget)>1:
-                print "Warning! multiple matches in bhiords found for ", bid
-            if len(newtarget)==0:
-                print str(bid)+" not found in orbit object! moving on..."
+        for eid in idnew:
+            match, = np.where(bhmergers['ID1']==eid)
+            if len(match)==0:
                 continue
-            newtarget = newtarget[0]
-            newpart = np.array(bhorbit.prog['iord'][newtarget])
-            idnext = np.append(idnext,newpart)
+            idnext = np.append(idnext,bhmergers['ID1'][match])
         idnew = idnext
         idlist = np.append(idlist,idnew)
-    print "finished with ", deep, "steps\n"
     return idlist
 
 def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, bins=50,
