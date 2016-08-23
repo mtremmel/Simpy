@@ -84,22 +84,24 @@ def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt',
 #     print "finished with ", deep, "steps\n"
 #     return idlist
 
-def get_complete_prog_list(bhmergers,bhid,tmax):
-    match, = np.where((bhmergers['ID1']==bhid)&(bhmergers['time']<=tmax))
+def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None):
+    if useonly is None:
+        useonly = np.arange(len(bhmergers['ID1']))
+    match, = np.where((bhmergers['ID1'][useonly]==bhid)&(bhmergers['time'][useonly]<=tmax))
     if len(match)==0:
         return np.array([])
     idlist = np.array([])
-    idnew = np.append(idlist,bhmergers['ID2'][match])
+    idnew = np.append(idlist,bhmergers['ID2'][useonly[match]])
     idlist = np.append(idlist,idnew)
     deep = 0
     while len(idnew)>0:
         deep +=1
         idnext = np.array([])
         for eid in idnew:
-            match, = np.where(bhmergers['ID1']==eid)
+            match, = np.where(bhmergers['ID1'][useonly]==eid)
             if len(match)==0:
                 continue
-            idnext = np.append(idnext,bhmergers['ID1'][match])
+            idnext = np.append(idnext,bhmergers['ID1'][useonly[match]])
         idnew = idnext
         idlist = np.append(idlist,idnew)
     return idlist
