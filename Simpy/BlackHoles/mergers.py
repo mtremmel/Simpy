@@ -193,6 +193,22 @@ def mass_binned_counts(redshift,Mvir,hmf,s,weights=None,zrange=[0,10],dz=0.5,tno
 
     return mbin_counts, mbin_total, dt, dz, zbins
 
+def raw_mass_bin_to_rates(cnt, tot, z, dz, hmf):
+    f = open('files.list','r')
+    s = pynbody.load(f.readline().strip('\n'))
+    frac = np.nan_to_num(cnt/tot)
+    n = np.zeros_like(frac)
+    for i in range(len(z)):
+        ind = np.argmin(np.abs(z[i]-hmf.z))
+        n[i,:] = frac[i,:]*hmf.hmf['phi'][ind]*0.3
+
+    nall = n.sum(axis=1)/dz
+
+    nobs = cosmology.event_count(nall,z,s.properties['omegaM0'], s.properties['omegeL0'], s.properties['h'])
+    return nobs
+
+
+
 
 class mergerCat(object):
     def __init__(self,simname):
