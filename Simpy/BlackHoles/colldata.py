@@ -57,7 +57,7 @@ K16_z_nod, K16_nobs_nod = readcol(os.path.join(os.path.dirname(__file__),'data/K
 
 #SAM results from Enrico Barausse
 def get_sam_mergers(type="Q3_delays"):
-	file = "mergers_"+type+".dat"
+	file = "data/mergers_"+type+".dat"
 	data = readcol(os.path.join(os.path.dirname(__file__),file),twod=True)
 	output = {}
 	output['z'] = data[:,0].astype(np.float)
