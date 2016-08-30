@@ -204,7 +204,7 @@ def raw_mass_bin_to_rates(cnt, tot, z, dz, hmf):
 
     nall = n.sum(axis=1)/dz
 
-    nobs = cosmology.event_count(nall,z,s.properties['omegaM0'], s.properties['omegeL0'], s.properties['h'])
+    nobs = cosmology.event_count(nall,z,s.properties['omegaM0'], s.properties['omegaL0'], s.properties['h'])
     return nobs
 
 
