@@ -159,8 +159,8 @@ def mass_binned_counts(redshift,Mvir,hmf,s,weights=None,zrange=[0,10],dz=0.5,tno
     zmid = zbins[0:-1]+dz/2.
     Mbins = np.arange(hmf.minlm,hmf.maxlm+hmf.delta,hmf.delta)
 
-    mbin_counts = np.zeros((len(zbins),len(Mbins)-1))
-    mbin_total = np.zeros((len(zbins),len(Mbins)-1))
+    mbin_counts = np.zeros((len(zbins)-1,len(Mbins)-1))
+    mbin_total = np.zeros((len(zbins)-1,len(Mbins)-1))
 
     for i in range(len(zbins)-1):
         o, = np.where((redshift>=zbins[i])&(redshift<zbins[i+1]))
