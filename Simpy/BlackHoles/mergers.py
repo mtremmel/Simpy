@@ -200,7 +200,7 @@ def raw_mass_bin_to_rates(cnt, tot, z, dz, hmf):
     n = np.zeros_like(frac)
     for i in range(len(z)):
         ind = np.argmin(np.abs(z[i]-hmf.z))
-        n[i,:] = frac[i,0:-1]*hmf.hmf['phi'][ind]*0.3
+        n[i,:] = frac[i,:]*hmf.hmf['phi'][ind]*0.3
 
     nall = n.sum(axis=1)/dz
 
