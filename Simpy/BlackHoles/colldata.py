@@ -54,3 +54,15 @@ fio_bhlf_L6Fp = 46.2 - 45.55
 #BH mergers from Klein 16 (SAMs)
 K16_z, K16_nobs = readcol(os.path.join(os.path.dirname(__file__),'data/Klein16_BHmerge_MBHd.csv'),twod=False)
 K16_z_nod, K16_nobs_nod = readcol(os.path.join(os.path.dirname(__file__),'data/Klein16_BHmerge_MBHnod.csv'),twod=False)
+
+#SAM results from Enrico Barausse
+def get_sam_mergers(type="Q3_delays"):
+	file = "mergers_"+type+".dat"
+	data = readcol(os.path.join(os.path.dirname(__file__),file),twod=True)
+	output = {}
+	output['z'] = data[:,0].astype(np.float)
+	output['M1'] = data[:,1].astype(np.float)
+	output['M2'] = data[:,2].astype(np.float)
+	output['Mh'] = data[:,15].astype(np.float)
+	output['weight'] = data[:,24].astype(np.float)
+	return output
