@@ -169,10 +169,6 @@ def mass_binned_counts(redshift,Mvir,hmf,s,weights=None,zrange=[0,10],dz=0.5,tno
         zind = np.where((hmf.z >= zbins[i])&(hmf.z < zbins[i+1]))[0]
         if len(zind) > 0:
             mbin_total[i,:] = np.sum(hmf.nhalos[zind,:],axis=0)/float(len(zind))
-            bad = np.where((mbin_total[i,:]==0)&(mbin_counts[i,:]>0))[0]
-            if len(bad)>0:
-                mbin_counts[i,bad-1] += mbin_counts[i,bad]
-                mbin_counts[i,bad] = 0
         if len(zind) == 0:
             z1 = np.where(hmf.z > zmid[i])[0]
             z2 = np.where(hmf.z < zmid[i])[0]
@@ -184,6 +180,10 @@ def mass_binned_counts(redshift,Mvir,hmf,s,weights=None,zrange=[0,10],dz=0.5,tno
 
             mbin_total[i,:] = hmf.nhalos[z1] + \
                 (hmf.nhalos[z2]-hmf.nhalos[z1])/(hmf.z[z2]-hmf.z[z1]) * (zmid[i]-hmf.z[z1])
+        bad = np.where((mbin_total[i,:]==0)&(mbin_counts[i,:]>0))[0]
+        if len(bad)>0:
+            mbin_counts[i,bad-1] += mbin_counts[i,bad]
+            mbin_counts[i,bad] = 0
 
     if tnorm is True:
         tedges = pynbody.array.SimArray([cosmology.getTime(z,s) for z in zbins],'Gyr')
