@@ -181,9 +181,11 @@ def mass_binned_counts(redshift,Mvir,hmf,s,weights=None,zrange=[0,10],dz=0.5,tno
             mbin_total[i,:] = hmf.nhalos[z1] + \
                 (hmf.nhalos[z2]-hmf.nhalos[z1])/(hmf.z[z2]-hmf.z[z1]) * (zmid[i]-hmf.z[z1])
         bad = np.where((mbin_total[i,:]==0)&(mbin_counts[i,:]>0))[0]
-        if len(bad)>0:
-            mbin_counts[i,bad-1] += mbin_counts[i,bad]
-            mbin_counts[i,bad] = 0
+        while len(bad)>0:
+            for bi in bad:
+                mbin_counts[i,bi-1] += mbin_counts[i,bi]
+                mbin_counts[i,bi] = 0
+            bad = np.where((mbin_total[i,:]==0)&(mbin_counts[i,:]>0))[0]
 
     if tnorm is True:
         tedges = pynbody.array.SimArray([cosmology.getTime(z,s) for z in zbins],'Gyr')
