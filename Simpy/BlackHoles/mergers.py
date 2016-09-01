@@ -159,7 +159,7 @@ def mass_binned_counts(redshift,Mvir,hmf,s,weights=None,zrange=[0,10],dz=0.5,tno
     if logz is True:
         lzbins = np.arange(zrange[0],zrange[1]+dz,dz)
         zbins = 10**lzbins
-        zmid = zbins[0,-1] + (zbins[1:]-zbins[0:-1])*0.5
+        zmid = zbins[0:-1] + (zbins[1:]-zbins[0:-1])*0.5
     else:
         zbins = np.arange(zrange[0],zrange[1]+dz,dz)
         zmid = zbins[0:-1]+dz/2.
@@ -276,7 +276,8 @@ def calc_nobs(z, m1, m2, mh, hmf, s, weights=None, rel_weights=[1],
                 wuse = wuse[ok]
         if ratio_range is not None:
             ratio = np.minimum(m1use,m2use)/np.maximum(m1use,m2use)
-            ok = np.where((ratio>=ratio_range[0])&(ratio<ratio_range[1]))
+            ok = np.where((ratio>=ratio_range[0])&(ratio<ratio_range[1]))[0]
+            zuse = zuse[ok]
             m1use = m1use[ok]
             m2use = m2use[ok]
             mhuse = mhuse[ok]
