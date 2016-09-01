@@ -223,7 +223,7 @@ def combine_merger_data(z,mh,hmf,s, weights=None,zrange=[0,10],dz=0.5,tnorm=True
         weights = []
         for i in range(todo):
             weights.append(np.ones(len(z[i])))
-    cnt, tot, dt, dz, zbins = mass_binned_counts(z[0], mh[0], hmf, s, weights[0], zrange, dz, tnorm, logz)
+    cnt, tot, dt, dz, zmid = mass_binned_counts(z[0], mh[0], hmf, s, weights[0], zrange, dz, tnorm, logz)
     cnt *= rel_weights[0]
     tot *= rel_weights[0]
     for i in range(todo-1):
@@ -292,7 +292,7 @@ def calc_nobs(z, m1, m2, mh, hmf, s, weights=None, rel_weights=[1],
         for i in range(len(zuse_l)-1):
             nn, zbinsn = np.histogram(zuse_l[i+1],weights=weights,bins=zbins)
             n += nn*rel_weights[i+1]
-        return cosmology.event_count(n,zmid,s.properties['omegaM0'], s.properties['omegaL0'], s.properties['h'])/dz
+        return cosmology.event_count(n,zmid,s.properties['omegaM0'], s.properties['omegaL0'], s.properties['h'])/dz, zmid
 
 
 
