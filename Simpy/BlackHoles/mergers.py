@@ -233,6 +233,30 @@ def combine_merger_data(z,mh,hmf,s, weights=None,zrange=[0,10],dz=0.5,tnorm=True
     nobs = raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf)
     return nobs, zmid
 
+def cal_weights(z, mh, hmf, s, hmf_comp = None, rel_weight=None):
+    weights = np.ones_like(z)*-1
+    for i in range(len(hmf.z)-1):
+        for j in range(len(hmf.mbins)-1):
+            target = np.where((z>hmf.z[i])&(z<=hmf.z[i+1])&(mh>hmf.mbins[i])&(mh<=hmf.mbins[i+1]))[0]
+            #if hmf_comp is None:
+            weights[target] = hmf.hmf['phi'][i+1]/hmf.nhalos[i+1,j]
+    return weights
+  #          else:
+   #             norm  = hmf.nhalos[i+1,j]
+    #            cnt = 0
+     #           for hmfc in hmf_comp:
+     #               dir = np.where(hmfc.z==hmf.z[i+1])[0]
+     ###               if len(dir)>0:
+      #                  norm += hmfc.nhalos[dir[0],j]*rel_weight[cnt]
+      #              else:
+      #                  ocomp_l = np.where(hmf_comp.z<=hmf.z[i+1])[0]
+      ##                  ocomp_h = np.where(hmf_comp.z>hmf.z[i+1])[0]
+       #                 if len(ocomp_h)==0:
+       #                     norm += hmfc.nhalos[ocomp_l[0],j]*rel_weight[cnt]
+       #                 else:
+       #                     norm += hmfc.nhalos[ocomp_l[0],j] + \
+       #                             (hmfc.nhalos[ocomp_h[0],j]-hmfc.nhalos[ocomp_l[0],j])/((hmfc.z[ocomp_l[0]]-hmfc.z[ocomp_h[0]])) *
+
 def calc_nobs(z, m1, m2, mh, hmf, s, weights=None, rel_weights=[1],
               msum_range=None, mmin_range=None, mh_range=None, ratio_range=None, zrange=[0,10], dz = 0.5, logz=True):
     if type(z) != list or type(m1) != list or type(m2) != list or type(mh) != list:
