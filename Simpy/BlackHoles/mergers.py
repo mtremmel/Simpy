@@ -236,8 +236,8 @@ def combine_merger_data(z,mh,hmf,s, weights=None,zrange=[0,10],dz=0.5,tnorm=True
 def cal_weights(z, mh, hmf, s, hmf_comp = None, rel_weight=None):
     weights = np.ones_like(z)*-1
     for i in range(len(hmf.z)-1):
-        for j in range(len(hmf.mbins)):
-            target = np.where((z>hmf.z[i])&(z<=hmf.z[i+1])&(mh>hmf.mbins[i])&(mh<=hmf.mbins[i+1]))[0]
+        for j in range(len(hmf.mbins)-2):
+            target = np.where((z>hmf.z[i])&(z<=hmf.z[i+1])&(mh>hmf.mbins[j])&(mh<=hmf.mbins[j+1]))[0]
             #if hmf_comp is None:
             weights[target] = hmf.hmf['phi'][i+1][j]/hmf.nhalos[i+1,j]
     return weights
