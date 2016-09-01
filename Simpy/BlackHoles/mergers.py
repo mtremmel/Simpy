@@ -278,7 +278,7 @@ def calc_nobs(z, m1, m2, mh, hmf, s, weights=None, rel_weights=[1],
     if weights is None:
         if len(z)==1:
             cnt, tot, dt, dz, zmid = mass_binned_counts(zuse_l[0], mhuse_l[0], hmf, s, np.ones(len(zuse_l[0])), zrange, dz, True, logz)
-            return raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf)
+            return raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf), zmid
         else:
             return combine_merger_data(z,mh,hmf,s, weights=None,zrange=zrange,dz=dz,rel_weights=rel_weights, logz=logz)
     else:
