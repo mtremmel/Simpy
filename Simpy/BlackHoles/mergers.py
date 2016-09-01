@@ -242,35 +242,48 @@ def calc_nobs(z, m1, m2, mh, hmf, s, weights=None, rel_weights=[1],
     m1use_l = []
     m2use_l = []
     mhuse_l = []
+    w_l = []
     for i in range(len(z)):
         zuse = np.copy(z[i])
         m1use = np.copy(m1[i])
         m2use = np.copy(m2[i])
         mhuse = np.copy(mh[i])
+        if weights is not None:
+            wuse = np.copy(weights[i])
         if msum_range is not None:
             ok = np.where((m1use+m2use>=msum_range[0])&(m1use+m2use<msum_range[1]))[0]
             zuse = zuse[ok]
             m1use = m1use[ok]
             m2use = m2use[ok]
             mhuse = mhuse[ok]
+            if weights:
+                wuse = wuse[ok]
         if mmin_range is not None:
             ok = np.where((np.minimum(m1use,m2use)>=mmin_range[0])&(np.minimum(m1use,m2use)<mmin_range[1]))[0]
             zuse = zuse[ok]
             m1use = m1use[ok]
             m2use = m2use[ok]
             mhuse = mhuse[ok]
+            if weights:
+                wuse = wuse[ok]
         if mh_range is not None:
             ok = np.where((mhuse>=mh_range[0])&(mhuse<mh_range[1]))[0]
             zuse = zuse[ok]
             m1use = m1use[ok]
             m2use = m2use[ok]
             mhuse = mhuse[ok]
+            if weights:
+                wuse = wuse[ok]
         if ratio_range is not None:
             ratio = np.minimum(m1use,m2use)/np.maximum(m1use,m2use)
             ok = np.where((ratio>=ratio_range[0])&(ratio<ratio_range[1]))
             m1use = m1use[ok]
             m2use = m2use[ok]
             mhuse = mhuse[ok]
+            if weights:
+                wuse = wuse[ok]
+        if weights:
+            w_l.append(wuse)
         zuse_l.append(zuse)
         m1use_l.append(m1use)
         m2use_l.append(m2use)
@@ -287,10 +300,10 @@ def calc_nobs(z, m1, m2, mh, hmf, s, weights=None, rel_weights=[1],
         else:
             zbins = np.arange(zrange[0],zrange[1]+dz,dz)
         zmid = zbins[0:-1]+0.5*(zbins[1:]-zbins[0:-1])
-        n, zbins = np.histogram(np.log10(zuse_l[0]),weights=weights[0],bins=zbins)
+        n, zbins = np.histogram(np.log10(zuse_l[0]),weights=w_l[0],bins=zbins)
         n *= rel_weights[0]
         for i in range(len(zuse_l)-1):
-            nn, zbinsn = np.histogram(zuse_l[i+1],weights=weights,bins=zbins)
+            nn, zbinsn = np.histogram(zuse_l[i+1],weights=w_l[i+1],bins=zbins)
             n += nn*rel_weights[i+1]
         return cosmology.event_count(n,zmid,s.properties['omegaM0'], s.properties['omegaL0'], s.properties['h'])/dz, zmid
 
