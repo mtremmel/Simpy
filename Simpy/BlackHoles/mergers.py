@@ -231,7 +231,7 @@ def combine_merger_data(z,mh,hmf,s, weights=None,zrange=[0,10],dz=0.5,tnorm=True
         cnt += cn*rel_weights[i+1]
         tot += tn*rel_weights[i+1]
     nobs = raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf)
-    return nobs
+    return nobs, zmid
 
 def calc_nobs(z, m1, m2, mh, hmf, s, weights=None, rel_weights=[1],
               msum_range=None, mmin_range=None, mh_range=None, ratio_range=None, zrange=[0,10], dz = 0.5, logz=True):
