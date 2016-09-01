@@ -239,7 +239,7 @@ def cal_weights(z, mh, hmf, s, hmf_comp = None, rel_weight=None):
         for j in range(len(hmf.mbins)-1):
             target = np.where((z>hmf.z[i])&(z<=hmf.z[i+1])&(mh>hmf.mbins[i])&(mh<=hmf.mbins[i+1]))[0]
             #if hmf_comp is None:
-            weights[target] = hmf.hmf['phi'][i+1]/hmf.nhalos[i+1,j]
+            weights[target] = hmf.hmf['phi'][i+1][j]/hmf.nhalos[i+1,j]
     return weights
   #          else:
    #             norm  = hmf.nhalos[i+1,j]
