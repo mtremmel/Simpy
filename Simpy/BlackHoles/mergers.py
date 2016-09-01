@@ -154,9 +154,15 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
     if ret_data is True:
         return rate, tzbins,tedges
 
-def mass_binned_counts(redshift,Mvir,hmf,s,weights=None,zrange=[0,10],dz=0.5,tnorm=True):
-    zbins = np.arange(zrange[0],zrange[1]+dz,dz)
-    zmid = zbins[0:-1]+dz/2.
+
+def mass_binned_counts(redshift,Mvir,hmf,s,weights=None,zrange=[0,10],dz=0.5,tnorm=True, logz=True):
+    if logz is True:
+        lzbins = np.arange(zrange[0],zrange[1]+dz,dz)
+        zbins = 10**lzbins
+        zmid = zbins[0,-1] + (zbins[1:]-zbins[0:-1])*0.5
+    else:
+        zbins = np.arange(zrange[0],zrange[1]+dz,dz)
+        zmid = zbins[0:-1]+dz/2.
     Mbins = np.arange(hmf.minlm,hmf.maxlm+hmf.delta,hmf.delta)
 
     mbin_counts = np.zeros((len(zbins)-1,len(Mbins)-1))
@@ -193,7 +199,8 @@ def mass_binned_counts(redshift,Mvir,hmf,s,weights=None,zrange=[0,10],dz=0.5,tno
     else:
         dt = None
 
-    return mbin_counts, mbin_total, dt, dz, zbins
+    return mbin_counts, mbin_total, dt, dz, zmid
+
 
 def raw_mass_bin_to_rates(cnt, tot, z, dz, hmf):
     f = open('files.list','r')
@@ -209,6 +216,83 @@ def raw_mass_bin_to_rates(cnt, tot, z, dz, hmf):
     nobs = cosmology.event_count(nall,z,s.properties['omegaM0'], s.properties['omegaL0'], s.properties['h'])
     return nobs
 
+
+def combine_merger_data(z,mh,hmf,s, weights=None,zrange=[0,10],dz=0.5,tnorm=True,rel_weights=[8,1], logz=True):
+    todo = len(z)
+    if weights is None:
+        weights = []
+        for i in range(todo):
+            weights.append(np.ones(len(z[i])))
+    cnt, tot, dt, dz, zbins = mass_binned_counts(z[0], mh[0], hmf, s, weights[0], zrange, dz, tnorm, logz)
+    cnt *= rel_weights[0]
+    tot *= rel_weights[0]
+    for i in range(todo-1):
+        cn, tn, dt, dz, zmid = mass_binned_counts(z[i+1], mh[i+1], hmf, s, weights[i+1], zrange, dz, tnorm, logz)
+        cnt += cn*rel_weights[i+1]
+        tot += tn*rel_weights[i+1]
+    nobs = raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf)
+    return nobs
+
+def calc_nobs(z, m1, m2, mh, hmf, s, weights=None, rel_weights=[1],
+              msum_range=None, mmin_range=None, mh_range=None, ratio_range=None, zrange=[0,10], dz = 0.5, logz=True):
+    if type(z) != list or type(m1) != list or type(m2) != list or type(mh) != list:
+        print "expecting lists of arrays!"
+        raise ValueError
+    zuse_l = []
+    m1use_l = []
+    m2use_l = []
+    mhuse_l = []
+    for i in range(len(z)):
+        zuse = np.copy(z[i])
+        m1use = np.copy(m1[i])
+        m2use = np.copy(m2[i])
+        mhuse = np.copy(mh[i])
+        if msum_range is not None:
+            ok = np.where((m1use+m2use>=msum_range[0])&(m1use+m2use<msum_range[1]))[0]
+            zuse = zuse[ok]
+            m1use = m1use[ok]
+            m2use = m2use[ok]
+            mhuse = mhuse[ok]
+        if mmin_range is not None:
+            ok = np.where((np.minimum(m1use,m2use)>=mmin_range[0])&(np.minimum(m1use,m2use)<mmin_range[1]))[0]
+            zuse = zuse[ok]
+            m1use = m1use[ok]
+            m2use = m2use[ok]
+            mhuse = mhuse[ok]
+        if mh_range is not None:
+            ok = np.where((mhuse>=mh_range[0])&(mhuse<mh_range[1]))[0]
+            zuse = zuse[ok]
+            m1use = m1use[ok]
+            m2use = m2use[ok]
+            mhuse = mhuse[ok]
+        if ratio_range is not None:
+            ratio = np.minimum(m1use,m2use)/np.maximum(m1use,m2use)
+            ok = np.where((ratio>=ratio_range[0])&(ratio<ratio_range[1]))
+            m1use = m1use[ok]
+            m2use = m2use[ok]
+            mhuse = mhuse[ok]
+        zuse_l.append(zuse)
+        m1use_l.append(m1use)
+        m2use_l.append(m2use)
+        mhuse_l.append(mhuse)
+    if weights is None:
+        if len(z)==1:
+            cnt, tot, dt, dz, zmid = mass_binned_counts(zuse_l[0], mhuse_l[0], hmf, s, np.ones(len(zuse_l[0])), zrange, dz, True, logz)
+            return raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf)
+        else:
+            return combine_merger_data(z,mh,hmf,s, weights=None,zrange=zrange,dz=dz,rel_weights=rel_weights, logz=logz)
+    else:
+        if logz is True:
+            zbins = 10**np.arange(zrange[0],zrange[1]+dz,dz)
+        else:
+            zbins = np.arange(zrange[0],zrange[1]+dz,dz)
+        zmid = zbins[0:-1]+0.5*(zbins[1:]-zbins[0:-1])
+        n, zbins = np.histogram(np.log10(zuse_l[0]),weights=weights[0],bins=zbins)
+        n *= rel_weights[0]
+        for i in range(len(zuse_l)-1):
+            nn, zbinsn = np.histogram(zuse_l[i+1],weights=weights,bins=zbins)
+            n += nn*rel_weights[i+1]
+        return cosmology.event_count(n,zmid,s.properties['omegaM0'], s.properties['omegaL0'], s.properties['h'])/dz
 
 
 
