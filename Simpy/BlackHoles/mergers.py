@@ -300,7 +300,7 @@ def calc_nobs(z, m1, m2, mh, hmf, s, weights=None, rel_weights=[1],
         else:
             zbins = np.arange(zrange[0],zrange[1]+dz,dz)
         zmid = zbins[0:-1]+0.5*(zbins[1:]-zbins[0:-1])
-        n, zbins = np.histogram(np.log10(zuse_l[0]),weights=w_l[0],bins=zbins)
+        n, zbins = np.histogram(zuse_l[0],weights=w_l[0],bins=zbins)
         n *= rel_weights[0]
         for i in range(len(zuse_l)-1):
             nn, zbinsn = np.histogram(zuse_l[i+1],weights=w_l[i+1],bins=zbins)
