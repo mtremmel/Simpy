@@ -752,14 +752,14 @@ class mergerCat(object):
                 self.rawdat['dt_hmerger_min'][i] = 0
 
             if detail == True:
-                self.rawdat['hmerger_mvir_1'] = mv1[match1[diff[0]]]
-                self.rawdat['hmerger_mvir_2'] = mv2[match2[diff[0]]]
-                self.rawdat['hmerger_mgas_1'] = mg1[match1[diff[0]]]
-                self.rawdat['hmerger_mgas_2'] = mg2[match2[diff[0]]]
-                self.rawdat['hmerger_mstar_1'] = ms1[match1[diff[0]]]
-                self.rawdat['hmerger_mstar_2'] = ms2[match2[diff[0]]]
-                self.rawdat['hmerger_mbh_1'] = mbh1[match1[diff[0]]]
-                self.rawdat['hmerger_mbh_2'] = mbh2[match2[diff[0]]]
+                self.rawdat['hmerger_mvir_1'][i] = mv1[match1[diff[0]]]
+                self.rawdat['hmerger_mvir_2'][i] = mv2[match2[diff[0]]]
+                self.rawdat['hmerger_mgas_1'][i] = mg1[match1[diff[0]]]
+                self.rawdat['hmerger_mgas_2'][i] = mg2[match2[diff[0]]]
+                self.rawdat['hmerger_mstar_1'][i] = ms1[match1[diff[0]]]
+                self.rawdat['hmerger_mstar_2'][i] = ms2[match2[diff[0]]]
+                self.rawdat['hmerger_mbh_1'][i] = mbh1[match1[diff[0]]]
+                self.rawdat['hmerger_mbh_2'][i] = mbh2[match2[diff[0]]]
         print "finished with ", nodiff, "BHs having never been in different halos and ", badmatch, "bad matches"
 
 
