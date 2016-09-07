@@ -679,11 +679,20 @@ class mergerCat(object):
                 dual = np.where((lum1[use1[close]]>minL)&(lum2[use2[close]]>minL))[0]
                 self.rawdat[fstr][i] = float(len(dual))/float(len(close))
 
-    def get_halo_merger(self,dbsim,overwrite=False):
+    def get_halo_merger(self,dbsim,overwrite=False, detail=False):
         import tangos as db
         if 'dt_hmerger' not in self.rawdat.keys() or overwrite==True:
             self.rawdat['dt_hmerger'] = np.ones(len(self.rawdat['ID1']))*-1
-            self.rawdat['dt_hmerger_min'] = np.ones(len(self.rawdat['ID1']))*-1
+            if detail == True:
+                self.rawdat['dt_hmerger_min'] = np.ones(len(self.rawdat['ID1']))*-1
+                self.rawdat['hmerger_mvir_1'] = np.ones(len(self.rawdat['ID1']))*-1
+                self.rawdat['hmerger_mvir_2'] = np.ones(len(self.rawdat['ID1']))*-1
+                self.rawdat['hmerger_mgas_1'] = np.ones(len(self.rawdat['ID1']))*-1
+                self.rawdat['hmerger_mgas_2'] = np.ones(len(self.rawdat['ID1']))*-1
+                self.rawdat['hmerger_mstar_1'] = np.ones(len(self.rawdat['ID1']))*-1
+                self.rawdat['hmerger_mstar_2'] = np.ones(len(self.rawdat['ID1']))*-1
+                self.rawdat['hmerger_mbh_1'] = np.ones(len(self.rawdat['ID1']))*-1
+                self.rawdat['hmerger_mbh_2'] = np.ones(len(self.rawdat['ID1']))*-1
         nodiff = 0
         badmatch = 0
         for i in range(len(self.rawdat['ID1'])):
@@ -703,8 +712,14 @@ class mergerCat(object):
                 continue
 
             try:
-                time1, hn1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()')
-                time2, hn2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()')
+                if detail==True:
+                    time1, hn1, mv1, mg1, ms1, mbh1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()',
+                                                          'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass')
+                    time2, hn2, mv2, mg2, ms2, mbh2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()',
+                                                          'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass')
+                else:
+                    time1, hn1 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()')
+                    time2, hn2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()')
             except:
                 badmatch +=1
                 continue
@@ -735,6 +750,16 @@ class mergerCat(object):
                 self.rawdat['dt_hmerger_min'][i] = self.rawdat['time'][i] - th1p
             else:
                 self.rawdat['dt_hmerger_min'][i] = 0
+
+            if detail == True:
+                self.rawdat['hmerger_mvir_1'] = mv1[match1[diff[0]]]
+                self.rawdat['hmerger_mvir_2'] = mv2[match1[diff[0]]]
+                self.rawdat['hmerger_mgas_1'] = mg1[match1[diff[0]]]
+                self.rawdat['hmerger_mgas_2'] = mg2[match1[diff[0]]]
+                self.rawdat['hmerger_mstar_1'] = ms1[match1[diff[0]]]
+                self.rawdat['hmerger_mstar_2'] = ms2[match1[diff[0]]]
+                self.rawdat['hmerger_mbh_1'] = mbh1[match1[diff[0]]]
+                self.rawdat['hmerger_mbh_2'] = mbh2[match1[diff[0]]]
         print "finished with ", nodiff, "BHs having never been in different halos and ", badmatch, "bad matches"
 
 
