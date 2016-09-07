@@ -202,7 +202,7 @@ def mass_binned_counts(redshift,Mvir,hmf,s,weights=None,zrange=[0,10],dz=0.5,tno
     return mbin_counts, mbin_total, dt, dz, zmid
 
 
-def raw_mass_bin_to_rates(cnt, tot, z, dz, hmf):
+def raw_mass_bin_to_rates(cnt, tot, z, dz, hmf, obs=True):
     f = open('files.list','r')
     s = pynbody.load(f.readline().strip('\n'))
     frac = np.nan_to_num(cnt/tot)
@@ -211,10 +211,12 @@ def raw_mass_bin_to_rates(cnt, tot, z, dz, hmf):
         ind = np.argmin(np.abs(z[i]-hmf.z))
         n[i,0:-1] = frac[i,0:-1]*hmf.hmf['phi'][ind]*0.3
 
-    nall = n.sum(axis=1)/dz
-
-    nobs = cosmology.event_count(nall,z,s.properties['omegaM0'], s.properties['omegaL0'], s.properties['h'])
-    return nobs
+    if obs == True:
+        nall = n.sum(axis=1)/dz
+        nobs = cosmology.event_count(nall,z,s.properties['omegaM0'], s.properties['omegaL0'], s.properties['h'])
+        return nobs
+    else:
+        return n.sum(axis=1)/dz
 
 
 def combine_merger_data(z,mh,hmf,s, weights=None,zrange=[0,10],dz=0.5,tnorm=True,rel_weights=[8,1], logz=True):
