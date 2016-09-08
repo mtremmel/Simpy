@@ -695,6 +695,9 @@ class mergerCat(object):
                 self.rawdat['hmerger_mstar_2'] = np.ones(len(self.rawdat['ID1']))*-1
                 self.rawdat['hmerger_mbh_1'] = np.ones(len(self.rawdat['ID1']))*-1
                 self.rawdat['hmerger_mbh_2'] = np.ones(len(self.rawdat['ID1']))*-1
+            else:
+                self.rawdat['hmerger_ndm_1'] = np.ones(len(self.rawdat['ID1']))*-1
+                self.rawdat['hmerger_ndm_2'] = np.ones(len(self.rawdat['ID1']))*-1
         nodiff = 0
         badmatch = 0
         for i in range(len(self.rawdat['ID1'])):
@@ -720,8 +723,8 @@ class mergerCat(object):
                     time2, hn2, mv2, mg2, ms2, mbh2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()',
                                                           'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass')
                 else:
-                    time1, hn1 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()')
-                    time2, hn2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()')
+                    time1, hn1, ndm1 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()', 'NDM()')
+                    time2, hn2, ndm2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()', 'NDM()')
             except:
                 badmatch +=1
                 continue
@@ -737,7 +740,16 @@ class mergerCat(object):
                 nodiff += 1
                 self.rawdat['dt_hmerger'][i] = self.rawdat['time'][i] - max(self.rawdat['tform1'][i],self.rawdat['tform2'][i])
                 self.rawdat['dt_hmerger_min'][i] = self.rawdat['time'][i] - max(time1.min(),time2.min())
+                if detail == True:
+                    self.rawdat['hmerger_mvir_1'][i] = mv1[-1]
+                    self.rawdat['hmerger_mgas_1'][i] = mg1[-1]
+                    self.rawdat['hmerger_mstar_1'][i] = ms1[-1]
+                    self.rawdat['hmerger_mbh_1'][i] = mbh1[-1]
+                    self.rawdat['hmerger_mbh_2'][i] = mbh2[-1]
+                else:
+                    self.rawdat['hmerger_ndm_1'][i] = ndm1[-1]
                 continue
+
             th1 = time1[match1[diff[0]]]
             th2 = time2[match2[diff[0]]]
             if diff[0] != 0:
@@ -762,6 +774,9 @@ class mergerCat(object):
                 self.rawdat['hmerger_mstar_2'][i] = ms2[match2[diff[0]]]
                 self.rawdat['hmerger_mbh_1'][i] = mbh1[match1[diff[0]]]
                 self.rawdat['hmerger_mbh_2'][i] = mbh2[match2[diff[0]]]
+            else:
+                self.rawdat['hmerger_ndm_1'][i] = ndm1[match1[diff[0]]]
+                self.rawdat['hmerger_ndm_2'][i] = ndm2[match2[diff[0]]]
         print "finished with ", nodiff, "BHs having never been in different halos and ", badmatch, "bad matches"
 
 
