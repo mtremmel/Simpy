@@ -695,6 +695,8 @@ class mergerCat(object):
                 self.rawdat['hmerger_mstar_2'] = np.ones(len(self.rawdat['ID1']))*-1
                 self.rawdat['hmerger_mbh_1'] = np.ones(len(self.rawdat['ID1']))*-1
                 self.rawdat['hmerger_mbh_2'] = np.ones(len(self.rawdat['ID1']))*-1
+                self.rawdat['hmerger_dbh_1'] = np.ones(len(self.rawdat['ID1']))*-1
+                self.rawdat['hmerger_dbh_2'] = np.ones(len(self.rawdat['ID1']))*-1
             else:
                 self.rawdat['hmerger_ndm_1'] = np.ones(len(self.rawdat['ID1']))*-1
                 self.rawdat['hmerger_ndm_2'] = np.ones(len(self.rawdat['ID1']))*-1
@@ -718,10 +720,10 @@ class mergerCat(object):
 
             try:
                 if detail==True:
-                    time1, hn1, mv1, mg1, ms1, mbh1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()',
-                                                          'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass')
-                    time2, hn2, mv2, mg2, ms2, mbh2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()',
-                                                          'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass')
+                    time1, hn1, mv1, mg1, ms1, mbh1, dbh1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()',
+                                                          'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass','BH_central_distance')
+                    time2, hn2, mv2, mg2, ms2, mbh2, dbh2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()',
+                                                          'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass','BH_central_distance')
                 else:
                     time1, hn1, ndm1 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()', 'NDM()')
                     time2, hn2, ndm2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()', 'NDM()')
@@ -746,6 +748,8 @@ class mergerCat(object):
                     self.rawdat['hmerger_mstar_1'][i] = ms1[-1]
                     self.rawdat['hmerger_mbh_1'][i] = mbh1[-1]
                     self.rawdat['hmerger_mbh_2'][i] = mbh2[-1]
+                    self.rawdat['hmerger_dbh_1'][i] = dbh1[-1]
+                    self.rawdat['hmerger_dbh_2'][i] = dbh2[-1]
                 else:
                     self.rawdat['hmerger_ndm_1'][i] = ndm1[-1]
                 continue
@@ -774,6 +778,8 @@ class mergerCat(object):
                 self.rawdat['hmerger_mstar_2'][i] = ms2[match2[diff[0]]]
                 self.rawdat['hmerger_mbh_1'][i] = mbh1[match1[diff[0]]]
                 self.rawdat['hmerger_mbh_2'][i] = mbh2[match2[diff[0]]]
+                self.rawdat['hmerger_dbh_1'][i] = dbh1[match1[diff[0]]]
+                self.rawdat['hmerger_dbh_2'][i] = dbh2[match2[diff[0]]]
             else:
                 self.rawdat['hmerger_ndm_1'][i] = ndm1[match1[diff[0]]]
                 self.rawdat['hmerger_ndm_2'][i] = ndm2[match2[diff[0]]]
