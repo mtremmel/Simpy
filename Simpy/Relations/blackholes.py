@@ -56,4 +56,4 @@ def plt_BHMStar(simname, step, marker='o', size = 100, color='blue', label=None,
 
     plotting.plt.yscale('log',base=10)
     plotting.plt.xscale('log',base=10)
-    plt.legend(loc='upper left')
+    plotting.plt.legend(loc='upper left')
