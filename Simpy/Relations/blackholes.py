@@ -31,11 +31,21 @@ def BHMBulge(logMbulge):
     return predlogMBH
 
 
-def plt_BHMStar(simname, step, marker='o', size = 100, color='blue', label=None, fit=True, fiterr=True):
+def plt_BHMStar(simname, step, marker='o', size = 100, color='blue', label=None, fit=True, fiterr=True, remove_sats=True):
     from .. import plotting
     import tangos as db
     print "getting data from database..."
-    bhdata, Mstar = db.get_timestep(simname+'/%'+step).gather_property('bh().BH_mass', 'Mstar')
+    bhdata, Mstar, cen, Rvir, Mvir = db.get_timestep(simname+'/%'+step).gather_property('bh().BH_mass', 'Mstar', 'SSC', 'Rvir', 'Mvir')
+    sats = np.zeros(len(Mstar))
+    if remove_sats is True:
+        for i in range(len(Mstar)):
+            D = np.sqrt(np.sum((cen[i] - cen)**2,axis=1))
+            close = np.where((D>0)&(D<Rvir+Rvir[i]))[0]
+            if len(close)>0:
+                sats[i] = 1
+        ok = np.where(sats==0)
+        Mstar = Mstar[ok]
+        bhdata = bhdata[ok]
     plotting.plt.scatter(Mstar, bhdata, marker=marker, s=size, color=color, label=label)
     if fit is True:
         lmstar = np.arange(np.log10(Mstar[(Mstar > 0)]).min() - 1., np.log10(Mstar[(Mstar > 0)]).max() + 1., 0.1)
