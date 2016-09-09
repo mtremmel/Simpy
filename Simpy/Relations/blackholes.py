@@ -40,7 +40,7 @@ def plt_BHMStar(simname, step, marker='o', size = 100, color='blue', label=None,
     if remove_sats is True:
         for i in range(len(Mstar)):
             D = np.sqrt(np.sum((cen[i] - cen)**2,axis=1))
-            close = np.where((D>0)&(D<Rvir)&(Mvir>Mvir[i]))[0]
+            close = np.where((D>0)&(D<Rvir))[0]
             if len(close)>0:
                 sats[i] = 1
         ok = np.where(sats==0)
