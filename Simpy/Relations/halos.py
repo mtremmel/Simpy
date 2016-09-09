@@ -104,7 +104,7 @@ def getstats(simname, step):
     return amigastat, a**-1 -1, type
 
 
-def SMHM_db(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None,
+def SMHM_db(sim, step, style, fitstyle=['c-','r-'], fit=['Mos', 'Krav'], minmass=None,
             maxmass=None, markersize=5,label=None, correct=True, error=True):
     import tangos as db
     step = db.get_timestep(sim+'/%'+str(step))
@@ -163,6 +163,9 @@ def SMHM_db(sim, step, style, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmas
     plotting.plt.ylabel(r'M$_{*}$/M$_{vir}$')
     plotting.plt.xlabel(r'M$_{vir}$ [M$_{\odot}$]')
     plotting.plt.legend(loc='lower right',fontsize=25)
+    plotting.plt.yscale('log',base=10)
+    plotting.plt.xscale('log',base=10)
+    plotting.plt.xlim(minmass, maxmass)
 
 
 def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None,
