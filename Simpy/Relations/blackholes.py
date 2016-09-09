@@ -40,7 +40,7 @@ def plt_BHMStar(simname, step, marker='o', size = 100, color='blue', label=None,
     if remove_sats is True:
         for i in range(len(Mstar)):
             D = np.sqrt(np.sum((cen[i] - cen)**2,axis=1))
-            close = np.where((D>0)&(D<Rvir+Rvir[i])&(Mvir>Mvir[i]))[0]
+            close = np.where((D>0)&(D<Rvir))[0]
             if len(close)>0:
                 sats[i] = 1
         ok = np.where(sats==0)
@@ -56,4 +56,6 @@ def plt_BHMStar(simname, step, marker='o', size = 100, color='blue', label=None,
 
     plotting.plt.yscale('log',base=10)
     plotting.plt.xscale('log',base=10)
-    plotting.plt.legend(loc='upper left')
+    plotting.plt.legend(loc='upper left',fontsize=25)
+    plotting.plt.ylabel(r"M$_{BH}$ [M$_{\odot}$]")
+    plotting.plt.ylabel(r"M$_{\star}$ [M$_{\odot}$]")
