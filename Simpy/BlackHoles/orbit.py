@@ -505,7 +505,7 @@ class Orbit(object):
 			plotting.plt.legend()
 		return
 
-	def plt_acc_hist(self, style, minM = 1e6, maxM = None, minL = 1e42, maxL = None, type='redshift',xlog=False,ylog=False, label=None, lw=1.5, volume=25**3, plotdata=True, overplot=False):
+	def plt_acc_hist(self, style, minM = 1e6, maxM = None, minL = 1e42, maxL = None, minEdd=None, type='redshift',xlog=False,ylog=False, label=None, lw=1.5, volume=25**3, plotdata=True, overplot=False):
 		from .. import plotting
 		ord = np.argsort(self.data['scalefac'])
 		if maxL is None: maxL = self.data['lum'].max()*10
@@ -518,8 +518,13 @@ class Orbit(object):
 		if minL is None or maxL is None:
 			if maxL is None: maxL = self.data['lum'].max()*10
 			if minL is None: minL = 0
+
 		okL, = np.where((self.data['lum'][ord] > minL)&(self.data['lum'][ord] <= maxL))
 		ord = ord[okL]
+		if minEdd is not None:
+			Ledd = util.L_edd(self.data['mass'][ord])
+			okE, = np.where(self.data['lum'][ord]/Ledd >= minEdd)
+			ord = ord[okE]
 
 		macc = np.cumsum(self.data['dM'][ord])
 
@@ -544,9 +549,9 @@ class Orbit(object):
 										yerr=0.5*dat.Treister13,uplims=[True,True,True], label='Treister+ 13')
 					plotting.plt.errorbar(dat.Hopkins07zp1,10**dat.Hopkins07,
 										color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
-					plotting.plt.plot(dat.Lacy15zBF+1,10**dat.Lacy15rhoBF,color='grey', linestyle='-',lw=3, label='Lacy+ 15', alpha=0.5)
-					plotting.plt.plot(dat.Lacy15zBF+1,10**dat.Lacy15rhoBF_eps06,color='grey', linestyle='-',lw=3, alpha=0.5)
-					plotting.plt.fill_between(dat.Lacy15zBF+1, 10**dat.Lacy15rhoBF, 10**dat.Lacy15rhoBF_eps06, facecolor='grey',alpha=0.2)
+					plotting.plt.plot(dat.Lacy15zBF_z2max+1,10**dat.Lacy15rhoBF_z2max,color='grey', linestyle='-',lw=3, label='Lacy+ 15', alpha=0.5)
+					plotting.plt.plot(dat.Lacy15zBF_z2max+1,10**dat.Lacy15rhoBF_eps06_z2max,color='grey', linestyle='-',lw=3, alpha=0.5)
+					plotting.plt.fill_between(dat.Lacy15zBF_z2max+1, 10**dat.Lacy15rhoBF_z2max, 10**dat.Lacy15rhoBF_eps06_z2max, facecolor='grey',alpha=0.2)
 				else:
 					plotting.plt.plot(dat.Uneda14z-1,dat.Uneda14rho,'k^',label='Ueda+ 14')
 					plotting.plt.errorbar([0.03],[dat.shankar09],yerr=[err],
@@ -559,9 +564,9 @@ class Orbit(object):
 										yerr=0.5*dat.Treister13,uplims=[True,True,True], label='Treister+ 13')
 					plotting.plt.errorbar(dat.Hopkins07zp1-1,10**dat.Hopkins07,
 										color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
-					plotting.plt.plot(dat.Lacy15zBF,10**dat.Lacy15rhoBF,color='grey', linestyle='-',lw=3, label='Lacy+ 15', alpha=0.5)
-					plotting.plt.plot(dat.Lacy15zBF,10**dat.Lacy15rhoBF_eps06,color='grey', linestyle='-',lw=3, alpha=0.5)
-					plotting.plt.fill_between(dat.Lacy15zBF, 10**dat.Lacy15rhoBF, 10**dat.Lacy15rhoBF_eps06, facecolor='grey',alpha=0.2)
+					plotting.plt.plot(dat.Lacy15zBF_z2max,10**dat.Lacy15rhoBF_z2max,color='grey', linestyle='-',lw=3, label='Lacy+ 15', alpha=0.5)
+					plotting.plt.plot(dat.Lacy15zBF_z2max,10**dat.Lacy15rhoBF_eps06_z2max,color='grey', linestyle='-',lw=3, alpha=0.5)
+					plotting.plt.fill_between(dat.Lacy15zBF_z2max, 10**dat.Lacy15rhoBF_z2max, 10**dat.Lacy15rhoBF_eps06, facecolor='grey',alpha=0.2)
 
 		if type == 'time' and plotdata is True:
 			print "WARNING! Data only valid for redshift plotting. Ignoring keyword for time plot"

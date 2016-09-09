@@ -9,6 +9,9 @@ G = pynbody.array.SimArray(6.67259e-8,'cm**3 s**-2 g**-1')
 M_sun_g = 1.988547e33
 loglbol_sun = np.log10(lbol_sun)
 
+def L_edd(mass):
+    return mass*lbol_sun * 3.2e4
+
 def cutdict(target, goodinds):
     for key in target.keys():
         target[key] = target[key][goodinds]

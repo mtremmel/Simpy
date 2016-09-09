@@ -778,8 +778,8 @@ class mergerCat(object):
                 self.rawdat['hmerger_mstar_2'][i] = ms2[match2[diff[0]]]
                 self.rawdat['hmerger_mbh_1'][i] = mbh1[match1[diff[0]]]
                 self.rawdat['hmerger_mbh_2'][i] = mbh2[match2[diff[0]]]
-                self.rawdat['hmerger_dbh_1'][i] = dbh1[match1[diff[0]]]
-                self.rawdat['hmerger_dbh_2'][i] = dbh2[match2[diff[0]]]
+                self.rawdat['hmerger_dbh_1'][i] = dbh1[match1[diff[0]]-1]
+                self.rawdat['hmerger_dbh_2'][i] = dbh2[match2[diff[0]]-1]
             else:
                 self.rawdat['hmerger_ndm_1'][i] = ndm1[match1[diff[0]]]
                 self.rawdat['hmerger_ndm_2'][i] = ndm2[match2[diff[0]]]
