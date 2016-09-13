@@ -33,8 +33,8 @@ Lacy15rhoBF_z2max = Lacy15rhoBF[(Lacy15zBF<=2)]
 Lacy15zBF_z2max = Lacy15zBF[(Lacy15zBF<=2)]
 Lacy15rhoCS_z2max = Lacy15rhoCS[(Lacy15zCS<=2)]
 Lacy15zCS_z2max = Lacy15zCS[(Lacy15zCS<=2)]
-Lacy15rhoBF_eps06_z2max = Lacy15rhoBF_eps06[(Lacy15zBF_eps06<=2)]
-Lacy15zBF_eps06_z2max = Lacy15zBF_eps06[(Lacy15zBF_eps06<=2)]
+Lacy15rhoBF_eps06_z2max = Lacy15rhoBF_eps06[(Lacy15zBF<=2)]
+Lacy15zBF_eps06_z2max = Lacy15zBF_eps06[(Lacy15zBF<=2)]
 
 #BH Luminosity Function Data
 #Hopkins 07
