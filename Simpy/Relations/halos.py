@@ -116,6 +116,7 @@ def SMHM_db(sim, step, style, fitstyle=['c-','r-'], fit=['Mos', 'Krav'], minmass
             sub[i] = 1
 
     ok = np.where(sub==0)
+    print len(ok)
     Mvir = Mvir[ok]
     Mstar = Mstar[ok]
     Rvir = Rvir[ok]
