@@ -546,9 +546,9 @@ class Orbit(object):
 										yerr=0.5*dat.Treister13,uplims=[True,True,True], label='Treister+ 13')
 					plotting.plt.errorbar(dat.Hopkins07zp1,10**dat.Hopkins07,
 										color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
-					plotting.plt.plot(dat.Lacy15zBF_z2max+1,10**dat.Lacy15rhoBF_z2max,color='grey', linestyle='-',lw=3, label='Lacy+ 15', alpha=0.5)
-					plotting.plt.plot(dat.Lacy15zBF_z2max+1,10**dat.Lacy15rhoBF_eps06_z2max,color='grey', linestyle='-',lw=3, alpha=0.5)
-					plotting.plt.fill_between(dat.Lacy15zBF_z2max+1, 10**dat.Lacy15rhoBF_z2max, 10**dat.Lacy15rhoBF_eps06_z2max, facecolor='grey',alpha=0.2)
+					plotting.plt.plot(dat.Lacy15zBF_eps06_z2max+1,10**dat.Lacy15rhoBF_z2max,color='grey', linestyle='-',lw=3, label='Lacy+ 15', alpha=0.5)
+					plotting.plt.plot(dat.Lacy15zBF_eps06_z2max+1,10**dat.Lacy15rhoBF_eps06_z2max,color='grey', linestyle='-',lw=3, alpha=0.5)
+					plotting.plt.fill_between(dat.Lacy15zBF_eps06_z2max+1, 10**dat.Lacy15rhoBF_z2max, 10**dat.Lacy15rhoBF_eps06_z2max, facecolor='grey',alpha=0.2)
 				else:
 					plotting.plt.plot(dat.Uneda14z-1,dat.Uneda14rho,'k^',label='Ueda+ 14')
 					plotting.plt.errorbar([0.03],[dat.shankar09],yerr=[err],
