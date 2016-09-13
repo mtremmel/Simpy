@@ -160,7 +160,7 @@ def cosmicSFH(sim, style, lw=3, bins=50, zrange=None, label=None, ret_hist=True,
 
 
 	plotting.plt.ylabel(r'$\rho_{SFR}$ [M$_{\odot}$ yr$^{-1}$ Mpc$^{-1}$]',fontsize=30)
-	plotting.plt.legend(loc='lower left',fontsize=20)
+	plotting.plt.legend(loc='lower left',fontsize=35)
 	if ylog is True:
 		plotting.plt.yscale('log',base=10)
 	if xlog is False:
