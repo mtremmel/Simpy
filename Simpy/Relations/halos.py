@@ -124,7 +124,7 @@ def SMHM_db(sim, step, style, fitstyle=['c-','r-'], fit=['Mos', 'Krav'], minmass
         Mstar *= 0.6
         Mvir /= 0.8
 
-    plotting.plt.plot(Mvir, Mstar/Mvir, style, markersize=markersize, label=label)
+    plotting.plt.plot(Mvir, Mstar/Mvir, style, markersize=markersize, label=label,zorder=1)
 
     if minmass is None:
         minmass = Mvir.min()/2.
@@ -152,7 +152,7 @@ def SMHM_db(sim, step, style, fitstyle=['c-','r-'], fit=['Mos', 'Krav'], minmass
                 flabel = 'Kravtsov+ 14'
 
             ratio_fit = fitfunc(logmv_fit, step.redshift)
-            plotting.plt.plot(10**logmv_fit, ratio_fit, fitstyle[cnt], label=flabel, lw=3)
+            plotting.plt.plot(10**logmv_fit, ratio_fit, fitstyle[cnt], label=flabel, lw=5,alpha=0.75,zorder=10)
             if ff in ['Mos','Moster'] and error is True:
                 sigma = errmoster13(logmv_fit, step.redshift)
                 plotting.plt.fill_between(10**logmv_fit,ratio_fit-sigma,ratio_fit+sigma,facecolor='grey',
