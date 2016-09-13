@@ -508,19 +508,16 @@ class Orbit(object):
 	def plt_acc_hist(self, style, minM = 1e6, maxM = None, minL = 1e42, maxL = None, minEdd=None, type='redshift',xlog=False,ylog=False, label=None, lw=1.5, volume=25**3, plotdata=True, overplot=False):
 		from .. import plotting
 		ord = np.argsort(self.data['scalefac'])
-		if maxL is None: maxL = self.data['lum'].max()*10
-		if minL is None: minL = 0
 		if maxM is not None or minM is not None:
 			if maxM is None: maxM = self.data['mass'].max()*10
 			if minM is None: minM = 0
-		okM, = np.where((self.data['mass'][ord] > minM)&(self.data['mass'][ord] <= maxM))
-		ord = ord[okM]
-		if minL is None or maxL is None:
+			okM, = np.where((self.data['mass'][ord] > minM)&(self.data['mass'][ord] <= maxM))
+			ord = ord[okM]
+		if minL is not None or maxL is not None:
 			if maxL is None: maxL = self.data['lum'].max()*10
 			if minL is None: minL = 0
-
-		okL, = np.where((self.data['lum'][ord] > minL)&(self.data['lum'][ord] <= maxL))
-		ord = ord[okL]
+			okL, = np.where((self.data['lum'][ord] > minL)&(self.data['lum'][ord] <= maxL))
+			ord = ord[okL]
 		if minEdd is not None:
 			Ledd = util.L_edd(self.data['mass'][ord])
 			okE, = np.where(self.data['lum'][ord]/Ledd >= minEdd)
@@ -566,7 +563,8 @@ class Orbit(object):
 										color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
 					plotting.plt.plot(dat.Lacy15zBF_z2max,10**dat.Lacy15rhoBF_z2max,color='grey', linestyle='-',lw=3, label='Lacy+ 15', alpha=0.5)
 					plotting.plt.plot(dat.Lacy15zBF_z2max,10**dat.Lacy15rhoBF_eps06_z2max,color='grey', linestyle='-',lw=3, alpha=0.5)
-					plotting.plt.fill_between(dat.Lacy15zBF_z2max, 10**dat.Lacy15rhoBF_z2max, 10**dat.Lacy15rhoBF_eps0_z2max, facecolor='grey',alpha=0.2)
+					plotting.plt.fill_between(dat.Lacy15zBF_z2max, 10**dat.Lacy15rhoBF_z2max, 10**dat.Lacy15rhoBF_eps0_z2max,
+											  facecolor='grey',edgecolor='grey',alpha=0.2)
 
 		if type == 'time' and plotdata is True:
 			print "WARNING! Data only valid for redshift plotting. Ignoring keyword for time plot"
