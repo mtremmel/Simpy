@@ -116,7 +116,6 @@ def SMHM_db(sim, step, style, fitstyle=['c-','r-'], fit=['Mos', 'Krav'], minmass
             sub[i] = 1
 
     ok = np.where(sub==0)
-    print len(ok[0])
     Mvir = Mvir[ok]
     Mstar = Mstar[ok]
     Rvir = Rvir[ok]
@@ -125,7 +124,7 @@ def SMHM_db(sim, step, style, fitstyle=['c-','r-'], fit=['Mos', 'Krav'], minmass
         Mstar *= 0.6
         Mvir /= 0.8
 
-    plotting.plt.plot(np.log10(Mvir), np.log10(Mstar/Mvir), style, markersize=markersize, label=label)
+    plotting.plt.plot(Mvir, Mstar/Mvir, style, markersize=markersize, label=label)
 
     if minmass is None:
         minmass = Mvir.min()/2.
@@ -153,10 +152,10 @@ def SMHM_db(sim, step, style, fitstyle=['c-','r-'], fit=['Mos', 'Krav'], minmass
                 flabel = 'Kravtsov+ 14'
 
             ratio_fit = fitfunc(logmv_fit, step.redshift)
-            plotting.plt.plot(logmv_fit, np.log10(ratio_fit), fitstyle[cnt], label=flabel, lw=3)
+            plotting.plt.plot(10**logmv_fit, ratio_fit, fitstyle[cnt], label=flabel, lw=3)
             if ff in ['Mos','Moster'] and error is True:
                 sigma = errmoster13(logmv_fit, step.redshift)
-                plotting.plt.fill_between(logmv_fit,np.log10(ratio_fit-sigma),np.log10(ratio_fit+sigma),facecolor='grey',
+                plotting.plt.fill_between(10**logmv_fit,ratio_fit-sigma,ratio_fit+sigma,facecolor='grey',
                                           edgecolor='k', lw=1.5, alpha=0.5,zorder=10)
 
             cnt += 1
