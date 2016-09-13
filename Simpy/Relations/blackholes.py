@@ -58,4 +58,4 @@ def plt_BHMStar(simname, step, marker='o', size = 100, color='blue', label=None,
     plotting.plt.xscale('log',base=10)
     plotting.plt.legend(loc='upper left',fontsize=25)
     plotting.plt.ylabel(r"M$_{BH}$ [M$_{\odot}$]")
-    plotting.plt.ylabel(r"M$_{\star}$ [M$_{\odot}$]")
+    plotting.plt.xlabel(r"M$_{\star}$ [M$_{\odot}$]")
