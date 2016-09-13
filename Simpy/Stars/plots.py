@@ -131,10 +131,7 @@ def cosmicSFH(sim, style, lw=3, bins=50, zrange=None, label=None, ret_hist=True,
 		sfr = data[0]/dt
 		zbins = zbins[tsorted]
 		#sfr = np.append(sfr,sfr[-1])
-		if xlog is False:
-			plotting.plt.step(zbins[1:],sfr/volume,style, label=label, linewidth=lw, where='post')
-		else:
-			plotting.plt.step(zbins[1:]+1,sfr/volume,style, label=label, linewidth=lw, where='post')
+		plotting.plt.step(zbins[1:]+1,sfr/volume,style, label=label, linewidth=lw, where='post')
 
 
 	if plotdata is True:
