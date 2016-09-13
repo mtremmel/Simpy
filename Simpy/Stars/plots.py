@@ -114,7 +114,7 @@ def cosmicSFH(sim, style, lw=3, bins=50, zrange=None, label=None, ret_hist=True,
 	if sim is not None:
 		tform = get.tform_fromsnap(sim,'Gyr')
 		massform = sim.stars['massform'].in_units('Msol')
-		if ylog is True:
+		if xlog is True:
 			dz = (np.log10(zrange[1]+1)-np.log10(zrange[0]+1))/float(bins)
 			zbins = 10**np.arange(np.log10(zrange[0]+1),np.log10(zrange[1]+1)+dz,dz)
 			tedges = np.array([cosmology.getTime(z - 1,sim) for z in zbins])
