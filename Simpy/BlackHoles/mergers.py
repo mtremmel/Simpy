@@ -657,14 +657,14 @@ class mergerCat(object):
             bphys = boxsize*scale1[use1]*1e3
             badx = np.where(xd > bphys/2)[0]
             xd[badx] = -1.0 * (xd[badx]/np.abs(xd[badx])) * \
-                              (bphys[badx] - np.abs(xd[badx]))
+                              np.abs(bphys[badx] - np.abs(xd[badx]))
 
             bady = np.where(yd > bphys/2)[0]
             yd[bady] = -1.0 * (yd[bady]/np.abs(yd[bady])) * \
-                              (bphys[bady] - np.abs(yd[bady]))
+                              np.abs(bphys[bady] - np.abs(yd[bady]))
             badz = np.where(zd > bphys/2)[0]
             zd[badz] = -1.0 * (zd[badz]/np.abs(zd[badz])) * \
-                              (bphys[badz] - np.abs(zd[badz]))
+                              np.abs(bphys[badz] - np.abs(zd[badz]))
 
             dist = np.sqrt(xd**2 + yd**2 + zd**2)
             if len(use1) != len(dist) or len(use2) != len(dist):
