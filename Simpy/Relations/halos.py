@@ -56,8 +56,9 @@ def errmoster13(logM,z):
     return sigma
 
 #Behroozi data
-def behroozi13(logM,a):
-    z = a**-1 - 1
+def behroozi13(logM,z):
+    a = 1./(z+1)
+    #z = a**-1 - 1
     v = np.exp(-4.*a**2)
     le = -1.777 + (-0.006*(a-1)*v) - 0.119*(a-1)
     lM1 = 11.514 + (-1.793*(a-1)-0.251*z)*v
