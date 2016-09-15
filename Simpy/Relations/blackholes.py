@@ -46,7 +46,7 @@ def plt_BHMStar(simname, step, marker='o', size = 100, color='blue', label=None,
         ok = np.where(sats==0)
         Mstar = Mstar[ok]
         bhdata = bhdata[ok]
-    plotting.plt.scatter(Mstar, bhdata, marker=marker, s=size, color=color, label=label)
+    plotting.plt.scatter(Mstar*0.6, bhdata, marker=marker, s=size, color=color, label=label)
     if fit is True:
         lmstar = np.arange(np.log10(Mstar[(Mstar > 0)]).min() - 1., np.log10(Mstar[(Mstar > 0)]).max() + 1., 0.1)
         bhmass = BHMstar(lmstar)
