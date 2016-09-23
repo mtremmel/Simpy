@@ -376,6 +376,7 @@ class mergerCat(object):
         import tangos as db
         self.rawdat['snap_after'] = np.zeros(len(self.rawdat['ID1'])).astype('S100')
         self.rawdat['snap_before'] = np.zeros(len(self.rawdat['ID1'])).astype('S100')
+        self.rawdat['sat_flag'] = np.zeros(len(self.rawdat['ID1']))
         zsteps = []
         for step in dbsim.timesteps:
             zsteps.append(step.redshift)
@@ -410,12 +411,25 @@ class mergerCat(object):
                     bh = db.get_halo(str(dbsim.timesteps[ind].path)+'/1.'+str(id3))
             if bh is None:
                 continue
+            cenbhs = np.array([halobh.halo_number for halobh in bh['host_halo']['BH_central']])
+            if bh.halo_number not in cenbhs:
+                self.rawdat['sat_flag'][i] = 1
             for p in halo_props:
                 try:
                     self.rawdat[p][i] = bh.calculate('host_halo.'+p)
                 except:
                     continue
 
+    def check_if_satellite(self, dbsim):
+        import tangos as db
+        if 'halo_number()' not in self.rawdat.keys():
+            print "first run get_halo_info()"
+            return
+        for i in range(len(self.rawdat['ID1'])):
+            if self.rawdat['halo_number()'] > 0:
+                host = db.get_halo(str(dbsim.basename)+'/'+self.rawdat['step_after'][i]+'/'+self.rawdat['halo_number()'][i])
+                bhcen = np.array([bh.halo_number for bh in host['BH_central']])
+                bh = db.get_halo(str(dbsim.basename)+'/'+self.rawdat['step_after'][i]+'/1.'+str(self.rawdat['ID1'][i]))
 
     def get_db_data(self,dbsim,properties=['host_halo.Mvir', 'host_halo.Mstar', 'host_halo.Mgas']):
         proplist = ['halo_number()', 'BH_merger_next.halo_number()', 'host_halo.halo_number()',
