@@ -411,17 +411,17 @@ class mergerCat(object):
                     bh = db.get_halo(str(dbsim.timesteps[ind].path)+'/1.'+str(id3))
             if bh is None:
                 continue
-            try:
+            if 'host_halo' in bh.keys():
                 hosth = bh['host_halo']
-            except:
+            else:
                 hosth = None
             if hosth is not None:
-                if 'BH_central' not in hosth.keys():
-                    self.rawdat['sat_flag'][i] = 1
-                else:
+                if "BH_central" in hosth.keys():
                     cenbhs = np.array([halobh.halo_number for halobh in hosth['BH_central']])
                     if bh.halo_number not in cenbhs:
                         self.rawdat['sat_flag'][i] = 1
+                else:
+                    self.rawdat['sat_flag'][i] = 1
             else:
                 self.rawdat['sat_flag'][i] = -1
             for p in halo_props:
