@@ -416,9 +416,12 @@ class mergerCat(object):
             except:
                 hosth = None
             if hosth is not None:
-                cenbhs = np.array([halobh.halo_number for halobh in hosth['BH_central']])
-                if bh.halo_number not in cenbhs:
+                if 'BH_central' not in hosth.keys():
                     self.rawdat['sat_flag'][i] = 1
+                else:
+                    cenbhs = np.array([halobh.halo_number for halobh in hosth['BH_central']])
+                    if bh.halo_number not in cenbhs:
+                        self.rawdat['sat_flag'][i] = 1
             else:
                 self.rawdat['sat_flag'][i] = -1
             for p in halo_props:
