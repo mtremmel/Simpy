@@ -420,17 +420,6 @@ class mergerCat(object):
                 except:
                     continue
 
-    def check_if_satellite(self, dbsim):
-        import tangos as db
-        if 'halo_number()' not in self.rawdat.keys():
-            print "first run get_halo_info()"
-            return
-        for i in range(len(self.rawdat['ID1'])):
-            if self.rawdat['halo_number()'] > 0:
-                host = db.get_halo(str(dbsim.basename)+'/'+self.rawdat['step_after'][i]+'/'+self.rawdat['halo_number()'][i])
-                bhcen = np.array([bh.halo_number for bh in host['BH_central']])
-                bh = db.get_halo(str(dbsim.basename)+'/'+self.rawdat['step_after'][i]+'/1.'+str(self.rawdat['ID1'][i]))
-
     def get_db_data(self,dbsim,properties=['host_halo.Mvir', 'host_halo.Mstar', 'host_halo.Mgas']):
         proplist = ['halo_number()', 'BH_merger_next.halo_number()', 'host_halo.halo_number()',
                     'BH_merger_next.host_halo.halo_number()', 'BH_merger_next.earlier(1).host_halo.halo_number()']
