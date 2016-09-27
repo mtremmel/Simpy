@@ -741,7 +741,7 @@ class mergerCat(object):
                     time2, hn2, mv2, mg2, ms2, mbh2, dbh2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()',
                                                           'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass','BH_central_distance')
                 else:
-                    time1, hn1, ndm1 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()', 'host_halo.NDM()')
+                    time1, hn1, ndm1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()', 'host_halo.NDM()')
                     time2, hn2, ndm2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()', 'host_halo.NDM()')
             except:
                 badmatch +=1
