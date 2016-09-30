@@ -233,9 +233,9 @@ def combine_merger_data(z,mh,hmf,s, weights=None,zrange=[0,10],dz=0.5,tnorm=True
         cnt += cn*rel_weights[i+1]
         tot += tn*rel_weights[i+1]
     if ptype=='obs':
-        nobs = raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf,ptype=pbype)
+        nobs = raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf,ptype=ptype)
     if ptype=='rate':
-        nobs = raw_mass_bin_to_rates(cnt, tot, zmid, dt, hmf,ptype=pbype)
+        nobs = raw_mass_bin_to_rates(cnt, tot, zmid, dt, hmf,ptype=ptype)
     if ptype=='zdist':
         nobs = raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf,ptype='rate')
     return nobs, zmid
@@ -333,7 +333,7 @@ def calc_nobs(z, m1, m2, mh, hmf, s, weights=None, rel_weights=[1],
                 return raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf,ptype=ptype), zmid
             if ptype=='rate':
                 return raw_mass_bin_to_rates(cnt, tot, zmid, dt, hmf,ptype=ptype), zmid
-            if ptype=='zdist'
+            if ptype=='zdist':
                 return raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf,ptype='rate'), zmid
         else:
             return combine_merger_data(z,mh,hmf,s, weights=None,zrange=zrange,dz=dz,rel_weights=rel_weights, logz=logz, ptype=ptype)
