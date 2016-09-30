@@ -202,7 +202,7 @@ def mass_binned_counts(redshift,Mvir,hmf,s,weights=None,zrange=[0,10],dz=0.5,tno
     return mbin_counts, mbin_total, dt, dz, zmid
 
 
-def raw_mass_bin_to_rates(cnt, tot, z, dz, hmf, obs=True):
+def raw_mass_bin_to_rates(cnt, tot, z, norm, hmf, ptype='obs'):
     f = open('files.list','r')
     s = pynbody.load(f.readline().strip('\n'))
     frac = np.nan_to_num(cnt/tot)
@@ -211,15 +211,15 @@ def raw_mass_bin_to_rates(cnt, tot, z, dz, hmf, obs=True):
         ind = np.argmin(np.abs(z[i]-hmf.z))
         n[i,0:-1] = frac[i,0:-1]*hmf.hmf['phi'][ind]*0.3
 
-    if obs == True:
-        nall = n.sum(axis=1)/dz
+    if ptype == 'obs':
+        nall = n.sum(axis=1)/norm
         nobs = cosmology.event_count(nall,z,s.properties['omegaM0'], s.properties['omegaL0'], s.properties['h'])
         return nobs
-    else:
-        return n.sum(axis=1)/dz
+    if ptype == 'rate':
+        return n.sum(axis=1)/norm
 
 
-def combine_merger_data(z,mh,hmf,s, weights=None,zrange=[0,10],dz=0.5,tnorm=True,rel_weights=[8,1], logz=True):
+def combine_merger_data(z,mh,hmf,s, weights=None,zrange=[0,10],dz=0.5,tnorm=True,rel_weights=[8,1], logz=True, ptype='obs'):
     todo = len(z)
     if weights is None:
         weights = []
@@ -232,7 +232,12 @@ def combine_merger_data(z,mh,hmf,s, weights=None,zrange=[0,10],dz=0.5,tnorm=True
         cn, tn, dt, dz, zmid = mass_binned_counts(z[i+1], mh[i+1], hmf, s, weights[i+1], zrange, dz, tnorm, logz)
         cnt += cn*rel_weights[i+1]
         tot += tn*rel_weights[i+1]
-    nobs = raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf)
+    if ptype=='obs':
+        nobs = raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf,ptype=pbype)
+    if ptype=='rate':
+        nobs = raw_mass_bin_to_rates(cnt, tot, zmid, dt, hmf,ptype=pbype)
+    if ptype=='zdist':
+        nobs = raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf,ptype='rate')
     return nobs, zmid
 
 def cal_weights(z, mh, hmf, s, hmf_comp = None, rel_weight=None):
@@ -266,7 +271,7 @@ def cal_weights(z, mh, hmf, s, hmf_comp = None, rel_weight=None):
        #                             (hmfc.nhalos[ocomp_h[0],j]-hmfc.nhalos[ocomp_l[0],j])/((hmfc.z[ocomp_l[0]]-hmfc.z[ocomp_h[0]])) *
 
 def calc_nobs(z, m1, m2, mh, hmf, s, weights=None, rel_weights=[1],
-              msum_range=None, mmin_range=None, mh_range=None, ratio_range=None, zrange=[0,10], dz = 0.5, logz=True):
+              msum_range=None, mmin_range=None, mh_range=None, ratio_range=None, zrange=[0,10], dz = 0.5, logz=True, ptype='obs'):
     if type(z) != list or type(m1) != list or type(m2) != list or type(mh) != list:
         print "expecting lists of arrays!"
         raise ValueError
@@ -324,9 +329,14 @@ def calc_nobs(z, m1, m2, mh, hmf, s, weights=None, rel_weights=[1],
     if weights is None:
         if len(z)==1:
             cnt, tot, dt, dz, zmid = mass_binned_counts(zuse_l[0], mhuse_l[0], hmf, s, np.ones(len(zuse_l[0])), zrange, dz, True, logz)
-            return raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf), zmid
+            if ptype=='obs':
+                return raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf,ptype=ptype), zmid
+            if ptype=='rate':
+                return raw_mass_bin_to_rates(cnt, tot, zmid, dt, hmf,ptype=ptype), zmid
+            if ptype=='zdist'
+                return raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf,ptype='rate'), zmid
         else:
-            return combine_merger_data(z,mh,hmf,s, weights=None,zrange=zrange,dz=dz,rel_weights=rel_weights, logz=logz)
+            return combine_merger_data(z,mh,hmf,s, weights=None,zrange=zrange,dz=dz,rel_weights=rel_weights, logz=logz, ptype=ptype)
     else:
         if logz is True:
             zbins = 10**np.arange(zrange[0],zrange[1]+dz,dz)
@@ -338,7 +348,14 @@ def calc_nobs(z, m1, m2, mh, hmf, s, weights=None, rel_weights=[1],
         for i in range(len(zuse_l)-1):
             nn, zbinsn = np.histogram(zuse_l[i+1],weights=w_l[i+1],bins=zbins)
             n += nn*rel_weights[i+1]
-        return cosmology.event_count(n,zmid,s.properties['omegaM0'], s.properties['omegaL0'], s.properties['h'])/dz, zmid
+        if ptype=='obs':
+            return cosmology.event_count(n,zmid,s.properties['omegaM0'], s.properties['omegaL0'], s.properties['h'])/dz, zmid
+        if ptype=='rate':
+            tedges = pynbody.array.SimArray([cosmology.getTime(z,s) for z in zbins],'Gyr')
+            dt = np.abs(tedges[0:-1]-tedges[1:])
+            return n/dt,zmid
+        if ptype=='zdist':
+            return n/dz, zmid
 
 
 
