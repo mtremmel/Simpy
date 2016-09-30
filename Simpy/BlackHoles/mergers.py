@@ -352,7 +352,7 @@ def calc_nobs(z, m1, m2, mh, hmf, s, weights=None, rel_weights=[1],
             return cosmology.event_count(n,zmid,s.properties['omegaM0'], s.properties['omegaL0'], s.properties['h'])/dz, zmid
         if ptype=='rate':
             tedges = pynbody.array.SimArray([cosmology.getTime(z,s) for z in zbins],'Gyr')
-            dt = np.abs(tedges[0:-1]-tedges[1:])
+            dt = np.abs(tedges[0:-1]-tedges[1:]) * 1e9
             return n/dt,zmid
         if ptype=='zdist':
             return n/dz, zmid
