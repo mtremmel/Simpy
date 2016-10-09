@@ -641,7 +641,7 @@ class mergerCat(object):
 
     def get_dual_frac(self,bhorbit,minL=1e43,maxD=10,boxsize=25,comove=True, gather_array=False):
         if gather_array is True:
-            self.closeBHevol = {'dist':[], 'lum1':[], 'lum2':[],'ID2':[], 'ID1':[], 'z':[], 'time':[]}
+            self.closeBHevol = {'dist':[], 'lum1':[], 'lum2':[],'ID2':[], 'ID1':[], 'z':[], 'time':[],'mass1':[],'mass2':[]}
         if comove:
             tstr = 't_'+str(maxD)+'c'
             fstr = 'frdual_'+str(minL)+'_'+str(maxD)+'c'
