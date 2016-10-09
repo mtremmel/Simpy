@@ -639,7 +639,7 @@ class mergerCat(object):
                 self.rawdat['merge_mdot_1'][i] = mdot1[argm]
                 self.rawdat['merge_lum_1'][i] = lum1[argm]
 
-    def get_dual_frac(self,bhorbit,minL=1e43,maxD=10,boxsize=25,comove=True, gather_array=False):
+    def get_dual_frac(self,bhorbit,minL=1e43,maxD=10,boxsize=25,comove=True, gather_array=False, timestep=None):
         if gather_array is True:
             self.closeBHevol = {'dist':[], 'lum1':[], 'lum2':[],'ID2':[], 'ID1':[], 'z':[], 'time':[],'mass1':[],'mass2':[]}
         if comove:
@@ -714,10 +714,13 @@ class mergerCat(object):
                 dist /= scale1[use1]
             close = np.where(dist<maxD)[0]
             if len(close) > 0:
-                try:
-                    dt = np.sum(np.abs(time1[use1[close]] - time1[use1[close]-1]))
-                except:
-                    dt = np.sum(np.abs(time1[use1[close]] - time1[use1[close]+1]))
+                if timestep:
+                    dt = len(close)*timestep
+                else:
+                    try:
+                        dt = np.sum(np.abs(time1[use1[close]] - time1[use1[close]-1]))
+                    except:
+                        dt = np.sum(np.abs(time1[use1[close]] - time1[use1[close]+1]))
                 self.rawdat[tstr][i] = dt
                 dual = np.where((lum1[use1[close]]>minL)&(lum2[use2[close]]>minL))[0]
                 self.rawdat[fstr][i] = float(len(dual))/float(len(close))
