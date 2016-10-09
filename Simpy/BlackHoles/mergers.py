@@ -641,7 +641,7 @@ class mergerCat(object):
 
     def get_dual_frac(self,bhorbit,minL=1e43,maxD=10,boxsize=25,comove=True, gather_array=False):
         if gather_array is True:
-            self.closeBHevol = {'dist':[], 'lum1':[], 'lum2':[],'ID2':[], 'ID1':[]}
+            self.closeBHevol = {'dist':[], 'lum1':[], 'lum2':[],'ID2':[], 'ID1':[], 'z':[], 'time':[]}
         if comove:
             tstr = 't_'+str(maxD)+'c'
             fstr = 'frdual_'+str(minL)+'_'+str(maxD)+'c'
@@ -667,6 +667,9 @@ class mergerCat(object):
 
             scale1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'scalefac')
             scale2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'scalefac')
+
+            mass1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'mass')
+            mass2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'mass')
             if len(time1) == 0 or len(time2) == 0:
                 continue
 
@@ -724,6 +727,13 @@ class mergerCat(object):
                     self.closeBHevol['lum2'].extend(lum2[use2[close]])
                     self.closeBHevol['ID1'].extend(np.ones(len(close))*self.rawdat['ID1'][i])
                     self.closeBHevol['ID2'].extend(np.ones(len(close))*self.rawdat['ID2'][i])
+                    self.closeBHevol['z'].extend(scale1[use1[close]]**-1 - 1)
+                    self.closeBHevol['time'].extend(time1[time1[use1[close]]])
+                    self.closeBHevol['mass1'].extend(mass1[use1[close]])
+                    self.closeBHevol['mass2'].extend(mass2[use2[close]])
+        if gather_array is True:
+            for key in self.closeBHevol.keys():
+                self.closeBHevol[key] = np.array(self.closeBHevol[key])
 
     def get_halo_merger(self,dbsim,overwrite=False, detail=False):
         import tangos as db
