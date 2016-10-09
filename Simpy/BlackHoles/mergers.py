@@ -639,7 +639,9 @@ class mergerCat(object):
                 self.rawdat['merge_mdot_1'][i] = mdot1[argm]
                 self.rawdat['merge_lum_1'][i] = lum1[argm]
 
-    def get_dual_frac(self,bhorbit,minL=1e43,maxD=10,boxsize=25,comove=True):
+    def get_dual_frac(self,bhorbit,minL=1e43,maxD=10,boxsize=25,comove=True, gather_array=False):
+        if gather_array is True:
+            self.closeBHevol = {'dist':[], 'lum1':[], 'lum2':[],'ID2':[], 'ID1':[]}
         if comove:
             tstr = 't_'+str(maxD)+'c'
             fstr = 'frdual_'+str(minL)+'_'+str(maxD)+'c'
@@ -716,6 +718,12 @@ class mergerCat(object):
                 self.rawdat[tstr][i] = dt
                 dual = np.where((lum1[use1[close]]>minL)&(lum2[use2[close]]>minL))[0]
                 self.rawdat[fstr][i] = float(len(dual))/float(len(close))
+                if gather_array is True:
+                    self.closeBHevol['dist'].extend(dist[use1[close]])
+                    self.closeBHevol['lum1'].extend(lum1[use1[close]])
+                    self.closeBHevol['lum2'].extend(lum2[use1[close]])
+                    self.closeBHevol['ID1'].extend(np.ones(len(close))*self.rawdat['ID1'][i])
+                    self.closeBHevol['ID2'].extend(np.ones(len(close))*self.rawdat['ID2'][i])
 
     def get_halo_merger(self,dbsim,overwrite=False, detail=False):
         import tangos as db
