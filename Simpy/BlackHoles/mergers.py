@@ -728,7 +728,7 @@ class mergerCat(object):
                     self.closeBHevol['ID1'].extend(np.ones(len(close))*self.rawdat['ID1'][i])
                     self.closeBHevol['ID2'].extend(np.ones(len(close))*self.rawdat['ID2'][i])
                     self.closeBHevol['z'].extend(scale1[use1[close]]**-1 - 1)
-                    self.closeBHevol['time'].extend(time1[time1[use1[close]]])
+                    self.closeBHevol['time'].extend(time1[use1[close]])
                     self.closeBHevol['mass1'].extend(mass1[use1[close]])
                     self.closeBHevol['mass2'].extend(mass2[use2[close]])
         if gather_array is True:
