@@ -719,9 +719,9 @@ class mergerCat(object):
                 dual = np.where((lum1[use1[close]]>minL)&(lum2[use2[close]]>minL))[0]
                 self.rawdat[fstr][i] = float(len(dual))/float(len(close))
                 if gather_array is True:
-                    self.closeBHevol['dist'].extend(dist[use1[close]])
+                    self.closeBHevol['dist'].extend(dist[close])
                     self.closeBHevol['lum1'].extend(lum1[use1[close]])
-                    self.closeBHevol['lum2'].extend(lum2[use1[close]])
+                    self.closeBHevol['lum2'].extend(lum2[use2[close]])
                     self.closeBHevol['ID1'].extend(np.ones(len(close))*self.rawdat['ID1'][i])
                     self.closeBHevol['ID2'].extend(np.ones(len(close))*self.rawdat['ID2'][i])
 
