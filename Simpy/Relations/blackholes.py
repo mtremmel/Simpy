@@ -89,21 +89,20 @@ def Find_AGN(dbsim, lAGN=1e43):
                 print float(i)/len(uid)*100, '% done'
             lum = mdot[ind[i]:ind[i]+cnt[i]]*util.c**2*util.M_sun_g/(3600.*24.*365.)
             dist = distance[ind[i]:ind[i]+cnt[i]]
-            mass = mass[ind[i]:ind[i]+cnt[i]]
-            print len(lum), len(dist), len(mass), cnt[i]
+            mbh = mass[ind[i]:ind[i]+cnt[i]]
             if lum.max()<lAGN:
                 continue
             AGN['lum_brightest'].append(lum.max())
             AGN['dist_brightest'].append(dist[np.argmax(lum)])
-            AGN['mass_brightest'].append(mass[np.argmax(lum)])
+            AGN['mass_brightest'].append(mbh[np.argmax(lum)])
             AGN['lum_central'].append(lum[np.argmin(dist)])
-            AGN['mass_central'].append(mass[np.argmin(dist)])
+            AGN['mass_central'].append(mbh[np.argmin(dist)])
             AGN['dist_central'].append(dist[np.argmin(dist)])
             AGN['haloID'].append(uid[i])
 
             AGN['all_AGN_lum'].append(lum[(lum>lAGN)])
             AGN['all_AGN_dist'].append(dist[(lum>lAGN)])
-            AGN['all_AGN_mass'].append(mass[(lum>lAGN)])
+            AGN['all_AGN_mass'].append(mbh[(lum>lAGN)])
 
             AGN['numberAGN'].append(len(lum[(lum>lAGN)]))
             AGN['redshift'].append(step.redshift)
