@@ -93,7 +93,7 @@ def Find_AGN(dbsim, lAGN=1e43, dmax=10):
             lum = lum[ok]
             dist = dist[ok]
             mbh = mass[ind[i]:ind[i]+cnt[i]]
-            mbh  mbh[ok]
+            mbh = mbh[ok]
             if len(ok)==0:
                 continue
             if lum.max()<lAGN:
