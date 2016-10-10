@@ -83,7 +83,7 @@ def Find_AGN(dbsim, lAGN=1e43):
 
         uid, ind, cnt = np.unique(host,return_index=True,return_counts=True)
         for i in range(len(uid)):
-            if len(uid)>10
+            if len(uid)>10:
                 if i%int(len(uid)/10.)==0: print float(i)/len(uid)*100,'% done'
             else:
                 print float(i)/len(uid)*100, '% done'
