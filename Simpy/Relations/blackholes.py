@@ -89,7 +89,7 @@ def Find_AGN(dbsim, lAGN=1e43, dmax=10):
                 print float(i)/len(uid)*100, '% done'
             lum = mdot[ind[i]:ind[i]+cnt[i]]*util.c**2*util.M_sun_g/(3600.*24.*365.)
             dist = distance[ind[i]:ind[i]+cnt[i]]*(1+step.redshift)
-            ok = np.where(dist<10)
+            ok = np.where(dist<10)[0]
             lum = lum[ok]
             dist = dist[ok]
             mbh = mass[ind[i]:ind[i]+cnt[i]]
