@@ -92,8 +92,10 @@ def Find_AGN(dbsim, lAGN=1e43, dmax=10):
             ok = np.where(dist<10)
             lum = lum[ok]
             dist = dist[ok]
-            mass = mass[ok]
             mbh = mass[ind[i]:ind[i]+cnt[i]]
+            mbh  mbh[ok]
+            if len(ok)==0:
+                continue
             if lum.max()<lAGN:
                 continue
             AGN['lum_brightest'].append(lum.max())
