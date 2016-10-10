@@ -105,6 +105,8 @@ def Find_AGN(dbsim, lAGN=1e43):
             AGN['Mgas'].append(Mgas[ind[i]])
             AGN['Mstar'].append(Mstar[ind[i]])
 
+    return AGN
+
 
 
 
