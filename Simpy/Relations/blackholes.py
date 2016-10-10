@@ -60,7 +60,7 @@ def plt_BHMStar(simname, step, marker='o', size = 100, color='blue', label=None,
     plotting.plt.ylabel(r"M$_{BH}$ [M$_{\odot}$]")
     plotting.plt.xlabel(r"M$_{\star}$ [M$_{\odot}$]")
 
-def Find_AGN(dbsim, lAGN=1e43):
+def Find_AGN(dbsim, lAGN=1e43, dmax=10):
     AGN = {'lum_brightest':[], 'dist_brightest':[], 'lum_central':[], 'dist_central':[], 'mass_central':[],
            'mass_brightest':[], 'haloID':[], 'all_AGN_mass':[], 'all_AGN_lum':[], 'all_AGN_dist':[],'numberAGN':[], 'redshift':[],
            'Mstar':[], 'Mgas':[],'Mvir':[]}
@@ -88,7 +88,11 @@ def Find_AGN(dbsim, lAGN=1e43):
             else:
                 print float(i)/len(uid)*100, '% done'
             lum = mdot[ind[i]:ind[i]+cnt[i]]*util.c**2*util.M_sun_g/(3600.*24.*365.)
-            dist = distance[ind[i]:ind[i]+cnt[i]]
+            dist = distance[ind[i]:ind[i]+cnt[i]]*(1+step.redshift)
+            ok = np.where(dist<10)
+            lum = lum[ok]
+            dist = dist[ok]
+            mass = mass[ok]
             mbh = mass[ind[i]:ind[i]+cnt[i]]
             if lum.max()<lAGN:
                 continue
