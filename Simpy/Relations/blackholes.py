@@ -59,3 +59,52 @@ def plt_BHMStar(simname, step, marker='o', size = 100, color='blue', label=None,
     plotting.plt.legend(loc='upper left',fontsize=25)
     plotting.plt.ylabel(r"M$_{BH}$ [M$_{\odot}$]")
     plotting.plt.xlabel(r"M$_{\star}$ [M$_{\odot}$]")
+
+def Find_AGN(dbsim, lAGN=1e43):
+    AGN = {'lum_brightest':[], 'dist_brightest':[], 'lum_central':[], 'dist_central':[], 'mass_central':[],
+           'mass_brightest':[], 'haloID':[], 'all_AGN_mass':[], 'all_AGN_lum':[], 'all_AGN_dist':[],'numberAGN':[], 'redshift':[],
+           'Mstar':[], 'Mgas':[],'Mvir':[]}
+    for step in dbsim.timesteps:
+        print step
+        mdot, host, distance, mass, Mvir, Mgas, Mstar = step.gather_property('BH_mdot_ave','host_halo.halo_number()','BH_central_distance', 'BH_mass',
+                                                          'host_halo.Mvir', 'host_halo.Mgas', 'host_halo.Mstar')
+        ord = np.argsort(host)
+        mdot = mdot[ord]
+        host = host[ord]
+        distance = distance[ord]
+        mass = mass[ord]
+        Mvir = Mvir[ord]
+        Mgas = Mgas[ord]
+        Mstar = Mstar[ord]
+
+
+        uid, ind, cnt = np.unique(host,return_indices=True,return_counts=True)
+        for i in range(len(uid)):
+            if i%int(len(uid)/10.)==0: print float(i)/len(uid)*100,'% done'
+            lum = mdot[ind[i]:ind[i]+cnt]*util.c**2*util.M_sun_g/(3600.*24.*365.)
+            dist = distance[ind[i]:ind[i]+cnt]
+            mass = mass[ind[i]:ind[i]+cnt]
+            if lum.max()<lAGN:
+                continue
+            AGN['lum_brightest'].append(lum.max())
+            AGN['dist_brightest'].append(dist[np.argmax(lum)])
+            AGN['mass_brightest'].append(mass[np.argmax(lum)])
+            AGN['lum_central'].append(lum[np.argmin(dist)])
+            AGN['mass_central'].append(mass[np.argmin(dist)])
+            AGN['dist_central'].append(dist[np.argmin(dist)])
+            AGN['haloID'].append(uid[i])
+
+            AGN['all_AGN_lum'].append(lum[(lum>lAGN)])
+            AGN['all_AGN_dist'].append(dist[(lum>lAGN)])
+            AGN['all_AGN_mass'].append(mass[(lum>lAGN)])
+
+            AGN['numberAGN'].append(len(lum[(lum>lAGN)]))
+            AGN['redshift'].append(step.redshift)
+
+            AGN['Mvir'].append(Mvir[ind[i]])
+            AGN['Mgas'].append(Mgas[ind[i]])
+            AGN['Mstar'].append(Mstar[ind[i]])
+
+
+
+
