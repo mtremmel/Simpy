@@ -87,9 +87,9 @@ def Find_AGN(dbsim, lAGN=1e43):
                 if i%int(len(uid)/10.)==0: print float(i)/len(uid)*100,'% done'
             else:
                 print float(i)/len(uid)*100, '% done'
-            lum = mdot[ind[i]:ind[i]+cnt]*util.c**2*util.M_sun_g/(3600.*24.*365.)
-            dist = distance[ind[i]:ind[i]+cnt]
-            mass = mass[ind[i]:ind[i]+cnt]
+            lum = mdot[ind[i]:ind[i]+cnt[i]]*util.c**2*util.M_sun_g/(3600.*24.*365.)
+            dist = distance[ind[i]:ind[i]+cnt[i]]
+            mass = mass[ind[i]:ind[i]+cnt[i]]
             if lum.max()<lAGN:
                 continue
             AGN['lum_brightest'].append(lum.max())
