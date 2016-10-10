@@ -81,7 +81,7 @@ def Find_AGN(dbsim, lAGN=1e43):
         Mstar = Mstar[ord]
 
 
-        uid, ind, cnt = np.unique(host,return_indices=True,return_counts=True)
+        uid, ind, cnt = np.unique(host,return_index=True,return_counts=True)
         for i in range(len(uid)):
             if i%int(len(uid)/10.)==0: print float(i)/len(uid)*100,'% done'
             lum = mdot[ind[i]:ind[i]+cnt]*util.c**2*util.M_sun_g/(3600.*24.*365.)
