@@ -66,8 +66,11 @@ def Find_AGN(dbsim, lAGN=1e43):
            'Mstar':[], 'Mgas':[],'Mvir':[]}
     for step in dbsim.timesteps:
         print step
-        mdot, host, distance, mass, Mvir, Mgas, Mstar = step.gather_property('BH_mdot_ave','host_halo.halo_number()','BH_central_distance', 'BH_mass',
+        try:
+            mdot, host, distance, mass, Mvir, Mgas, Mstar = step.gather_property('BH_mdot_ave','host_halo.halo_number()','BH_central_distance', 'BH_mass',
                                                           'host_halo.Mvir', 'host_halo.Mgas', 'host_halo.Mstar')
+        except:
+            continue
         ord = np.argsort(host)
         mdot = mdot[ord]
         host = host[ord]
