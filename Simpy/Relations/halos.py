@@ -169,7 +169,7 @@ def SMHM_db(sim, step, style, fitstyle=['c-','r-'], fit=['Mos', 'Krav'], minmass
     plotting.plt.xlim(minmass, maxmass)
 
     if return_subs:
-        return subs
+        return sub
 
 
 def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None,
