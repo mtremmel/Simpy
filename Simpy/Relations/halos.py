@@ -112,7 +112,7 @@ def SMHM_db(sim, step, style, fitstyle=['c-','r-'], fit=['Mos', 'Krav'], minmass
     Mvir, Mstar, Rvir, cen = step.gather_property('Mvir', 'Mstar', 'Rvir','SSC')
     sub = np.zeros(len(Mstar))
     for i in range(len(Mvir)):
-        int = np.where((np.sqrt(np.sum((cen[i] - cen)**2,axis=1))<Rvir)&(np.sum((cen[i] - cen)**2,axis=1)>0))
+        int = np.where((np.sqrt(np.sum((cen[i] - cen)**2,axis=1))<Rvir)&(np.sum((cen[i] - cen)**2,axis=1)>0)&(Mvir[i]<Mvir))
         if len(int[0])>0:
             sub[i] = 1
 
