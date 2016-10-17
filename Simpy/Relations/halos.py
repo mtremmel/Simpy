@@ -106,7 +106,7 @@ def getstats(simname, step):
 
 
 def SMHM_db(sim, step, style, fitstyle=['c-','r-'], fit=['Mos', 'Krav'], minmass=None,
-            maxmass=None, markersize=5,label=None, correct=True, error=True):
+            maxmass=None, markersize=5,label=None, correct=True, error=True, return_subs=False):
     import tangos as db
     step = db.get_timestep(sim+'/%'+str(step))
     Mvir, Mstar, Rvir, cen = step.gather_property('Mvir', 'Mstar', 'Rvir','SSC')
@@ -167,6 +167,9 @@ def SMHM_db(sim, step, style, fitstyle=['c-','r-'], fit=['Mos', 'Krav'], minmass
     plotting.plt.yscale('log',base=10)
     plotting.plt.xscale('log',base=10)
     plotting.plt.xlim(minmass, maxmass)
+
+    if return_subs:
+        return subs
 
 
 def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None,
