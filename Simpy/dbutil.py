@@ -40,7 +40,7 @@ def hist_by_step_intervals(dbsim, data, type='time',weight=None, dxnorm=True, re
 		return
 
 
-class PopEvol(oubject):
+class PopEvol(object):
 	def __init__(self, step, hidlist, proplist, type='backward'):
 		if 'z()' not in proplist:
 			proplist.append('z()')
@@ -68,7 +68,7 @@ class PopEvol(oubject):
 		output = []
 		for i in len(self.data['hid']):
 			ztarget = np.where((self.data['z()'][i]>=zmin)&(self.data['z()'][i]<zmax))[0]
-			output.append(self.data[key][i][ztarget]
+			output.append(self.data[key][i][ztarget])
 
 		return np.array(output)
 
