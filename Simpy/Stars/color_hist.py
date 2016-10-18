@@ -147,15 +147,17 @@ class ColorHistPop(object):
         for e in earlier:
             for p in self.props:
                 props_do.append('earlier('+str(e)+').'+p)
-
+        print "gathering properties from database..."
         raw_data = np.array(step.gather_property(*props_do))
         z = np.unique(raw_data[14::len(self.props)])
-
+        print "organizing properties by redshift..."
         self.data = {}
         for zz in z:
             self.data[str(zz)] = {}
+        for j in range(len(later)+len(earlier)+1):
+            curz = raw_data[14+j*len(self.props)][0]
             for i in range(len(self.props)-2):
-                self.data[str(zz)][self.props[i]] = raw_data[i::len(self.props)]
+                self.data[str(curz)][self.props[i]] = raw_data[i+j*len(self.props)]
 
     def calc_colors(self,band1,band2, dust=True):
         for z in self.data.keys():
