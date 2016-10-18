@@ -26,6 +26,16 @@ CANDELS_MW = { 'redshift':[0.45,  0.8,  1.0, 1.25, 1.55,1.85, 2.1, 2.5],
         'VJ-':[0.1,0.2,0.2,0.3,0.3,0.4,0.3,0.4]
         }
 
+def plt_UVJ_quench_region(lw=1.5, shade=True):
+        plotting.plt.plot([1.5,1.5], [1.9,2.7], 'k--', linewidth=lw)
+        plotting.plt.plot([1.0,1.5], [1.3,1.9], 'k--', linewidth=lw)
+        plotting.plt.plot([-0.5,1.0], [1.3,1.3], 'k--', linewidth=lw)
+        if shade is True:
+            plotting.plt.fill_between([-0.5,1.0], [1.3,1.3], [2.5,2.5], color='red', alpha=0.1)
+            plotting.plt.fill_between([1.005,1.5], [1.3,1.9], [2.5,2.5], color='red', alpha=0.1)
+
+        return
+
 
 def plt_colorcolor_multi(chlist,c1, c2, c3, c4, dust=True, data=True, cbar=True,
                          cmap="Blues", color='blue',marksize=100, mark='o', label=None, overplot=False, zcolor_range=None):
@@ -125,3 +135,90 @@ class ColorHist(object):
 
         return
 
+class ColorHistPop(object):
+    def __init__(self, step, later=[], earlier=[]):
+        self.props = ['Mvir', 'Mstar',
+                 'AB_U', 'AB_V', 'AB_B', 'AB_K', 'AB_J', 'AB_I',
+                 'dustExt_U', 'dustExt_V', 'dustExt_B', 'dustExt_K', 'dustExt_J', 'dustExt_I', 'z()', 't()']
+        props_do = list(self.props)
+        for l in later:
+            for p in self.props:
+                props_do.append('later('+str(l)+').'+p)
+        for e in earlier:
+            for p in self.props:
+                props_do.append('earlier('+str(e)+').'+p)
+
+        raw_data = np.array(step.gather_property(*props_do))
+        z = np.unique(raw_data[14::len(self.props)])
+
+        self.data = {}
+        for zz in z:
+            self.data[str(zz)] = {}
+            for i in range(len(self.props)-2):
+                self.data[str(zz)][self.props[i]] = raw_data[i::len(self.props)]
+
+    def calc_colors(self,band1,band2, dust=True):
+        for z in self.data.keys():
+            b1 = self.data[z]['AB_'+band1]
+            b2 = self.data[z]['AB_'+band2]
+            color = b1-b2
+            if dust is True:
+                d1 = self.data[z]['dustExt_'+str(band1)]
+                d2 = self.data[z]['dustExt_'+str(band2)]
+                color += (d1-d2)
+            self.data[z][band1+'-'+band2] = color
+
+    def plt_colors(self, c1, c2, c3, c4, dust=True, use = None,
+                   cmap="Blues", color='blue',marksize=100, mark='o', label=None, obs_data=True, cbar=True):
+        self.calc_colors(c1,c2,dust=dust)
+        self.calc_colors(c3,c4,dust=dust)
+        if use is None:
+            use = np.arange(len(self.data[self.data.keys()[0]][self.props[0]]))
+        cdat1 = []
+        cdat2 = []
+        red = []
+        std1 = []
+        std2 = []
+        for z in self.data.keys():
+            red.append(float(z))
+            cdat1.append(self.data[z][c1+'-'+c2][use].mean())
+            cdat2.append(self.data[z][c3+'-'+c4][use].mean())
+            std1.append(self.data[z][c1+'-'+c2][use].std())
+            std2.append(self.data[z][c3+'-'+c4][use].std())
+
+        red = np.array(red)
+        cdat1 = np.array(cdat1)
+        cdat2 = np.array(cdat2)
+        std1 = np.array(std1)
+        std2 = np.array(std2)
+
+        import matplotlib.colors as pltcolors
+        redcNorm = pltcolors.Normalize(1./(1+red.max()), 1./(1+red.min()))
+
+
+        if obs_data==True:
+            plotting.plt.errorbar(CANDELS_MW['VJ'], CANDELS_MW['UV'],
+                                  xerr=[CANDELS_MW['VJ-'],CANDELS_MW['VJ+']], yerr=[CANDELS_MW['UV-'],CANDELS_MW['UV+']],
+                                  fmt='o-', color='grey', markersize=0, elinewidth=.75, linewidth=2)
+            plotting.plt.errorbar(CANDELS_M31['VJ'], CANDELS_M31['UV'],
+                                  xerr=[CANDELS_M31['VJ-'],CANDELS_M31['VJ+']], yerr=[CANDELS_M31['UV-'],CANDELS_M31['UV+']],
+                                  fmt='o-', color='k', markersize=0, elinewidth=.75, linewidth=2)
+
+            plotting.plt.scatter(CANDELS_MW['VJ'], CANDELS_MW['UV'], c=1./(1+np.array(CANDELS_MW['redshift'])),
+                                 norm=redcNorm, cmap='Greys', s=150, marker='D',label='Papovich+ 14 MW', linewidth=1.5, color='k')
+            plotting.plt.scatter(CANDELS_M31['VJ'], CANDELS_M31['UV'], c=1./(1+np.array(CANDELS_M31['redshift'])),
+                                 norm=redcNorm, cmap='Greys', s=150, marker='^',label='M31', linewidth=1.5, color='k')
+
+        plotting.plt.errorbar(cdat1,cdat2,xerr=std1, yerr=std2, color=color, fmt='o-', markersize=0, elinewidth=3, linewidth=2)
+        plotting.plt.scatter(cdat1, cdat2,
+                             c=1./(1+red), norm=redcNorm, cmap=cmap, s=marksize, marker=mark, label=label, color=color)
+
+        if cbar is True:
+            cbar = plotting.plt.colorbar(ticks=[0.25, 1./3., 0.5, 1./1.5, 1])
+            cbar.set_label('Redshift', fontsize=30, labelpad=2)
+            cbar.set_ticklabels(['3','2','1','0.5','0'])
+
+        plotting.plt.xlabel(c1+'-'+c2+' color')
+        plotting.plt.ylabel(c3+'-'+c4+' color')
+
+        plotting.plt.legend(loc='upper left',fontsize=30)
