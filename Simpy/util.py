@@ -79,4 +79,16 @@ def get_rates_by_z(zin,s,range=[0,20],nbins=40,units='yr**-1',weights=None):
     n = n/dt
     return n.in_units(units), zbins
 
+def find_sats(Mvir, cen, Rvir, strict = False):
+    sub = np.zeros(len(Mvir))
+    for i in range(len(Mvir)):
+        if strict is False:
+            int = np.where((np.sqrt(np.sum((cen[i] - cen)**2,axis=1))<Rvir)&(np.sum((cen[i] - cen)**2,axis=1)>0)&(Mvir[i]<Mvir))
+        else:
+            int = np.where((np.sqrt(np.sum((cen[i] - cen)**2,axis=1))<Rvir)&(np.sum((cen[i] - cen)**2,axis=1)>0))
+        if len(int[0])>0:
+            sub[i] = 1
+    return sub
+
+
 
