@@ -66,7 +66,7 @@ class PopEvol(object):
 
 	def get_data_zrange(self,zmin,zmax, key):
 		output = []
-		for i in len(self.data['hid']):
+		for i in range(len(self.data['hid'])):
 			ztarget = np.where((self.data['z()'][i]>=zmin)&(self.data['z()'][i]<zmax))[0]
 			output.append(self.data[key][i][ztarget])
 
