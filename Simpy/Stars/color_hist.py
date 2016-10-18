@@ -140,24 +140,37 @@ class ColorHistPop(object):
         self.props = ['Mvir', 'Mstar',
                  'AB_U', 'AB_V', 'AB_B', 'AB_K', 'AB_J', 'AB_I',
                  'dustExt_U', 'dustExt_V', 'dustExt_B', 'dustExt_K', 'dustExt_J', 'dustExt_I', 'z()', 't()']
-        props_do = list(self.props)
+        self.data = {}
+
         for l in later:
+            print "getting data for later step", l
+            props_do = list(self.props)
             for p in self.props:
-                props_do.append('later('+str(l)+').'+p)
+                props_do.append('later('+str(e)+').'+p)
+            raw_data = step.gather_property(*props_do)
+            if str(raw_data[14][0]) not in self.data.keys():
+                self.data[str(raw_data[14][0])] = {}
+                for i in range(len(self.props)-2):
+                    self.data[str(raw_data[14][0])][self.props[i]] = raw_data[i]
+            if str(raw_data[30][0]) not in self.data.keys():
+                self.data[str(raw_data[30][0])] = {}
+                for i in range(len(self.props)-2):
+                    self.data[str(raw_data[30][0])][self.props[i]] = raw_data[i+len(self.props)]
+
         for e in earlier:
+            print "getting data for earlier step", e
+            props_do = list(self.props)
             for p in self.props:
                 props_do.append('earlier('+str(e)+').'+p)
-        print "gathering properties from database..."
-        raw_data = np.array(step.gather_property(*props_do))
-        z = np.unique(raw_data[14::len(self.props)])
-        print "organizing properties by redshift..."
-        self.data = {}
-        for zz in z:
-            self.data[str(zz)] = {}
-        for j in range(len(later)+len(earlier)+1):
-            curz = raw_data[14+j*len(self.props)][0]
-            for i in range(len(self.props)-2):
-                self.data[str(curz)][self.props[i]] = raw_data[i+j*len(self.props)]
+            raw_data = step.gather_property(*props_do)
+            if str(raw_data[14][0]) not in self.data.keys():
+                self.data[str(raw_data[14][0])] = {}
+                for i in range(len(self.props)-2):
+                    self.data[str(raw_data[14][0])][self.props[i]] = raw_data[i]
+            if str(raw_data[30][0]) not in self.data.keys():
+                self.data[str(raw_data[30][0])] = {}
+                for i in range(len(self.props)-2):
+                    self.data[str(raw_data[30][0])][self.props[i]] = raw_data[i+len(self.props)]
 
     def calc_colors(self,band1,band2, dust=True):
         for z in self.data.keys():
