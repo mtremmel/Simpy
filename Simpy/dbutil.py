@@ -52,6 +52,7 @@ class PopEvol(oubject):
 			self.data[p] = []
 
 		for hid in hidlist:
+			print "collecting data for halo ", hid
 			self.data['hid'].append(hid)
 			if type == 'backward':
 				rawdat =  step.halos[hid-1].reverse_property_cascade(*proplist)
