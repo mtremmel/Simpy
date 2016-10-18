@@ -40,4 +40,36 @@ def hist_by_step_intervals(dbsim, data, type='time',weight=None, dxnorm=True, re
 		return
 
 
+class PopEvol(oubject):
+	def __init__(self, step, hidlist, proplist, type='backward'):
+		if 'z()' not in proplist:
+			proplist.append('z()')
+		if 't()' not in proplist:
+			proplist.append('t()')
+
+		self.data = {'hid':[]}
+		for p in proplist:
+			self.data[p] = []
+
+		for hid in hidlist:
+			self.data['hid'].append(hid)
+			if type == 'backward':
+				rawdat =  step.halos[hid-1].reverse_property_cascade(*proplist)
+			if type == 'forward':
+				rawdat =  step.halos[hid-1].property_cascae(*proplist)
+
+			cnt = 0
+			for p in proplist:
+				self.data[p].append(rawdat[cnt])
+				cnt += 1
+
+	def get_data_zrange(self,zmin,zmax, key):
+		output = []
+		for i in len(self.data['hid']):
+			ztarget = np.where((self.data['z()'][i]>=zmin)&(self.data['z()'][i]<zmax))[0]
+			output.append(self.data[key][i][ztarget]
+
+		return np.array(output)
+
+
 
