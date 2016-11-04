@@ -2,6 +2,12 @@ import numpy as np
 from .. import plotting, cosmology
 from . import get
 
+def dbSFH(halo, **kwargs):
+	from .. import dbanalysis
+	ssfr,t = dbanalysis.formation_history.sSFR
+	plotting.plt.plot(t,ssfr,**kwargs)
+
+
 
 def SFH(sim, color, style, lw=3,bins=50, trange=None, label=None, ret_hist=True, type='time',xlog=False,ylog=False, overplot=False):
 	tform = get.tform_fromsnap(sim,'Gyr')
