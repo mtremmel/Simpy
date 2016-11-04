@@ -4,7 +4,12 @@ import numpy as np
 
 
 def get_merger_ratios(merger_list, property):
-	ratio = [min(mm[0][property],mm[1][property])/max(mm[0][property],mm[1][property]) for mm in merger_list]
+	ratio = []
+	for mm in merger_list:
+		try:
+			ratio.append(min(mm[0][property],mm[1][property])/max(mm[0][property],mm[1][property]))
+		except KeyError:
+			break
 	return np.array(ratio)
 
 
