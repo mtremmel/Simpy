@@ -22,6 +22,7 @@ def plot_merger_times(halo, y_range, sim = None, ratio_property=None, convert_to
 	import tangos.examples.mergers as mergers
 	from .. import plotting
 	z, ratio, merger_list = mergers.get_mergers_of_major_progenitor(halo)
+	ratio = ratio**-1
 	if ratio_property is not None:
 		ratio = get_merger_ratios(merger_list, ratio_property)
 	if convert_to_time is True:
