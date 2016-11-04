@@ -4,7 +4,7 @@ from . import get
 
 def dbSFH(halo, **kwargs):
 	from .. import dbanalysis
-	ssfr,t = dbanalysis.formation_history.sSFR
+	ssfr,t = dbanalysis.formation_history.sSFR(halo)
 	plotting.plt.plot(t,ssfr,**kwargs)
 
 
