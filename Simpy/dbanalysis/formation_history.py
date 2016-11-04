@@ -34,7 +34,7 @@ def plot_merger_times(halo, y_range, sim = None, ratio_property=None, convert_to
 	for i in range(len(ratio)):
 		if ratio[i] < ratio_min:
 			continue
-		if ratio_range is not None:
+		if ratio_range is None:
 			ratio_range=[0.1,1]
 		alpha = 0.9/(ratio_range[1]-ratio_range[0]) * (ratio[i] - ratio_range[0]) + 0.1
 		if alpha > 1: alpha = 1
