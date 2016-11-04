@@ -37,4 +37,4 @@ def plot_merger_times(halo, y_range, sim = None, ratio_property=None, convert_to
 		alpha = ratio[i]/ratio_norm
 		if alpha > 1: alpha = 1
 		print alpha
-		plotting.plt.plot([x,x],y_range,alpha=alpha,**kwargs)
+		plotting.plt.plot([x[i],x[i]],y_range,alpha=alpha,**kwargs)
