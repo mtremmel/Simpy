@@ -30,7 +30,7 @@ setup(name=NAME,
       packages=['Simpy',
                 'Simpy/BlackHoles',
                 'Simpy/Stars',
-                'Simpy/Relations'
+                'Simpy/Relations',
                 'Simpy/dbanalysis'],
 #      package_data={'nbdpt':['data/mf_planck13.dat',
  #                            'data/mf_wmap3.dat',
