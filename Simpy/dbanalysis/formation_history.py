@@ -18,7 +18,7 @@ def sSFR(halo):
 	return sSFR, t_sfh
 
 
-def plot_merger_times(halo, y_range, sim = None, ratio_property=None, convert_to_time=True, ratio_min=0.1, ratio_norm=1.0, **kwargs):
+def plot_merger_times(halo, y_range, sim = None, ratio_property=None, convert_to_time=True, ratio_min=0.1, ratio_range=None, **kwargs):
 	import tangos.examples.mergers as mergers
 	from .. import plotting
 	z, ratio, merger_list = mergers.get_mergers_of_major_progenitor(halo)
@@ -34,7 +34,9 @@ def plot_merger_times(halo, y_range, sim = None, ratio_property=None, convert_to
 	for i in range(len(ratio)):
 		if ratio[i] < ratio_min:
 			continue
-		alpha = ratio[i]/ratio_norm
+		if ratio_range is not None:
+			ratio_range=[0.1,1]
+		alpha = 0.9/(ratio_range[1]-ratio_range[0]) * (ratio[i] - ratio_range[0]) + 0.1
 		if alpha > 1: alpha = 1
 		print alpha
 		plotting.plt.plot([x[i],x[i]],y_range,alpha=alpha,**kwargs)
