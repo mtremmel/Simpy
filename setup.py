@@ -55,7 +55,9 @@ setup(name=NAME,
 					'data/GasFrac/UnedaRhoBH.csv,'
 					'data/GasFrac/bol_lf_point_dump.dat'
 					'data/Morishita15/Morishita15.pkl',
-					'data/behrooziData/sfh.pkl']},
+					'data/behrooziData/sfh.pkl',
+                    'data/QuenchFraction/Bluck16_Mvir.csv',
+                    'data/QuenchFraction/Bluck16_Mstar.csv']},
       classifiers = ["Development Status :: 3 - Alpha",
                      "Intended Audience :: Developers",
                      "Intended Audience :: Science/Research",
