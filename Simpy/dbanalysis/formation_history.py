@@ -13,14 +13,16 @@ def get_merger_ratios(merger_list, property):
 	return np.array(ratio)
 
 
-def sSFR(halo):
+def sSFR(halo, return_mstar=False):
 	SFH = halo.calculate("reassemble(SFR_histogram)")
 	Mstar, time = halo.reverse_property_cascade("Mstar","t()")
 	t_sfh = np.arange((len(SFH)))*0.01
 	Mstar_interp = np.interp(t_sfh,time[::-1],Mstar[::-1])
 	sSFR = SFH/Mstar_interp
-
-	return sSFR, t_sfh
+	if return_mstar is True:
+		return sSFR, t_sfh, Mstar_interp
+	else:
+		return sSFR, t_sfh
 
 
 def plot_merger_times(halo, y_range, sim = None, ratio_property=None, convert_to_time=True, ratio_range=None, alpha=None, **kwargs):

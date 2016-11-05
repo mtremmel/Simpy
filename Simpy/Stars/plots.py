@@ -12,10 +12,13 @@ def SF_MS(Mstar,z):
 
 	return so - np.log10(1+(Mstar/Mo)**(-1.0*gamma))
 
-def dbSFH(halo, **kwargs):
+def dbSFH(halo, return_data=True **kwargs):
 	from .. import dbanalysis
-	ssfr,t = dbanalysis.formation_history.sSFR(halo)
+	ssfr,t, mstar = dbanalysis.formation_history.sSFR(halo, return_mstar=True)
 	plotting.plt.plot(t,ssfr,**kwargs)
+	if return_data is True:
+		return ssfr, t, mstar
+
 
 def plot_sfms_t(mstar,t,sim,scatter=0.5, alpha = 0.5, color='grey'):
 	from .. import cosmology
