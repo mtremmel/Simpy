@@ -2,6 +2,15 @@ import numpy as np
 from .. import plotting, cosmology
 from . import get
 
+def SF_MS(Mstar,z):
+	so = 0.448 + 1.22*z - 0.174*z**2
+	logMo = 9.458 + 0.865*z - 0.132*z**2
+	gamma = 1.091
+
+	Mo = 10**logMo
+
+	return so - np.log10(1+(Mstar/Mo)**(-1.0*gamma))
+
 def dbSFH(halo, **kwargs):
 	from .. import dbanalysis
 	ssfr,t = dbanalysis.formation_history.sSFR(halo)
