@@ -17,6 +17,15 @@ def dbSFH(halo, **kwargs):
 	ssfr,t = dbanalysis.formation_history.sSFR(halo)
 	plotting.plt.plot(t,ssfr,**kwargs)
 
+def plot_sfms_t(mstar,t,sim,scatter=0.5, alpha = 0.5, color='grey'):
+	from .. import cosmology
+	a,z = cosmology.getScaleFactor(t,sim)
+	logSFR = SF_MS(mstar,z)
+	up = logSFR - np.log10(mstar) + scatter
+	down = logSFR - np.log10(mstar) - scatter
+
+	plotting.plt.fill_between(t,up,down,color=color,alpha=alpha)
+
 
 
 def SFH(sim, color, style, lw=3,bins=50, trange=None, label=None, ret_hist=True, type='time',xlog=False,ylog=False, overplot=False):
