@@ -27,7 +27,7 @@ def plot_sfms_t(mstar,t,sim,scatter=0.5, alpha = 0.5, color='grey'):
 	up = logSFR - np.log10(mstar) + scatter
 	down = logSFR - np.log10(mstar) - scatter
 
-	plotting.plt.fill_between(t,up,down,color=color,alpha=alpha)
+	plotting.plt.fill_between(t,10**up,10**down,color=color,alpha=alpha)
 
 
 
