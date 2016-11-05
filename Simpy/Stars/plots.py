@@ -3,6 +3,7 @@ from .. import plotting, cosmology
 from . import get
 
 def SF_MS(Mstar,z):
+	#Tomczak+ 2016
 	so = 0.448 + 1.22*z - 0.174*z**2
 	logMo = 9.458 + 0.865*z - 0.132*z**2
 	gamma = 1.091
