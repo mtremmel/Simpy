@@ -20,9 +20,9 @@ def dbSFH(halo, return_data=True, **kwargs):
 		return ssfr, t, mstar
 
 
-def plot_sfms_t(mstar,t,sim,scatter=0.5, alpha = 0.5, color='grey'):
+def plot_sfms_t(mstar,t,z,scatter=0.5, alpha = 0.5, color='grey'):
 	from .. import cosmology
-	a,z = cosmology.getScaleFactor(t,sim)
+	#a,z = cosmology.getScaleFactor(t,sim)
 	logSFR = SF_MS(mstar,z)
 	up = logSFR - np.log10(mstar) + scatter
 	down = logSFR - np.log10(mstar) - scatter
