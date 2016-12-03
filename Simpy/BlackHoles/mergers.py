@@ -842,6 +842,83 @@ class mergerCat(object):
                 self.rawdat['hmerger_ndm_2'][i] = ndm2[match2[diff[0]]]
         print "finished with ", nodiff, "BHs having never been in different halos and ", badmatch, "bad matches"
 
+    def get_close_time(self,bhorbit, maxD, boxsize=25,comove=False):
+        tstr = 'dt_hmerger_'+str(maxD)
+        if comove:
+            tstr = tstr+'c'
+        for i in range(len(self.rawdat['ID1'])):
+            if i %100==0:
+                print float(i)/float(len(self.rawdat['ID1']))*100, '% done'
+
+            x1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'x')
+            x2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'x')
+            y1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'y')
+            y2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'y')
+            z1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'z')
+            z2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'z')
+
+            time1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'time')
+            time2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'time')
+
+            scale1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'scalefac')
+            scale2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'scalefac')
+
+            if len(time1) == 0 or len(time2) == 0:
+                continue
+
+            mint = self.rawdat['time']-self.rawdat['dt_hmerger_min']
+            maxt = time2.max()
+
+            use1 = np.where((time1<=maxt)&(time1>=mint))[0]
+            use2 = np.where((time2<=maxt)&(time2>=mint))[0]
+
+            if len(use1) == 0 or len(use2) == 0:
+                continue
+
+            if len(use1) != len(use2):
+                if len(use1)< len(use2):
+                    use1 = np.append(use1,use1[-1])
+                    if len(use1) != len(use2):
+                        print "SHIIIIIIT"
+                else:
+                    print "SHIIIIIIIT"
+                    print self.rawdat['ID1'][i], self.rawdat['ID2'][i]
+
+            xd = x1[use1]-x2[use2]
+            yd = y1[use1]-y2[use2]
+            zd = z1[use1]-z2[use2]
+
+            bphys = boxsize*scale1[use1]*1e3
+            badx = np.where(xd > bphys/2)[0]
+            xd[badx] = -1.0 * (xd[badx]/np.abs(xd[badx])) * \
+                              np.abs(bphys[badx] - np.abs(xd[badx]))
+
+            bady = np.where(yd > bphys/2)[0]
+            yd[bady] = -1.0 * (yd[bady]/np.abs(yd[bady])) * \
+                              np.abs(bphys[bady] - np.abs(yd[bady]))
+            badz = np.where(zd > bphys/2)[0]
+            zd[badz] = -1.0 * (zd[badz]/np.abs(zd[badz])) * \
+                              np.abs(bphys[badz] - np.abs(zd[badz]))
+
+            dist = np.sqrt(xd**2 + yd**2 + zd**2)
+            if len(use1) != len(dist) or len(use2) != len(dist):
+                print len(use1), len(use2), len(dist)
+            if comove:
+                dist /= scale1[use1]
+
+            close = np.where(dist < maxD)
+            if len(close) > 0:
+                if timestep:
+                    dt = len(close)*timestep
+                else:
+                    try:
+                        dt = np.sum(np.abs(time1[use1[close]] - time1[use1[close]-1]))
+                    except:
+                        dt = np.sum(np.abs(time1[use1[close]] - time1[use1[close]+1]))
+
+                self.rawdat[tstr] = dt
+
+
 
 
 
