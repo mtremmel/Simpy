@@ -842,7 +842,7 @@ class mergerCat(object):
                 self.rawdat['hmerger_ndm_2'][i] = ndm2[match2[diff[0]]]
         print "finished with ", nodiff, "BHs having never been in different halos and ", badmatch, "bad matches"
 
-    def get_close_time(self,bhorbit, maxD, boxsize=25,comove=False):
+    def get_close_time(self,bhorbit, maxD, boxsize=25,comove=False, timestep=None):
         tstr = 'dt_hmerger_'+str(maxD)
         if comove:
             tstr = tstr+'c'
