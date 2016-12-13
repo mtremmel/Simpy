@@ -106,10 +106,18 @@ def getstats(simname, step):
 
 
 def SMHM_db(sim, step, style, fitstyle=['c-','r-'], fit=['Mos', 'Krav'], minmass=None,
-            maxmass=None, markersize=5,label=None, correct=True, error=True, return_subs=False, remove_sats=True):
+            maxmass=None, markersize=5,label=None, correct=True, error=True, return_subs=False, remove_sats=True, contam_limit=None):
     import tangos as db
     step = db.get_timestep(sim+'/%'+str(step))
-    Mvir, Mstar, Rvir, cen = step.gather_property('Mvir', 'Mstar', 'Rvir','SSC')
+    if contam_limit:
+        Mvir, Mstar, Rvir, cen, contam = step.gather_property('Mvir', 'Mstar', 'Rvir','SSC','contamination_fraction')
+        ok = np.where(contam<contam_limit)
+        Mvir = Mvir[ok]
+        Mstar = Mstar[ok]
+        Rvir = Rvir[ok]
+        cen = cen[ok]
+    else:
+        Mvir, Mstar, Rvir, cen = step.gather_property('Mvir', 'Mstar', 'Rvir','SSC')
     if remove_sats is True or return_subs is True:
         sub = np.zeros(len(Mstar))
         for i in range(len(Mvir)):
