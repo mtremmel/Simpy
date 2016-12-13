@@ -106,20 +106,21 @@ def getstats(simname, step):
 
 
 def SMHM_db(sim, step, style, fitstyle=['c-','r-'], fit=['Mos', 'Krav'], minmass=None,
-            maxmass=None, markersize=5,label=None, correct=True, error=True, return_subs=False):
+            maxmass=None, markersize=5,label=None, correct=True, error=True, return_subs=False, remove_sats=True):
     import tangos as db
     step = db.get_timestep(sim+'/%'+str(step))
     Mvir, Mstar, Rvir, cen = step.gather_property('Mvir', 'Mstar', 'Rvir','SSC')
-    sub = np.zeros(len(Mstar))
-    for i in range(len(Mvir)):
-        int = np.where((np.sqrt(np.sum((cen[i] - cen)**2,axis=1))<Rvir)&(np.sum((cen[i] - cen)**2,axis=1)>0)&(Mvir[i]<Mvir))
-        if len(int[0])>0:
-            sub[i] = 1
-
-    ok = np.where(sub==0)
-    Mvir = Mvir[ok]
-    Mstar = Mstar[ok]
-    Rvir = Rvir[ok]
+    if remove_sats is True or return_subs is True:
+        sub = np.zeros(len(Mstar))
+        for i in range(len(Mvir)):
+            int = np.where((np.sqrt(np.sum((cen[i] - cen)**2,axis=1))<Rvir)&(np.sum((cen[i] - cen)**2,axis=1)>0)&(Mvir[i]<Mvir))
+            if len(int[0])>0:
+                sub[i] = 1
+        if remove_sats is True:
+            ok = np.where(sub==0)
+            Mvir = Mvir[ok]
+            Mstar = Mstar[ok]
+            Rvir = Rvir[ok]
 
     if correct is True:
         Mstar *= 0.6
