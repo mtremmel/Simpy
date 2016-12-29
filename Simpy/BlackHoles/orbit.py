@@ -326,6 +326,7 @@ class Orbit(object):
 			self.data[key] *= self.data['scalefac']
 		for key in self.data.keys():
 			unit = None
+			if key == 'fake?': continue
 			if defunits[key] is not None:
 				unit = s.infer_original_units(defunits[key])
 				if key in ['x', 'y', 'z', 'vx', 'vy', 'vz']: unit = unit / pynbody.units.Unit('a')
