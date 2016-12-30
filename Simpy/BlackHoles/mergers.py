@@ -10,7 +10,7 @@ def findmergers(outname, diagname='*out*'):
     return
 
 
-def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt', NCHILADA=True):
+def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt', NCHILADA=True, out_end='.mergers'):
     if not os.path.exists(mergename):
         print "didn't find merger file... getting mergers from outputs"
         findmergers(mergename, diagname=outname)
@@ -50,7 +50,7 @@ def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt',
         tofile.append(output[key])
     tofile = tuple(tofile)
     print "saving to file..."
-    np.savetxt(simname + '.mergers', np.column_stack(tofile), fmt=['%f', '%f', '%d', '%d', '%f', '%f'])
+    np.savetxt(simname + out_end, np.column_stack(tofile), fmt=['%f', '%f', '%d', '%d', '%f', '%f'])
     if RetData == True:
         return output
     else:
