@@ -89,7 +89,10 @@ def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=Fals
         useonly = np.arange(len(bhmergers['ID1']))
     match, = np.where((bhmergers['ID1'][useonly]==bhid)&(bhmergers['time'][useonly]<=tmax))
     if len(match)==0:
-        return np.array([])
+        if return_details is False:
+            return np.array([])
+        else:
+            return np.array([]), np.array([]), np.array([])
     idnew = np.copy(bhmergers['ID2'][useonly[match]])
     idlist = np.copy(idnew)
     deep = 0
