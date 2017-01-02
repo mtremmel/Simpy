@@ -84,7 +84,7 @@ def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt',
 #     print "finished with ", deep, "steps\n"
 #     return idlist
 
-def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None):
+def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=False):
     if useonly is None:
         useonly = np.arange(len(bhmergers['ID1']))
     match, = np.where((bhmergers['ID1'][useonly]==bhid)&(bhmergers['time'][useonly]<=tmax))
@@ -93,16 +93,32 @@ def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None):
     idnew = np.copy(bhmergers['ID2'][useonly[match]])
     idlist = np.copy(idnew)
     deep = 0
+    if return_details is True:
+        massnew = np.copy(bhmergers['merge_mass_2'][useonly[match]])
+        masslist = np.copy(massnew)
+        timenew = np.copy(bhmergers['time'][useonly[match]])
+        timelist = np.copy(timenew)
     while len(idnew)>0:
         deep +=1
         idnext = np.array([])
+        massnext = np.array([])
+        timenext = np.array([])
         for eid in idnew:
             match, = np.where(bhmergers['ID1'][useonly]==eid)
             if len(match)>0:
                 idnext = np.append(idnext,bhmergers['ID2'][useonly[match]])
+                if return_details is True:
+                    massnext = np.append(massnext,bhmergers['merge_mass_2'][useonly[match]])
+                    timenext = np.append(timenext,bhmergers['time'][useonly[match]])
         idnew = idnext
         idlist = np.append(idlist,idnew)
-    return idlist
+        if return_details is True:
+            masslist = np.append(masslist,massnext)
+            timelist = np.append(timelist,timenext)
+    if return_details is True:
+        return idlist, masslist, timelist
+    else:
+        return idlist
 
 def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, bins=50,
                      tzrange=[0,25], xlog=True, ylog=True, lw=3, label=None, ret_data=False,
