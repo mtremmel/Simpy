@@ -935,6 +935,14 @@ class mergerCat(object):
 
                 self.rawdat[tstr] = dt
 
+    def get_new_masses(self,orig_seed = 1e6, new_seed = 1e3, useonly=None, doonly=None):
+        from . import util
+        self.rawdat['newmass1'] = util.get_new_masses(self.rawdat['ID1'],self.rawdat['time'],self.rawdat['merge_mass_1'],
+                                                      self, orig_seed=orig_seed, new_seed = new_seed, useonly=useonly)
+        self.rawdat['newmass2'] = util.get_new_masses(self.rawdat['ID2'],self.rawdat['time'],self.rawdat['merge_mass_2'],
+                                                      self, orig_seed=orig_seed, new_seed = new_seed, useonly=useonly)
+
+
 
 
 
