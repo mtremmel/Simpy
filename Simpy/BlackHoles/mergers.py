@@ -757,6 +757,70 @@ class mergerCat(object):
             for key in self.closeBHevol.keys():
                 self.closeBHevol[key] = np.array(self.closeBHevol[key])
 
+    def get_halo_interaction(self, dbsim):
+        import tangos as db
+        self.rawdat['hinteract_mvir_1'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_mvir_2'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_mstar_1'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_mstar_2'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_mgas_1'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_mgas_2'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_mbh_1'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_mbh_2'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['dt_hinteract'] = np.ones(len(self.rawdat['ID1']))*-1
+
+        nodiff = 0
+        badmatch = 0
+        for i in range(len(self.rawdat['ID1'])):
+            if i%30 == 0:
+                print float(i)/float(len(self.rawdat['ID1']))*100, '% done'
+            try:
+                bh1 = db.get_halo(str(dbsim.path)+'/%'+str(self.rawdat['snap_before'][i])+'/1.'+str(self.rawdat['ID1'][i]))
+                bh2 = db.get_halo(str(dbsim.path)+'/%'+str(self.rawdat['snap_before'][i])+'/1.'+str(self.rawdat['ID2'][i]))
+            except:
+                continue
+
+            try:
+                time1, hn1, mv1, mg1, ms1, mbh1, dbh1, ssc, rvir = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()',
+                                                          'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass','BH_central_distance',
+                                                            'host_halo.SSC', 'host_halo.Rvir')
+                time2, hn2, mv2, mg2, ms2, mbh2, dbh2, ssc2, rvir2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()',
+                                                          'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass','BH_central_distance',
+                                                            'host_halo.SSC', 'host_halo.Rvir')
+            except:
+                continue
+
+            match1 = np.where(np.in1d(time1,time2))[0]
+            match2 = np.where(np.in1d(time2,time1))[0]
+            if not np.array_equal(time1[match1],time2[match2]):
+                print "WARNING time arrays don't match!"
+            if len(match1)==0 or len(match2)==0:
+                continue
+
+            ssc = ssc[match1]
+            ssc2 = ssc2[match2]
+            rvir = ssc[match1]
+            rvir2 = ssc2[match2]
+
+            dist = np.sqrt(np.sum((ssc-ssc2)**2,axis=1))
+            good = np.where(dist > np.maximum(rvir,rvir2))[0]
+            if len(good)==0: continue
+                #good = np.where(dist >0)[0]
+                #if len(good) == 0:
+                #    continue
+            self.rawdat['hinteract_mvir_1'][i] = mv1[match1[good[0]]]
+            self.rawdat['hinteract_mvir_2'][i] = mv2[match2[good[0]]]
+            self.rawdat['hinteract_mstar_1'][i] = ms1[match1[good[0]]]
+            self.rawdat['hinteract_mstar_2'][i] = ms2[match2[good[0]]]
+            self.rawdat['hinteract_mgas_1'][i] = mv1[match1[good[0]]]
+            self.rawdat['hinteract_mgas_2'][i] = mv2[match2[good[0]]]
+            self.rawdat['hinteract_mbh_1'][i] = mbh1[match1[good[0]]]
+            self.rawdat['hinteract_mbh_2'][i] = mbh2[match2[good[0]]]
+
+            self.rawdat['dt_hinteract'][i] = self.rawdat['time'][i] = time1[match2[good[0]]]
+
+
+
     def get_halo_merger(self,dbsim,overwrite=False, detail=False):
         import tangos as db
         if 'dt_hmerger' not in self.rawdat.keys() or overwrite==True:
