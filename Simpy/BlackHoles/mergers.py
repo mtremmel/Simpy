@@ -816,7 +816,7 @@ class mergerCat(object):
             self.rawdat['hinteract_mbh_1'][i] = mbh1[match1[good[0]]]
             self.rawdat['hinteract_mbh_2'][i] = mbh2[match2[good[0]]]
 
-            self.rawdat['dt_hinteract'][i] = self.rawdat['time'][i] = time1[match2[good[0]]]
+            self.rawdat['dt_hinteract'][i] = self.rawdat['time'][i] - time1[match2[good[0]]]
 
 
 
