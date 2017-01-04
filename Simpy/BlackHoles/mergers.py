@@ -799,7 +799,7 @@ class mergerCat(object):
             ssc = ssc[match1]
             ssc2 = ssc2[match2]
             rvir = rvir[match1]
-            rvir2 = ssc2[match2]
+            rvir2 = rvir2[match2]
 
             dist = np.sqrt(np.sum((ssc-ssc2)**2,axis=1))
             good = np.where(dist > np.maximum(rvir,rvir2))[0]
