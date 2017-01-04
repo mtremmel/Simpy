@@ -796,11 +796,13 @@ class mergerCat(object):
                 print "WARNING time arrays don't match!"
             if len(match1)==0 or len(match2)==0:
                 continue
-
-            ssc = ssc[match1]
-            ssc2 = ssc2[match2]
-            rvir = ssc[match1]
-            rvir2 = ssc2[match2]
+            try:
+                ssc = ssc[match1]
+                ssc2 = ssc2[match2]
+                rvir = ssc[match1]
+                rvir2 = ssc2[match2]
+            except KeyError:
+                print 'key error!', len(time1), len(time2), bh1.halo_number, bh2.halo_number, self.rawdat['snap_before'][i]
 
             dist = np.sqrt(np.sum((ssc-ssc2)**2,axis=1))
             good = np.where(dist > np.maximum(rvir,rvir2))[0]
