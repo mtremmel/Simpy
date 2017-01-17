@@ -768,6 +768,9 @@ class mergerCat(object):
         self.rawdat['hinteract_mbh_1'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['hinteract_mbh_2'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['dt_hinteract'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_step'] = np.chararray(len(self.rawdat['ID1']))
+        self.rawdat['hinteract_haloID_1'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_haloID_2'] = np.ones(len(self.rawdat['ID1']))*-1
 
         nodiff = 0
         badmatch = 0
@@ -781,12 +784,12 @@ class mergerCat(object):
                 continue
 
             try:
-                time1, hn1, mv1, mg1, ms1, mbh1, dbh1, ssc, rvir = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()',
+                time1, hn1, mv1, mg1, ms1, mbh1, dbh1, ssc, rvir, step1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()',
                                                           'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass','BH_central_distance',
-                                                            'host_halo.SSC', 'host_halo.Rvir')
-                time2, hn2, mv2, mg2, ms2, mbh2, dbh2, ssc2, rvir2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()',
+                                                            'host_halo.SSC', 'host_halo.Rvir', 'step_path()')
+                time2, hn2, mv2, mg2, ms2, mbh2, dbh2, ssc2, rvir2, step2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()',
                                                           'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass','BH_central_distance',
-                                                            'host_halo.SSC', 'host_halo.Rvir')
+                                                            'host_halo.SSC', 'host_halo.Rvir', 'step_path()')
             except:
                 continue
 
@@ -807,6 +810,9 @@ class mergerCat(object):
                 #good = np.where(dist >0)[0]
                 #if len(good) == 0:
                 #    continue
+            self.rawdat['hinteract_haloID_1'][i] = hn1[match1[good[0]]]
+            self.rawdat['hinteract_haloID_2'][i] = hn2[match2[good[0]]]
+            self.rawdat['hinteract_step'][i] = step1[match1[good[0]]]
             self.rawdat['hinteract_mvir_1'][i] = mv1[match1[good[0]]]
             self.rawdat['hinteract_mvir_2'][i] = mv2[match2[good[0]]]
             self.rawdat['hinteract_mstar_1'][i] = ms1[match1[good[0]]]
