@@ -768,7 +768,7 @@ class mergerCat(object):
         self.rawdat['hinteract_mbh_1'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['hinteract_mbh_2'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['dt_hinteract'] = np.ones(len(self.rawdat['ID1']))*-1
-        self.rawdat['hinteract_step'] = np.zeros(len(self.data['ID1'])).astype('S100')
+        self.rawdat['hinteract_step'] = np.zeros(len(self.rawdata['ID1'])).astype('S100')
         self.rawdat['hinteract_haloID_1'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['hinteract_haloID_2'] = np.ones(len(self.rawdat['ID1']))*-1
 
