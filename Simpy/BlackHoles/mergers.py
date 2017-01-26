@@ -10,24 +10,28 @@ def findmergers(outname, diagname='*out*'):
     return
 
 
-def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt', NCHILADA=True, out_ext='.mergers'):
+def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt', NCHILADA=True, out_ext='.mergers',t_end=13.8):
     if not os.path.exists(mergename):
         print "didn't find merger file... getting mergers from outputs"
         findmergers(mergename, diagname=outname)
     if not os.path.exists('files.list'):
         Files.getFileLists(simname, NCHILADA=NCHILADA)
     f = open('files.list', 'r')
-    farr = f.readlines()
+    s = pynbody.load(f.readlines()[-1].strip('\n'))
+    nsteps = s._paramfile['nSteps']
+    dt = t_end/nsteps
     f.close()
-    f = open('steps.list', 'r')
-    sarr = f.readlines()
-    f.close()
+    #farr = f.readlines()
+    #f.close()
+    #f = open('steps.list', 'r')
+    #sarr = f.readlines()
+    #f.close()
 
-    s = pynbody.load(farr[-1].strip('\n'))
-    lstep = float(sarr[-1].strip('\n'))
+    #s = pynbody.load(farr[-1].strip('\n'))
+    #lstep = float(sarr[-1].strip('\n'))
 
-    simtime = s.properties['time'].in_units('Gyr')#cosmology.getTime(s.properties['a'] ** -1 - 1, s)
-    dt = simtime / lstep
+    #simtime = s.properties['time'].in_units('Gyr')#cosmology.getTime(s.properties['a'] ** -1 - 1, s)
+    #dt = simtime / lstep
     tunit = s.infer_original_units('Gyr')
 
     a, b, ID, c, IDeat, d, time, e, f, kick, g, h, mratio = readcol(mergename, twod=False)
