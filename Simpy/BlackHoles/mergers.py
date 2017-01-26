@@ -18,7 +18,7 @@ def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt',
         Files.getFileLists(simname, NCHILADA=NCHILADA)
     f = open('files.list', 'r')
     s = pynbody.load(f.readlines()[-1].strip('\n'))
-    nsteps = s._paramfile['nSteps']
+    nsteps = int(s._paramfile['nSteps'])
     dt = t_end/nsteps
     f.close()
     #farr = f.readlines()
