@@ -233,6 +233,7 @@ def truncOrbitFile(simname, minstep=1, maxstep=4096, ret_output=False, MBHinit=1
 	np.savetxt(outf, np.column_stack(tofile),
 			fmt=['%d', '%f', '%d', '%e', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f','%e'])
 	del tofile
+	outf.close()
 	gc.collect()
 	if ret_output:
 		return output
