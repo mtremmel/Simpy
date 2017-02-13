@@ -26,7 +26,7 @@ def name_ticks_2d(xnames,ynames):
 def make_two_d_plot(data1, bins1, data2, bins2, zdata, cmap, zdata_function = np.mean,
 					zdata_range=None, makeplot=True, return_data=False):
 
-	image = np.zeros((len(bins1)-1,len(bins2-1)))
+	image = np.zeros((len(bins1)-1,len(bins2)-1))
 
 	for i in range(len(bins1[:-1])):
 		for j in range(len(bins2[:-1])):
