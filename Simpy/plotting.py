@@ -43,7 +43,7 @@ def make_two_d_plot(data1, bins1, data2, bins2, zdata, cmap, zdata_function = np
 		two_d_grid(image,bins1[:-1],bins2[:-1],norm,cmap,noticks=True)
 
 	if return_data is True:
-		return zdata
+		return image
 
 	else:
 		return
