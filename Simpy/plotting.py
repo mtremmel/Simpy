@@ -7,6 +7,7 @@ plt.rc('font', weight='medium', size=40)
 plt.rc('axes', linewidth=2)
 plt.rc('xtick.major',width=2, pad=10)
 plt.rc('ytick.major',width=2, pad=5)
+plt.rc('text', usetex=True)
 
 
 def two_d_grid(data,tick_array1,tick_array2,color_norm,cmap,noticks=True,cbar=True,cbarlabel=None):
