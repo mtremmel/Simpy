@@ -431,6 +431,56 @@ class Orbit(object):
 				self.tform[cnt] = self.single_BH_data(id,'time').min()
 				cnt += 1
 
+	def get_distance(self, ID1, ID2,boxsize=25,comove=True):
+		time1 = self.single_BH_data(ID1,'time')
+		time2 = self.single_BH_data(ID2,'time')
+		x1 = self.single_BH_data(ID1,'x')
+		x2 = self.single_BH_data(ID2,'x')
+		y1 = self.single_BH_data(ID1,'y')
+		y2 = self.single_BH_data(ID2,'y')
+		z1 = self.single_BH_data(ID1,'z')
+		z2 = self.single_BH_data(ID2,'z')
+		scale = self.single_BH_data(ID1,'scalefac')
+		mint = np.max([time1.min(),time2.min()])
+		maxt = time2.max()
+
+		use1 = np.where((time1<=maxt)&(time1>=mint))[0]
+		use2 = np.where((time2<=maxt)&(time2>=mint))[0]
+
+		if len(use1) == 0 or len(use2) == 0:
+			print "uh no no time match"
+			return
+
+		if len(use1) != len(use2):
+			if len(use1)< len(use2):
+				use1 = np.append(use1,use1[-1])
+				if len(use1) != len(use2):
+					print "SHIIIIIIT"
+			else:
+				print "SHIIIIIIIT oh no"
+
+		xd = x1[use1]-x2[use2]
+		yd = y1[use1]-y2[use2]
+		zd = z1[use1]-z2[use2]
+
+		bphys = boxsize*scale[use1]*1e3
+		badx = np.where(xd > bphys/2)[0]
+		xd[badx] = -1.0 * (xd[badx]/np.abs(xd[badx])) * \
+							  np.abs(bphys[badx] - np.abs(xd[badx]))
+
+		bady = np.where(yd > bphys/2)[0]
+		yd[bady] = -1.0 * (yd[bady]/np.abs(yd[bady])) * \
+							  np.abs(bphys[bady] - np.abs(yd[bady]))
+		badz = np.where(zd > bphys/2)[0]
+		zd[badz] = -1.0 * (zd[badz]/np.abs(zd[badz])) * \
+							  np.abs(bphys[badz] - np.abs(zd[badz]))
+
+		dist = np.sqrt(xd**2 + yd**2 + zd**2)
+
+		if comove:
+			dist /= scale[use1]
+		return dist, time1[use1], scale[use1]**-1 -1
+
 	def getprogbhs(self):
 		time, step, ID, IDeat, ratio, kick = readcol(self.simname + '.mergers', twod=False)
 		self.prog = {'iord': [[] for i in range(len(self.bhiords))], 'kick': [[] for i in range(len(self.bhiords))],
