@@ -464,14 +464,14 @@ class Orbit(object):
 		zd = z1[use1]-z2[use2]
 
 		bphys = boxsize*scale[use1]*1e3
-		badx = np.where(xd > bphys/2)[0]
+		badx = np.where(np.abs(xd) > bphys/2)[0]
 		xd[badx] = -1.0 * (xd[badx]/np.abs(xd[badx])) * \
 							  np.abs(bphys[badx] - np.abs(xd[badx]))
 
-		bady = np.where(yd > bphys/2)[0]
+		bady = np.where(np.abs(yd) > bphys/2)[0]
 		yd[bady] = -1.0 * (yd[bady]/np.abs(yd[bady])) * \
 							  np.abs(bphys[bady] - np.abs(yd[bady]))
-		badz = np.where(zd > bphys/2)[0]
+		badz = np.where(np.abs(zd) > bphys/2)[0]
 		zd[badz] = -1.0 * (zd[badz]/np.abs(zd[badz])) * \
 							  np.abs(bphys[badz] - np.abs(zd[badz]))
 
