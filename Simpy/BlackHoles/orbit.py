@@ -442,7 +442,7 @@ class Orbit(object):
 		z2 = self.single_BH_data(ID2,'z')
 		scale = self.single_BH_data(ID1,'scalefac')
 		mint = np.max([time1.min(),time2.min()])
-		maxt = time2.max()
+		maxt = np.minimum(time2.max(),time1.max())
 
 		use1 = np.where((time1<=maxt)&(time1>=mint))[0]
 		use2 = np.where((time2<=maxt)&(time2>=mint))[0]
