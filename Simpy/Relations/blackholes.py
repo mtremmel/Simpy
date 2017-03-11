@@ -48,11 +48,16 @@ def plt_BHMStar(simname, step, marker='o', size = 100, color='blue', label=None,
         bhdata = bhdata[ok]
     plotting.plt.scatter(Mstar*0.6, bhdata, marker=marker, s=size, color=color, label=label, alpha=alpha)
     if fit is True:
-        lmstar = np.arange(np.log10(Mstar[(Mstar > 0)]).min() - 1., np.log10(Mstar[(Mstar > 0)]).max() + 1., 0.1)
+        lmstarE = np.arange(9,9.7,0.1)
+        lmstar = np.arange(9.7,12,0.1)
+        bhmassE = BHMstar(lmstarE)
+        #lmstar = np.arange(np.log10(Mstar[(Mstar > 0)]).min() - 1., np.log10(Mstar[(Mstar > 0)]).max() + 1., 0.1)
         bhmass = BHMstar(lmstar)
         plotting.plt.plot(10**lmstar, 10**bhmass,'k-', label='Schramm+Silverman 13',lw=2)
+        plotting.plt.plot(10**lmstarE, 10**bhmassE,'k--',lw=2)
         if fiterr is True:
-            plotting.plt.fill_between(10**lmstar,10**(bhmass+0.3),10**(bhmass-0.3),color='Grey',alpha=0.5)
+            plotting.plt.fill_between(10**np.concatenate([lmstarE,lmstar),10**(np.concatenate([bhmassE,bhmass])+0.3),
+                                      10**(np.concatenate(bhmassE,bhmass)-0.3),color='Grey',alpha=0.5)
 
     plotting.plt.yscale('log',base=10)
     plotting.plt.xscale('log',base=10)
