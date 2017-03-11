@@ -56,7 +56,7 @@ def plt_BHMStar(simname, step, marker='o', size = 100, color='blue', label=None,
         plotting.plt.plot(10**lmstar, 10**bhmass,'k-', label='Schramm+Silverman 13',lw=2)
         plotting.plt.plot(10**lmstarE, 10**bhmassE,'k--',lw=2)
         if fiterr is True:
-            plotting.plt.fill_between(10**np.concatenate([lmstarE,lmstar),10**(np.concatenate([bhmassE,bhmass])+0.3),
+            plotting.plt.fill_between(10**np.concatenate([lmstarE,lmstar]),10**(np.concatenate([bhmassE,bhmass])+0.3),
                                       10**(np.concatenate([bhmassE,bhmass])-0.3),color='Grey',alpha=0.5)
 
     plotting.plt.yscale('log',base=10)
