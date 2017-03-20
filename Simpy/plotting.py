@@ -21,7 +21,7 @@ def two_d_grid(data,tick_array1,tick_array2,color_norm,cmap,noticks=True,cbar=Tr
 	if cbar is True:
 		cbar = plt.colorbar()
 		if cbarlabel:
-			cbar.set_label('Redshift', fontsize=30, labelpad=2)
+			cbar.set_label(cbarlabel, fontsize=30, labelpad=2)
 	return
 
 def name_ticks_2d(xnames,ynames):
