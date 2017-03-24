@@ -880,8 +880,8 @@ class mergerCat(object):
             self.rawdat['hinteract_mgas_h'][i] = mg[outside[0]]
             self.rawdat['hinteract_mbh_a'][i] = mbha[outside[0]]
             self.rawdat['hinteract_mbh_h'][i] = mbhh[outside[0]]
-            self.rawdat['hinteract_acc_id'][i] = self.rawdat['ID'+str(accid)]
-            self.rawdat['hinteract_host_id'][i] = self.rawdat['ID'+str(hostid)]
+            self.rawdat['hinteract_acc_id'][i] = self.rawdat['ID'+str(accid)][i]
+            self.rawdat['hinteract_host_id'][i] = self.rawdat['ID'+str(hostid)][i]
 
             self.rawdat['dt_hinteract'][i] = self.rawdat['time'][i] - timea[outside[0]]
 
