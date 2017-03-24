@@ -824,6 +824,7 @@ class mergerCat(object):
             while ii < min(len(hn1),len(hn2),len(hn)):
                 if timeh[ii] != time1[ii] or timeh[ii] != time2[ii]:
                     print "FUCK times are weird", ii, bh1, bh2, host
+                    print time1, time2, timeh
                 if hn[ii] != hn1[ii] and hn[ii] == hn2[ii]:
                     bha = bh1
                     accid=1
