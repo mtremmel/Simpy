@@ -842,9 +842,13 @@ class mergerCat(object):
                 ii += 1
             if bha is None:
                 continue
-            timea, hna, mva, mga, msa, mbha, dbha, ssca, rvira, stepa, red = bha.reverse_property_cascade('t()', 'host_halo.halo_number()',
+            try:
+                timea, hna, mva, mga, msa, mbha, dbha, ssca, rvira, stepa, red = bha.reverse_property_cascade('t()', 'host_halo.halo_number()',
                                                           'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass','BH_central_distance',
                                                             'host_halo.SSC', 'host_halo.Rvir', 'step_path()', 'z()')
+            except:
+                print "bad bha reverse"
+                continue
 
             matcha = np.where(np.in1d(timea,timeh))[0]
             matchh = np.where(np.in1d(timeh,timea))[0]
