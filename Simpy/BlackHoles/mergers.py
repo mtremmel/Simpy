@@ -761,7 +761,7 @@ class mergerCat(object):
             for key in self.closeBHevol.keys():
                 self.closeBHevol[key] = np.array(self.closeBHevol[key])
 
-    def get_halo_interaction(self, dbsim):
+    def get_halo_interaction(self, dbsim,boxsize=25):
         import tangos as db
         self.rawdat['hinteract_mvir_1'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['hinteract_mvir_2'] = np.ones(len(self.rawdat['ID1']))*-1
@@ -784,10 +784,14 @@ class mergerCat(object):
             try:
                 bh1 = db.get_halo(str(dbsim.path)+'/%'+str(self.rawdat['snap_before'][i])+'/1.'+str(self.rawdat['ID1'][i]))
                 bh2 = db.get_halo(str(dbsim.path)+'/%'+str(self.rawdat['snap_before'][i])+'/1.'+str(self.rawdat['ID2'][i]))
+                host = db.get_halo(str(dbsim.path)+'/%'+str(self.rawdat['snap_after'][i])+'/'+str(int(self.rawdat['halo_number()'][i])))
             except:
                 continue
 
             try:
+                timeh, hn, mv, mg, ms, rvirh, steph, ssch, mbhh = host.previous.reverse_property_cascade(
+                    't()','halo_number()','Mvir','Mgas','Mstar','Rvir','step_path()', 'SSC', 'bh().BH_mass')
+
                 time1, hn1, mv1, mg1, ms1, mbh1, dbh1, ssc, rvir, step1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()',
                                                           'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass','BH_central_distance',
                                                             'host_halo.SSC', 'host_halo.Rvir', 'step_path()')
@@ -797,36 +801,104 @@ class mergerCat(object):
             except:
                 continue
 
-            match1 = np.where(np.in1d(time1,time2))[0]
-            match2 = np.where(np.in1d(time2,time1))[0]
-            if not np.array_equal(time1[match1],time2[match2]):
-                print "WARNING time arrays don't match!"
-            if len(match1)==0 or len(match2)==0:
+            ii = 0
+            bha = None
+            accid = 0
+            hostid = 0
+            while ii < min(len(hn1),len(hn2)):
+                if timeh[ii] != time1[ii] or timeh[ii] != time2[ii]:
+                    print "FUCK times are weird", ii, bh1, bh2, host
+                if hn[ii] != hn1[ii] and hn[ii] == hn2[ii]:
+                    bha = bh1
+                    accid=1
+                    hostid=2
+                    break
+                if hn[ii] != hn2[ii] and hn[ii] == hn1[ii]:
+                    bha = bh2
+                    accid=2
+                    hostid=1
+                    break
+                ii += 1
+            if bha is None:
                 continue
-            ssc = ssc[match1]
-            ssc2 = ssc2[match2]
-            rvir = rvir[match1]
-            rvir2 = rvir2[match2]
+            timea, hna, mva, mga, msa, mbha, dbha, ssca, rvira, stepa, red = bha.reverse_property_cascade('t()', 'host_halo.halo_number()',
+                                                          'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass','BH_central_distance',
+                                                            'host_halo.SSC', 'host_halo.Rvir', 'step_path()', 'z()')
 
-            dist = np.sqrt(np.sum((ssc-ssc2)**2,axis=1))
-            good = np.where(dist > np.maximum(rvir,rvir2))[0]
-            if len(good)==0: continue
+            use = np.arange(min(len(timea),len(timeh)))
+            if len(np.where(timea[use]!=timeh[use])[0])>0:
+                print "FUCK times are still weird", bha, host
+
+            xd = ssca[use,0]-ssch[use,0]
+            yd = ssca[use,1]-ssch[use,1]
+            zd = ssca[use,2]-ssch[use,2]
+
+            scale = 1./(red+1)
+
+            bphys = boxsize*scale[use]*1e3
+            badx = np.where(np.abs(xd) > bphys/2)[0]
+            xd[badx] = -1.0 * (xd[badx]/np.abs(xd[badx])) * \
+                              np.abs(bphys[badx] - np.abs(xd[badx]))
+
+            bady = np.where(np.abs(yd) > bphys/2)[0]
+            yd[bady] = -1.0 * (yd[bady]/np.abs(yd[bady])) * \
+                              np.abs(bphys[bady] - np.abs(yd[bady]))
+            badz = np.where(np.abs(zd) > bphys/2)[0]
+            zd[badz] = -1.0 * (zd[badz]/np.abs(zd[badz])) * \
+                              np.abs(bphys[badz] - np.abs(zd[badz]))
+
+            dist = np.sqrt(xd**2 + yd**2 + zd**2)
+
+            outside = use[(dist>rvirh[use])]
+            if len(outside)==0:
+                continue
+
+            self.rawdat['hinteract_haloID_a'][i] = hna[outside[0]]
+            self.rawdat['hinteract_haloID_h'][i] = hn[outside[0]]
+            self.rawdat['hinteract_step'][i] = stepa[outside[0]]
+            self.rawdat['hinteract_mvir_a'][i] = mva[outside[0]]
+            self.rawdat['hinteract_mvir_h'][i] = mv[outside[0]]
+            self.rawdat['hinteract_mstar_a'][i] = msa[outside[0]]
+            self.rawdat['hinteract_mstar_h'][i] = ms[outside[0]]
+            self.rawdat['hinteract_mgas_a'][i] = mga[outside[0]]
+            self.rawdat['hinteract_mgas_h'][i] = mg[outside[0]]
+            self.rawdat['hinteract_mbh_a'][i] = mbha[outside[0]]
+            self.rawdat['hinteract_mbh_h'][i] = mbhh[outside[0]]
+            self.rawdat['hinteract_acc_id'][i] = self.rawdat['ID'+str(accid)]
+            self.rawdat['hinteract_host_id'][i] = self.rawdat['ID'+str(hostid)]
+
+            self.rawdat['dt_hinteract'][i] = self.rawdat['time'][i] - timea[outside[0]]
+
+#            match1 = np.where(np.in1d(time1,time2))[0]
+##            match2 = np.where(np.in1d(time2,time1))[0]
+#            if not np.array_equal(time1[match1],time2[match2]):
+#                print "WARNING time arrays don't match!"
+#            if len(match1)==0 or len(match2)==0:
+#                continue
+#            ssc = ssc[match1]
+#            ssc2 = ssc2[match2]
+#            rvir = rvir[match1]
+#            rvir2 = rvir2[match2]
+
+#            dist = np.sqrt(np.sum((ssc-ssc2)**2,axis=1))
+#            good = np.where(dist > np.maximum(rvir,rvir2))[0]
+#            if len(good)==0: continue
                 #good = np.where(dist >0)[0]
                 #if len(good) == 0:
                 #    continue
-            self.rawdat['hinteract_haloID_1'][i] = hn1[match1[good[0]]]
-            self.rawdat['hinteract_haloID_2'][i] = hn2[match2[good[0]]]
-            self.rawdat['hinteract_step'][i] = step1[match1[good[0]]]
-            self.rawdat['hinteract_mvir_1'][i] = mv1[match1[good[0]]]
-            self.rawdat['hinteract_mvir_2'][i] = mv2[match2[good[0]]]
-            self.rawdat['hinteract_mstar_1'][i] = ms1[match1[good[0]]]
-            self.rawdat['hinteract_mstar_2'][i] = ms2[match2[good[0]]]
-            self.rawdat['hinteract_mgas_1'][i] = mv1[match1[good[0]]]
-            self.rawdat['hinteract_mgas_2'][i] = mv2[match2[good[0]]]
-            self.rawdat['hinteract_mbh_1'][i] = mbh1[match1[good[0]]]
-            self.rawdat['hinteract_mbh_2'][i] = mbh2[match2[good[0]]]
+#            self.rawdat['hinteract_haloID_1'][i] = hn1[match1[good[0]]]
+#            self.rawdat['hinteract_haloID_2'][i] = hn2[match2[good[0]]]
+#            self.rawdat['hinteract_step'][i] = step1[match1[good[0]]]
+#            self.rawdat['hinteract_mvir_1'][i] = mv1[match1[good[0]]]
+#            self.rawdat['hinteract_mvir_2'][i] = mv2[match2[good[0]]]
+#            self.rawdat['hinteract_mstar_1'][i] = ms1[match1[good[0]]]
+#            self.rawdat['hinteract_mstar_2'][i] = ms2[match2[good[0]]]
+#            self.rawdat['hinteract_mgas_1'][i] = mv1[match1[good[0]]]
+#            self.rawdat['hinteract_mgas_2'][i] = mv2[match2[good[0]]]
+#            self.rawdat['hinteract_mbh_1'][i] = mbh1[match1[good[0]]]
+#            self.rawdat['hinteract_mbh_2'][i] = mbh2[match2[good[0]]]
 
-            self.rawdat['dt_hinteract'][i] = self.rawdat['time'][i] - time1[match1[good[0]]]
+#            self.rawdat['dt_hinteract'][i] = self.rawdat['time'][i] - time1[match1[good[0]]]
 
 
 
