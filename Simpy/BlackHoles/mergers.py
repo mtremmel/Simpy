@@ -846,17 +846,18 @@ class mergerCat(object):
                                                           'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass','BH_central_distance',
                                                             'host_halo.SSC', 'host_halo.Rvir', 'step_path()', 'z()')
 
-            use = np.arange(min(len(timea),len(timeh)))
-            if len(np.where(timea[use]!=timeh[use])[0])>0:
+            matcha = np.where(np.in1d(timea,timeh))[0]
+            matchh = np.where(np.in1d(timeh,timea))[0]
+            if len(np.where(timea[matcha]!=timeh[matchh])[0])>0:
                 print "FUCK times are still weird", bha, host
 
-            xd = ssca[use,0]-ssch[use,0]
-            yd = ssca[use,1]-ssch[use,1]
-            zd = ssca[use,2]-ssch[use,2]
+            xd = ssca[matcha,0]-ssch[matchh,0]
+            yd = ssca[matcha,1]-ssch[matchh,1]
+            zd = ssca[matcha,2]-ssch[matchh,2]
 
-            scale = 1./(red+1)
+            scale = 1./(red[matcha]+1)
 
-            bphys = boxsize*scale[use]*1e3
+            bphys = boxsize*scale*1e3
             badx = np.where(np.abs(xd) > bphys/2)[0]
             xd[badx] = -1.0 * (xd[badx]/np.abs(xd[badx])) * \
                               np.abs(bphys[badx] - np.abs(xd[badx]))
@@ -870,25 +871,26 @@ class mergerCat(object):
 
             dist = np.sqrt(xd**2 + yd**2 + zd**2)
 
-            outside = use[(dist>rvirh[use])]
-            if len(outside)==0:
+            outsidea = matcha[(dist>rvirh[matchh])]
+            outsideh = matchh[(dist>rvirh[matchh])]
+            if len(outsidea)==0:
                 continue
 
-            self.rawdat['hinteract_haloID_a'][i] = hna[outside[0]]
-            self.rawdat['hinteract_haloID_h'][i] = hn[outside[0]]
-            self.rawdat['hinteract_step'][i] = stepa[outside[0]]
-            self.rawdat['hinteract_mvir_a'][i] = mva[outside[0]]
-            self.rawdat['hinteract_mvir_h'][i] = mv[outside[0]]
-            self.rawdat['hinteract_mstar_a'][i] = msa[outside[0]]
-            self.rawdat['hinteract_mstar_h'][i] = ms[outside[0]]
-            self.rawdat['hinteract_mgas_a'][i] = mga[outside[0]]
-            self.rawdat['hinteract_mgas_h'][i] = mg[outside[0]]
-            self.rawdat['hinteract_mbh_a'][i] = mbha[outside[0]]
-            self.rawdat['hinteract_mbh_h'][i] = mbhh[outside[0]]
+            self.rawdat['hinteract_haloID_a'][i] = hna[outsidea[0]]
+            self.rawdat['hinteract_haloID_h'][i] = hn[outsideh[0]]
+            self.rawdat['hinteract_step'][i] = stepa[outsidea[0]]
+            self.rawdat['hinteract_mvir_a'][i] = mva[outsidea[0]]
+            self.rawdat['hinteract_mvir_h'][i] = mv[outsideh[0]]
+            self.rawdat['hinteract_mstar_a'][i] = msa[outsidea[0]]
+            self.rawdat['hinteract_mstar_h'][i] = ms[outsideh[0]]
+            self.rawdat['hinteract_mgas_a'][i] = mga[outsidea[0]]
+            self.rawdat['hinteract_mgas_h'][i] = mg[outsideh[0]]
+            self.rawdat['hinteract_mbh_a'][i] = mbha[outsidea[0]]
+            self.rawdat['hinteract_mbh_h'][i] = mbhh[outsideh[0]]
             self.rawdat['hinteract_acc_id'][i] = self.rawdat['ID'+str(accid)][i]
             self.rawdat['hinteract_host_id'][i] = self.rawdat['ID'+str(hostid)][i]
 
-            self.rawdat['dt_hinteract'][i] = self.rawdat['time'][i] - timea[outside[0]]
+            self.rawdat['dt_hinteract'][i] = self.rawdat['time'][i] - timea[outsidea[0]]
 
 #            match1 = np.where(np.in1d(time1,time2))[0]
 ##            match2 = np.where(np.in1d(time2,time1))[0]
