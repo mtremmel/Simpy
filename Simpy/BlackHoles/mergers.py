@@ -821,16 +821,20 @@ class mergerCat(object):
             bha = None
             accid = 0
             hostid = 0
-            while ii < min(len(hn1),len(hn2),len(hn)):
-                if timeh[ii] != time1[ii] or timeh[ii] != time2[ii]:
-                    print "FUCK times are weird", ii, bh1, bh2, host
-                    print time1, time2, timeh
-                if hn[ii] != hn1[ii] and hn[ii] == hn2[ii]:
+
+            while ii < len(hn):
+                o1 = np.where(time1==timeh[ii])[0]
+                o2 = np.where(time2==timeh[ii])[0]
+                if len(o1)==0 or len(o2)==0:
+                    break
+                if len(o1) > 1 or len(o2) > 1:
+                    print "WEIRD"
+                if hn[ii] != hn1[o1[0]] and hn[ii] == hn2[o2[0]]:
                     bha = bh1
                     accid=1
                     hostid=2
                     break
-                if hn[ii] != hn2[ii] and hn[ii] == hn1[ii]:
+                if hn[ii] != hn2[o1[0]] and hn[ii] == hn1[o2[0]]:
                     bha = bh2
                     accid=2
                     hostid=1
