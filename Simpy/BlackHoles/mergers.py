@@ -763,21 +763,37 @@ class mergerCat(object):
 
     def get_halo_interaction(self, dbsim,boxsize=25):
         import tangos as db
-        self.rawdat['hinteract_mvir_1'] = np.ones(len(self.rawdat['ID1']))*-1
-        self.rawdat['hinteract_mvir_2'] = np.ones(len(self.rawdat['ID1']))*-1
-        self.rawdat['hinteract_mstar_1'] = np.ones(len(self.rawdat['ID1']))*-1
-        self.rawdat['hinteract_mstar_2'] = np.ones(len(self.rawdat['ID1']))*-1
-        self.rawdat['hinteract_mgas_1'] = np.ones(len(self.rawdat['ID1']))*-1
-        self.rawdat['hinteract_mgas_2'] = np.ones(len(self.rawdat['ID1']))*-1
-        self.rawdat['hinteract_mbh_1'] = np.ones(len(self.rawdat['ID1']))*-1
-        self.rawdat['hinteract_mbh_2'] = np.ones(len(self.rawdat['ID1']))*-1
-        self.rawdat['dt_hinteract'] = np.ones(len(self.rawdat['ID1']))*-1
-        self.rawdat['hinteract_step'] = np.zeros(len(self.rawdat['ID1'])).astype('S100')
-        self.rawdat['hinteract_haloID_1'] = np.ones(len(self.rawdat['ID1']))*-1
-        self.rawdat['hinteract_haloID_2'] = np.ones(len(self.rawdat['ID1']))*-1
 
-        nodiff = 0
-        badmatch = 0
+        self.rawdat['hinteract_haloID_a'][i] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_haloID_h'][i] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_step'][i] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_mvir_a'][i] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_mvir_h'][i] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_mstar_a'][i] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_mstar_h'][i] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_mgas_a'][i] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_mgas_h'][i] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_mbh_a'][i] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_mbh_h'][i] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_acc_id'][i] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['hinteract_host_id'][i] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['dt_hinteract'][i] = np.ones(len(self.rawdat['ID1']))*-1
+
+        #self.rawdat['hinteract_mvir_1'] = np.ones(len(self.rawdat['ID1']))*-1
+        #self.rawdat['hinteract_mvir_2'] = np.ones(len(self.rawdat['ID1']))*-1
+        #self.rawdat['hinteract_mstar_1'] = np.ones(len(self.rawdat['ID1']))*-1
+        #self.rawdat['hinteract_mstar_2'] = np.ones(len(self.rawdat['ID1']))*-1
+        #self.rawdat['hinteract_mgas_1'] = np.ones(len(self.rawdat['ID1']))*-1
+        #self.rawdat['hinteract_mgas_2'] = np.ones(len(self.rawdat['ID1']))*-1
+        #self.rawdat['hinteract_mbh_1'] = np.ones(len(self.rawdat['ID1']))*-1
+        #self.rawdat['hinteract_mbh_2'] = np.ones(len(self.rawdat['ID1']))*-1
+        #self.rawdat['dt_hinteract'] = np.ones(len(self.rawdat['ID1']))*-1
+        #self.rawdat['hinteract_step'] = np.zeros(len(self.rawdat['ID1'])).astype('S100')
+        #self.rawdat['hinteract_haloID_1'] = np.ones(len(self.rawdat['ID1']))*-1
+        #self.rawdat['hinteract_haloID_2'] = np.ones(len(self.rawdat['ID1']))*-1
+
+        #nodiff = 0
+        #badmatch = 0
         for i in range(len(self.rawdat['ID1'])):
             if i%30 == 0:
                 print float(i)/float(len(self.rawdat['ID1']))*100, '% done'
