@@ -12,9 +12,12 @@ def SF_MS_hiz(Mstar,z):
 
 	return so - np.log10(1+(Mstar/Mo)**(-1.0*gamma))
 
-def SF_MS_z0_SDSS(Mstar,z):
+def SF_MS_z0_SDSS(Mstar):
 	#Elbaz+ 2007
-	return 8.7 * (Mstar/1e11)**0.77
+	return np.log10(8.7 * (Mstar/1e11)**0.77)
+
+def SF_MS_z0_Bluck(Mstar):
+	return 0.73 * np.log10(Mstar) - 7.3
 
 def dbSFH(halo, return_data=True, **kwargs):
 	from .. import dbanalysis
