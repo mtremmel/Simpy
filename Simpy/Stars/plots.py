@@ -2,7 +2,7 @@ import numpy as np
 from .. import plotting, cosmology
 from . import get
 
-def SF_MS(Mstar,z):
+def SF_MS_hiz(Mstar,z):
 	#Tomczak+ 2016
 	so = 0.448 + 1.22*z - 0.174*z**2
 	logMo = 9.458 + 0.865*z - 0.132*z**2
@@ -11,6 +11,10 @@ def SF_MS(Mstar,z):
 	Mo = 10**logMo
 
 	return so - np.log10(1+(Mstar/Mo)**(-1.0*gamma))
+
+def SF_MS_z0_SDSS(Mstar,z):
+	#Elbaz+ 2007
+	return 8.7 * (Mstar/1e11)**0.77
 
 def dbSFH(halo, return_data=True, **kwargs):
 	from .. import dbanalysis
