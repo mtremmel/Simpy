@@ -31,6 +31,12 @@ def init_iord_to_fpos(snap):
     iord_to_fpos[snap['iord']] = np.linspace(0,len(snap)-1,len(snap)).astype(np.int64)
     return iord_to_fpos
 
+def wrap(relpos,scale,boxsize=25):
+	bphys = boxsize*scale
+	bad = np.where(np.abs(relpos) > bphys/2.)
+	relpos[bad] = -1.0 * (relpos[bad]/np.abs(relpos[bad])) * np.abs(bphys - np.abs(relpos[bad]))
+	return
+
 
 def histogram(a,inbins,weights=None):
     if (np.size(np.shape(inbins))!=2) | (np.shape(inbins)[1] != 2):
