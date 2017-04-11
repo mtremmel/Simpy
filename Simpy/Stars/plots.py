@@ -207,11 +207,12 @@ def cosmicSFH(sim, style, lw=3, bins=50, zrange=None, label=None, ret_hist=True,
 		plotting.plt.xlim(zrange[0]+1,zrange[1]+1)
 		plotting.plt.xlabel(r'Redshift',fontsize=30)
 
-def UVJ_color(step,colorby=None):
+def UVJ_color(step,minmasss=1e9):
 	from color_hist import plt_UVJ_quench_region
 	from ..plotting import plt
-	U, V, J, Ud, Vd, Jd = step.gather_property('AB_U','AB_V','AB_J','dustExt_U','dustExt_V','dustExt_J')
-	UV = (U - V) + (Ud - Vd)
-	VJ = (V - J) + (Vd - Jd)
+	U, V, J, Ud, Vd, Jd, ms = step.gather_property('AB_U','AB_V','AB_J','dustExt_U','dustExt_V','dustExt_J', 'at(0.1*Rvir,star_mass_profile)')
+	ok = np.where(ms>minmass)[0]
+	UV = (U[ok] - V[ok]) + (Ud[ok] - Vd[ok])
+	VJ = (V[ok] - J[ok]) + (Vd[ok] - Jd[ok])
 	plt_UVJ_quench_region()
 	plt.plot(VJ,UV,'bo',ms=3)
