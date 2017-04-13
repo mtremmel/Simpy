@@ -1034,9 +1034,10 @@ class mergerCat(object):
         print "finished with ", nodiff, "BHs having never been in different halos and ", badmatch, "bad matches"
 
     def get_close_time(self,bhorbit, maxD, boxsize=25,comove=False, timestep=None):
-        tstr = 'dt_hmerger_'+str(maxD)
+        tstr = 't_'+str(maxD)
         if comove:
             tstr = tstr+'c'
+        self.rawdat[tstr] = np.ones(len(self.rawdat['ID1']))*-1
         for i in range(len(self.rawdat['ID1'])):
             if i %100==0:
                 print float(i)/float(len(self.rawdat['ID1']))*100, '% done'
@@ -1108,7 +1109,7 @@ class mergerCat(object):
                     except:
                         dt = np.sum(np.abs(time1[use1[close]] - time1[use1[close]+1]))
 
-                self.rawdat[tstr] = dt
+                self.rawdat[tstr][i] = dt
 
     def get_new_masses(self,orig_seed = 1e6, new_seed = 1e3, useonly=None, doonly=None):
         from . import util
