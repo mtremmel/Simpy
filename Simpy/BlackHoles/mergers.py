@@ -1104,10 +1104,7 @@ class mergerCat(object):
                 if timestep:
                     dt = len(close)*timestep
                 else:
-                    try:
-                        dt = np.sum(np.abs(time1[use1[close]] - time1[use1[close]-1]))
-                    except:
-                        dt = np.sum(np.abs(time1[use1[close]] - time1[use1[close]+1]))
+                    dt = len(close)*13.8/8192.
 
                 self.rawdat[tstr][i] = dt
 
