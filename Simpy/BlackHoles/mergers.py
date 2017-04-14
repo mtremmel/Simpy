@@ -1100,13 +1100,12 @@ class mergerCat(object):
                 dist /= scale1[use1]
 
             close = np.where(dist < maxD)
-            if len(close) > 0:
-                if timestep:
-                    dt = len(close)*timestep
-                else:
-                    dt = len(close)*13.8/8192.
+            if timestep:
+                dt = len(close)*timestep
+            else:
+                dt = len(close)*13.8/8192.
 
-                self.rawdat[tstr][i] = dt
+            self.rawdat[tstr][i] = dt
 
     def get_new_masses(self,orig_seed = 1e6, new_seed = 1e3, useonly=None, doonly=None):
         from . import util
