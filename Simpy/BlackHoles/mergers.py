@@ -1035,6 +1035,7 @@ class mergerCat(object):
 
     def get_close_time(self,bhorbit, maxD, boxsize=25,comove=False, timestep=None):
         tstr = 't_'+str(maxD)
+        print "hey this is updated!"
         if comove:
             tstr = tstr+'c'
         self.rawdat[tstr] = np.ones(len(self.rawdat['ID1']))*-1
