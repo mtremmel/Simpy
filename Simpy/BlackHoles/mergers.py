@@ -1103,7 +1103,7 @@ class mergerCat(object):
             if timestep:
                 dt = len(close)*timestep
             else:
-                if use1[close].min==0:
+                if np.min(use1[close])==0:
                     dt = np.sum(time1[use1[close[1:]]] - time1[use1[close[1:]]-1])
                 else:
                     dt = np.sum(np.abs(time1[use1[close]] - time1[use1[close]-1]))
