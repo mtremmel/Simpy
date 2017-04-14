@@ -1099,7 +1099,7 @@ class mergerCat(object):
             if comove:
                 dist /= scale1[use1]
 
-            close = np.where(dist < maxD)
+            close = np.where(dist < maxD)[0]
             if timestep:
                 dt = len(close)*timestep
             else:
