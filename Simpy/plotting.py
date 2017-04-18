@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 plt.ion()
-plt.rc('xtick',labelsize=20)
-plt.rc('ytick',labelsize=20)
-plt.rc('font', weight='medium', size=20)
+plt.rc('xtick',labelsize=15)
+plt.rc('ytick',labelsize=15)
+plt.rc('font', weight='medium', size=15)
 plt.rc('axes', linewidth=2)
 plt.rc('xtick.major',width=2, pad=10)
 plt.rc('ytick.major',width=2, pad=5)
