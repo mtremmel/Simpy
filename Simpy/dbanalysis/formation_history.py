@@ -4,7 +4,7 @@ import numpy as np
 
 
 def get_merger_ratios(merger_list, property):
-	ratio = np.zeros(merger_list)
+	ratio = np.zeros(len(merger_list))
 	cnt = 0
 	for mm in merger_list:
 		try:
