@@ -29,7 +29,7 @@ def name_ticks_2d(xnames,ynames):
 	plt.yticks(np.arange(len(xnames)),ynames[::-1])
 
 def make_two_d_plot(data1, bins1, data2, bins2, zdata, cmap, zdata_function = np.mean,
-					zdata_range=None, makeplot=True, return_data=False, cbar=True, cbarlabel=None):
+					zdata_range=None, makeplot=True, return_data=False, cbar=True, cbarlabel=None,noticks=True):
 
 	image = np.zeros((len(bins1)-1,len(bins2)-1))
 
@@ -45,7 +45,7 @@ def make_two_d_plot(data1, bins1, data2, bins2, zdata, cmap, zdata_function = np
 		else:
 			norm = colors.Normalize(image.min(),image.max())
 
-		two_d_grid(image,bins1[:-1],bins2[:-1],norm,cmap,noticks=True,cbar=cbar,cbarlabel=cbarlabel)
+		two_d_grid(image,bins1[:-1],bins2[:-1],norm,cmap,noticks=noticks,cbar=cbar,cbarlabel=cbarlabel)
 
 	if return_data is True:
 		return image
