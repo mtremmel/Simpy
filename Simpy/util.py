@@ -70,8 +70,8 @@ def mcABconv(mag,nu):
 def smoothdata(rawdat,nsteps=20,ret_std=False):
     nind = len(rawdat) - len(rawdat)%nsteps
     use = np.arange(nind)
-    rawdat = rawdat[use].reshape((nind/nsteps,nsteps))
-    meandat = rawdat.mean(axis=1)
+    newdat = rawdat[use].reshape((nind/nsteps,nsteps))
+    meandat = newdat.mean(axis=1)
     if ret_std is False:
         return meandat
     else:
