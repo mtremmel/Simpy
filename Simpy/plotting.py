@@ -36,7 +36,7 @@ def make_two_d_plot(data1, bins1, data2, bins2, zdata, cmap, zdata_function = np
 	for i in range(len(bins1[:-1])):
 		for j in range(len(bins2[:-1])):
 			obin = np.where((data1 < bins1[i+1]) & (data1 > bins1[i]) & (data2 < bins2[j+1]) & (data2 > bins2[j]))
-			image[i,j] = zdata_function(zdata[obin])
+			image[-1-i,j] = zdata_function(zdata[obin])
 
 	if makeplot is True:
 		import matplotlib.colors as colors
@@ -45,7 +45,7 @@ def make_two_d_plot(data1, bins1, data2, bins2, zdata, cmap, zdata_function = np
 		else:
 			norm = colors.Normalize(image.min(),image.max())
 
-		two_d_grid(image,bins1[:-1],bins2[:-1],norm,cmap,noticks=noticks,cbar=cbar,cbarlabel=cbarlabel)
+		two_d_grid(image,bins1[::-1],bins2[:-1],norm,cmap,noticks=noticks,cbar=cbar,cbarlabel=cbarlabel)
 
 	if return_data is True:
 		return image
