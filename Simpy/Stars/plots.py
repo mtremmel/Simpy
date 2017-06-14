@@ -7,8 +7,8 @@ def SF_MS_fit(mstar, sfr, mmin=8,mmax=10,dlm=0.1, minsfr = 0.0, return_data=Fals
 	medsfr = np.zeros(len(mbins)-1)
 	sigsfr = np.zeros(len(mbins)-1)
 	for i in range(len(mbins)-1):
-		medsfr[i] = np.median(np.log10(sfr[(mstar*0.6>10**mbins[i])&(mstar*0.6<10**mbins[i+1])&(sfr>minsfr)]))
-		sigsfr[i] = np.std(np.log10(sfr[(mstar*0.6>10**mbins[i])&(mstar*0.6<10**mbins[i+1])&(sfr>minsfr)]))
+		medsfr[i] = np.median(np.log10(sfr[(mstar>10**mbins[i])&(mstar<10**mbins[i+1])&(sfr>minsfr)]))
+		sigsfr[i] = np.std(np.log10(sfr[(mstar>10**mbins[i])&(mstar<10**mbins[i+1])&(sfr>minsfr)]))
 
 	fit= np.polyfit(mbins[:-1]+0.05,medsfr,1)
 	if return_data:
