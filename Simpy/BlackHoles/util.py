@@ -57,7 +57,7 @@ def get_new_masses(bhid_list, time_list, mass_list, bhmergers, orig_seed = 1e6, 
     cnt = 0
     for id, t, m in zip(bhid_list,time_list,mass_list):
         massdiff = 0
-        prog_list, masses, times = mergers.get_complete_prog_list(bhmergers, id, useonly=useonly, return_details=True)
+        prog_list, masses, times = mergers.get_complete_prog_list(bhmergers, id,t, useonly=useonly, return_details=True)
         small = np.where((masses < orig_seed)&(masses > new_seed))[0]
         big = np.where(masses >= orig_seed)[0]
         if len(small) > 0:
