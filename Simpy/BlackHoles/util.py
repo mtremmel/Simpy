@@ -64,6 +64,7 @@ def get_new_masses(bhid_list, time_list, mass_list, bhmergers, orig_seed = 1e6, 
             massdiff += np.sum(masses[small] - new_seed)
         if len(big) > 0:
             massdiff += len(big) * (orig_seed - new_seed)
+        print massdiff
         new_masses[cnt] -= massdiff
         if m >= orig_seed:
             new_masses[cnt] -= (orig_seed - new_seed)
