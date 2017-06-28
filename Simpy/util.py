@@ -33,8 +33,10 @@ def init_iord_to_fpos(snap):
 
 def wrap(relpos,scale,boxsize=25):
 	bphys = boxsize*scale
+    print bphys
 	bad = np.where(np.abs(relpos) > bphys/2.)
-	relpos[bad] = -1.0 * (relpos[bad]/np.abs(relpos[bad])) * np.abs(bphys/2. - np.abs(relpos[bad]))
+    print len(bad)
+	relpos[bad] = -1.0 * (relpos[bad]/np.abs(relpos[bad])) * np.abs(bphys - np.abs(relpos[bad]))
 	return
 
 
