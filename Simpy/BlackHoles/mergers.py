@@ -1128,8 +1128,12 @@ class mergerCat(object):
                                                       self, orig_seed=orig_seed, new_seed = new_seed, useonly=useonly)
 
 
-
-
-
+    def calc_DF_timescale(self, r = 0.7):
+        z = np.copy(self.rawdat['redshift'])
+        z[(z>2)]=2
+        sigma = 190 * (self.rawdat['Mstar']/1e11)**0.2 * (1+sz)**0.44
+        mbh = np.minimum(self.rawdat['merge_mass_2'],self.rawdat['merge_mass_1'])
+        tdf = 19/np.log(1+self.rawdat['Mstar']/mbh) * (r/5)**2 * (sigma/200.) * (1e8/mbh)
+        self.rawdat['tdf'] = tdf
 
 
