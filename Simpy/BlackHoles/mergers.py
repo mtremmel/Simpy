@@ -129,7 +129,7 @@ def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=Fals
                     else:
                         massnext = np.append(massnext,bhmergers['merge_mass_2'][useonly[match]])
                     timenext = np.append(timenext,bhmergers['time'][useonly[match]])
-                    if 'tdf' in bhmergers.keys()
+                    if 'tdf' in bhmergers.keys():
                         tdfnext = np.append(tdfnext,bhmergers['tdf'][useonly[match]])
         idnew = idnext
         idlist = np.append(idlist,idnew)
