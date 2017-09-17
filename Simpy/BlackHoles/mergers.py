@@ -96,7 +96,7 @@ def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=Fals
         if return_details is False:
             return np.array([])
         else:
-            return np.array([]), np.array([]), np.array([])
+            return np.array([]), np.array([]), np.array([]), np.array([])
     idnew = np.copy(bhmergers['ID2'][useonly[match]])
     idlist = np.copy(idnew)
     deep = 0
@@ -108,11 +108,17 @@ def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=Fals
         masslist = np.copy(massnew)
         timenew = np.copy(bhmergers['time'][useonly[match]])
         timelist = np.copy(timenew)
+        if 'tdf' in bhmergers.keys():
+            tdfnew = np.copy(bhmergers['tdf'][useonly[match]])
+            tdflist = np.copy(tdfnew)
+        else:
+            tdflist = np.array([])
     while len(idnew)>0:
         deep +=1
         idnext = np.array([])
         massnext = np.array([])
         timenext = np.array([])
+        tdfnext = np.array([])
         for eid in idnew:
             match, = np.where(bhmergers['ID1'][useonly]==eid)
             if len(match)>0:
@@ -123,13 +129,16 @@ def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=Fals
                     else:
                         massnext = np.append(massnext,bhmergers['merge_mass_2'][useonly[match]])
                     timenext = np.append(timenext,bhmergers['time'][useonly[match]])
+                    if 'tdf' in bhmergers.keys()
+                        tdfnext = np.append(tdfnext,bhmergers['tdf'][useonly[match]])
         idnew = idnext
         idlist = np.append(idlist,idnew)
         if return_details is True:
             masslist = np.append(masslist,massnext)
             timelist = np.append(timelist,timenext)
+            tdflist = npappend(tdflist,tdfnext)
     if return_details is True:
-        return idlist, masslist, timelist
+        return idlist, masslist, timelist,tdflist
     else:
         return idlist
 
