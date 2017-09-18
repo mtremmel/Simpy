@@ -1145,7 +1145,11 @@ class mergerCat(object):
             mbh = np.minimum(self.rawdat['newmass2'], self.rawdat['newmass1'])
         else:
             mbh = np.minimum(self.rawdat['merge_mass_2'],self.rawdat['merge_mass_1'])
-        tdf = 19/np.log(1+self.rawdat['Mstar']/mbh) * (r/5)**2 * (sigma/200.) * (1e8/mbh)
+        #rsch = Simpy.util.G.in_units('km**3 s**-2 Msol**-1') * mbh/Simpy.util.c.in_units('km s**-1')**2
+        r90 = Simpy.util.G.in_units('km**3 s**-2 Msol**-1')*mbh/sigma**2
+        lnlam = np.log(r/r90)
+
+        tdf = 19/lnlam * (r/5)**2 * (sigma/200.) * (1e8/mbh)
         self.rawdat['tdf'] = tdf
 
 
