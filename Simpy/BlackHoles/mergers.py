@@ -136,7 +136,7 @@ def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=Fals
         if return_details is True:
             masslist = np.append(masslist,massnext)
             timelist = np.append(timelist,timenext)
-            tdflist = npappend(tdflist,tdfnext)
+            tdflist = np.append(tdflist,tdfnext)
     if return_details is True:
         return idlist, masslist, timelist,tdflist
     else:
