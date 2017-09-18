@@ -88,7 +88,7 @@ def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt',
 #     print "finished with ", deep, "steps\n"
 #     return idlist
 
-def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=False, usenewmass=False):
+def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=False, usenewmass=False, leastmass=False):
     if useonly is None:
         useonly = np.arange(len(bhmergers['ID1']))
     match, = np.where((bhmergers['ID1'][useonly]==bhid)&(bhmergers['time'][useonly]<=tmax))
@@ -102,9 +102,16 @@ def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=Fals
     deep = 0
     if return_details is True:
         if usenewmass:
-            massnew = np.copy(bhmergers['newmass2'][useonly[match]])
+            if leastmass:
+                massnew = np.copy(np.minimum(bhmergers['newmass2'][useonly[match]],bhmergers['newmass1'][useonly[match]]))
+            else:
+                massnew = np.copy(bhmergers['newmass2'][useonly[match]])
         else:
-            massnew = np.copy(bhmergers['merge_mass_2'][useonly[match]])
+            if leastmass:
+                massnew = np.copy(
+                    np.minimum(bhmergers['merge_mass_2'][useonly[match]], bhmergers['merge_mass_1'][useonly[match]]))
+            else:
+                massnew = np.copy(bhmergers['merge_mass_2'][useonly[match]])
         masslist = np.copy(massnew)
         timenew = np.copy(bhmergers['time'][useonly[match]])
         timelist = np.copy(timenew)
@@ -125,9 +132,17 @@ def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=Fals
                 idnext = np.append(idnext,bhmergers['ID2'][useonly[match]])
                 if return_details is True:
                     if usenewmass:
-                        massnext = np.append(massnext, bhmergers['newmass2'][useonly[match]])
+                        if leastmass:
+                            massnext = \
+                                np.append(massnext, np.minimum(bhmergers['newmass2'][useonly[match]],bhmergers['newmass1'][useonly[match]]))
+                        else:
+                            massnext = np.append(massnext, bhmergers['newmass2'][useonly[match]])
                     else:
-                        massnext = np.append(massnext,bhmergers['merge_mass_2'][useonly[match]])
+                        if leastmass:
+                            massnext = \
+                                np.append(np.minimum(bhmergers['merge_mass_2'][useonly[match]], bhmergers['merge_mass_1'][useonly[match]]))
+                        else:
+                            massnext = np.append(massnext,bhmergers['merge_mass_2'][useonly[match]])
                     timenext = np.append(timenext,bhmergers['time'][useonly[match]])
                     if 'tdf' in bhmergers.keys():
                         tdfnext = np.append(tdfnext,bhmergers['tdf'][useonly[match]])
