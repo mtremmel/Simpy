@@ -1138,6 +1138,7 @@ class mergerCat(object):
 
 
     def calc_DF_timescale(self, r = 0.7, usenewmass=False):
+        from . import util
         z = np.copy(self.rawdat['redshift'])
         z[(z>2)]=2
         sigma = 190 * (self.rawdat['Mstar']/1e11)**0.2 * (1+z)**0.44
@@ -1146,7 +1147,7 @@ class mergerCat(object):
         else:
             mbh = np.minimum(self.rawdat['merge_mass_2'],self.rawdat['merge_mass_1'])
         #rsch = Simpy.util.G.in_units('km**3 s**-2 Msol**-1') * mbh/Simpy.util.c.in_units('km s**-1')**2
-        r90 = Simpy.util.G.in_units('km**3 s**-2 Msol**-1')*mbh/sigma**2
+        r90 = util.G.in_units('km**3 s**-2 Msol**-1')*mbh/sigma**2
         lnlam = np.log(r/r90)
 
         tdf = 19/lnlam * (r/5)**2 * (sigma/200.) * (1e8/mbh)
