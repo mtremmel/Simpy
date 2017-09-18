@@ -1138,7 +1138,7 @@ class mergerCat(object):
 
 
     def calc_DF_timescale(self, r = 0.7, usenewmass=False):
-        from . import util
+        from .. import util
         z = np.copy(self.rawdat['redshift'])
         z[(z>2)]=2
         sigma = 190 * (self.rawdat['Mstar']/1e11)**0.2 * (1+z)**0.44
