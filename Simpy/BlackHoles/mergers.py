@@ -140,7 +140,7 @@ def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=Fals
                     else:
                         if leastmass:
                             massnext = \
-                                np.append(np.minimum(bhmergers['merge_mass_2'][useonly[match]], bhmergers['merge_mass_1'][useonly[match]]))
+                                np.append(massnext, np.minimum(bhmergers['merge_mass_2'][useonly[match]], bhmergers['merge_mass_1'][useonly[match]]))
                         else:
                             massnext = np.append(massnext,bhmergers['merge_mass_2'][useonly[match]])
                     timenext = np.append(timenext,bhmergers['time'][useonly[match]])
