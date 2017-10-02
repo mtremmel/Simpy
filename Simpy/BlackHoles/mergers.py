@@ -1179,7 +1179,7 @@ class mergerCat(object):
         else:
             mbh = pynbody.array.SimArray(np.minimum(self.rawdat['merge_mass_2'],self.rawdat['merge_mass_1']))
         for ii in doonly:
-            host = db.get_halo(sim+'/'+self.rawdat['snap_before'][ii]+'/'+str(int(self.rawdat['halo_number()'])))
+            host = db.get_halo(sim+'/'+self.rawdat['snap_before'][ii]+'/'+str(int(self.rawdat['halo_number()'][ii])))
             if host is None:
                 continue
             try:
