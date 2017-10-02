@@ -1168,4 +1168,26 @@ class mergerCat(object):
         tdf = 19/lnlam * (r/5)**2 * (sigma/pynbody.array.SimArray(200.,'km s**-1')) * (pynbody.array.SimArray(1e8,'Msol')/mbh)
         self.rawdat['tdf'] = tdf
 
-
+    def calc_DF_timescale_2(self, sim='cosmo25', r=0.7, usenewmass=False, doonly=None):
+        from .. import util
+        import tangos as db
+        Mint = np.ones(len(self.rawdat['ID1']))*-1
+        if doonly is None:
+            doonly = np.arange(len(Mint))
+        if usenewmass:
+            mbh = pynbody.array.SimArray(np.minimum(self.rawdat['newmass2'], self.rawdat['newmass1']),'Msol')
+        else:
+            mbh = pynbody.array.SimArray(np.minimum(self.rawdat['merge_mass_2'],self.rawdat['merge_mass_1']))
+        for ii in doonly:
+            host = db.get_halo(sim+'/'+self.rawdat['snap_before'][ii]+'/'+self.rawdat['host.halo_number()'])
+            if host is None:
+                continue
+            try:
+                Mint[ii] = host.calculate('at('+str(r)+",tot_mass_profile)")
+            except:
+                continue
+        sigma = pynbody.array.SimArray(190 * (self.rawdat['Mstar'] / 1e11) ** 0.2 * (1 + z) ** 0.44, 'km s**-1')
+        r90 = util.G.in_units('kpc**3 s**-2 Msol**-1') * mbh / sigma.in_units('kpc s**-1') ** 2
+        lnlam = np.log(pynbody.array.SimArray(r, 'kpc') / r90)
+        vc = np.sqrt(util.G.in_units('kpc**3 Msol**-1 Gyr**-2')*Mint/r)
+        self.rawdat['tdf'] = 1.17/lnlam * Mint/mbh * r/vc
