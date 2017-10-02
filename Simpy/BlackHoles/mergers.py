@@ -1186,6 +1186,8 @@ class mergerCat(object):
                 Mint[ii] = host.calculate('at('+str(r)+",tot_mass_profile)")
             except:
                 continue
+        z = np.copy(self.rawdat['redshift'])
+        z[(z > 2)] = 2
         sigma = pynbody.array.SimArray(190 * (self.rawdat['Mstar'] / 1e11) ** 0.2 * (1 + z) ** 0.44, 'km s**-1')
         r90 = util.G.in_units('kpc**3 s**-2 Msol**-1') * mbh / sigma.in_units('kpc s**-1') ** 2
         lnlam = np.log(pynbody.array.SimArray(r, 'kpc') / r90)
