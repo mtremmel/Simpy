@@ -70,11 +70,11 @@ def mcABconv(mag,nu):
     C = 20.638
     return -(2./5.)*mag + C + np.log10(nu)
 
-def smoothdata(rawdat,nsteps=20,ret_std=False, sum=False):
+def smoothdata(rawdat,nsteps=20,ret_std=False, dosum=False):
     nind = len(rawdat) - len(rawdat)%nsteps
     use = np.arange(nind)
     newdat = rawdat[use].reshape((nind/nsteps,nsteps))
-    if sum:
+    if dosum:
         meandat = newdat.sum(axis=1)
     else:
         meandat = newdat.mean(axis=1)
