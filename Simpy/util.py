@@ -75,9 +75,9 @@ def smoothdata(rawdat,nsteps=20,ret_std=False, dosum=False):
     use = np.arange(nind)
     newdat = rawdat[use].reshape((nind/nsteps,nsteps))
     if dosum:
-        meandat = newdat.sum(axis=1)
+        meandat = newdat.nansum(axis=1)
     else:
-        meandat = newdat.mean(axis=1)
+        meandat = newdat.nanmean(axis=1)
     if ret_std is False:
         return meandat
     else:
