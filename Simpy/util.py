@@ -31,11 +31,14 @@ def init_iord_to_fpos(snap):
     iord_to_fpos[snap['iord']] = np.linspace(0,len(snap)-1,len(snap)).astype(np.int64)
     return iord_to_fpos
 
-def wrap(relpos,scale,boxsize=25):
-	bphys = boxsize*scale
-	bad = np.where(np.abs(relpos) > bphys/2.)
-	relpos[bad] = -1.0 * (relpos[bad]/np.abs(relpos[bad])) * np.abs(bphys - np.abs(relpos[bad]))
-	return
+def wrap(relpos,scale,boxsize=25e3):
+    bphys = boxsize*scale
+    bad = np.where(np.abs(relpos) > bphys/2.)
+    if type(bphys) == np.ndarray:
+        relpos[bad] = -1.0 * (relpos[bad] / np.abs(relpos[bad])) * np.abs(bphys[bad] - np.abs(relpos[bad]))
+    else:
+        relpos[bad] = -1.0 * (relpos[bad]/np.abs(relpos[bad])) * np.abs(bphys - np.abs(relpos[bad]))
+    return
 
 
 def histogram(a,inbins,weights=None):
@@ -67,11 +70,14 @@ def mcABconv(mag,nu):
     C = 20.638
     return -(2./5.)*mag + C + np.log10(nu)
 
-def smoothdata(rawdat,nsteps=20,ret_std=False):
+def smoothdata(rawdat,nsteps=20,ret_std=False, dosum=False):
     nind = len(rawdat) - len(rawdat)%nsteps
     use = np.arange(nind)
     newdat = rawdat[use].reshape((nind/nsteps,nsteps))
-    meandat = newdat.mean(axis=1)
+    if dosum:
+        meandat = np.nansum(newdat,axis=1)
+    else:
+        meandat = np.nanmean(newdat,axis=1)
     if ret_std is False:
         return meandat
     else:

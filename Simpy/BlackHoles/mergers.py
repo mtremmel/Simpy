@@ -88,7 +88,7 @@ def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt',
 #     print "finished with ", deep, "steps\n"
 #     return idlist
 
-def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=False):
+def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=False, usenewmass=False, leastmass=False):
     if useonly is None:
         useonly = np.arange(len(bhmergers['ID1']))
     match, = np.where((bhmergers['ID1'][useonly]==bhid)&(bhmergers['time'][useonly]<=tmax))
@@ -96,34 +96,64 @@ def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=Fals
         if return_details is False:
             return np.array([])
         else:
-            return np.array([]), np.array([]), np.array([])
+            return np.array([]), np.array([]), np.array([]), np.array([])
     idnew = np.copy(bhmergers['ID2'][useonly[match]])
     idlist = np.copy(idnew)
     deep = 0
     if return_details is True:
-        massnew = np.copy(bhmergers['merge_mass_2'][useonly[match]])
+        if usenewmass:
+            if leastmass:
+                massnew = np.copy(np.minimum(bhmergers['newmass2'][useonly[match]],bhmergers['newmass1'][useonly[match]]))
+            else:
+                massnew = np.copy(bhmergers['newmass2'][useonly[match]])
+        else:
+            if leastmass:
+                massnew = np.copy(
+                    np.minimum(bhmergers['merge_mass_2'][useonly[match]], bhmergers['merge_mass_1'][useonly[match]]))
+            else:
+                massnew = np.copy(bhmergers['merge_mass_2'][useonly[match]])
         masslist = np.copy(massnew)
         timenew = np.copy(bhmergers['time'][useonly[match]])
         timelist = np.copy(timenew)
+        if 'tdf' in bhmergers.keys():
+            tdfnew = np.copy(bhmergers['tdf'][useonly[match]])
+            tdflist = np.copy(tdfnew)
+        else:
+            tdflist = np.array([])
     while len(idnew)>0:
         deep +=1
         idnext = np.array([])
         massnext = np.array([])
         timenext = np.array([])
+        tdfnext = np.array([])
         for eid in idnew:
             match, = np.where(bhmergers['ID1'][useonly]==eid)
             if len(match)>0:
                 idnext = np.append(idnext,bhmergers['ID2'][useonly[match]])
                 if return_details is True:
-                    massnext = np.append(massnext,bhmergers['merge_mass_2'][useonly[match]])
+                    if usenewmass:
+                        if leastmass:
+                            massnext = \
+                                np.append(massnext, np.minimum(bhmergers['newmass2'][useonly[match]],bhmergers['newmass1'][useonly[match]]))
+                        else:
+                            massnext = np.append(massnext, bhmergers['newmass2'][useonly[match]])
+                    else:
+                        if leastmass:
+                            massnext = \
+                                np.append(massnext, np.minimum(bhmergers['merge_mass_2'][useonly[match]], bhmergers['merge_mass_1'][useonly[match]]))
+                        else:
+                            massnext = np.append(massnext,bhmergers['merge_mass_2'][useonly[match]])
                     timenext = np.append(timenext,bhmergers['time'][useonly[match]])
+                    if 'tdf' in bhmergers.keys():
+                        tdfnext = np.append(tdfnext,bhmergers['tdf'][useonly[match]])
         idnew = idnext
         idlist = np.append(idlist,idnew)
         if return_details is True:
             masslist = np.append(masslist,massnext)
             timelist = np.append(timelist,timenext)
+            tdflist = np.append(tdflist,tdfnext)
     if return_details is True:
-        return idlist, masslist, timelist
+        return idlist, masslist, timelist,tdflist
     else:
         return idlist
 
@@ -1122,14 +1152,44 @@ class mergerCat(object):
                                                       self, orig_seed=orig_seed, new_seed = new_seed, useonly=useonly)
 
 
+    def calc_DF_timescale(self, r = 0.7, usenewmass=False):
+        from .. import util
+        z = np.copy(self.rawdat['redshift'])
+        z[(z>2)]=2
+        sigma = pynbody.array.SimArray(190 * (self.rawdat['Mstar']/1e11)**0.2 * (1+z)**0.44,'km s**-1')
+        if usenewmass:
+            mbh = pynbody.array.SimArray(np.minimum(self.rawdat['newmass2'], self.rawdat['newmass1']),'Msol')
+        else:
+            mbh = pynbody.array.SimArray(np.minimum(self.rawdat['merge_mass_2'],self.rawdat['merge_mass_1']))
+        #rsch = Simpy.util.G.in_units('km**3 s**-2 Msol**-1') * mbh/Simpy.util.c.in_units('km s**-1')**2
+        r90 = util.G.in_units('kpc**3 s**-2 Msol**-1')*mbh/sigma.in_units('kpc s**-1')**2
+        lnlam = np.log(pynbody.array.SimArray(r,'kpc')/r90)
 
+        tdf = 19/lnlam * (r/5)**2 * (sigma/pynbody.array.SimArray(200.,'km s**-1')) * (pynbody.array.SimArray(1e8,'Msol')/mbh)
+        self.rawdat['tdf'] = tdf
 
-
-
-
-
-
-
-
-
-
+    def calc_DF_timescale_2(self, sim='cosmo25', r=0.7, usenewmass=False, doonly=None):
+        from .. import util
+        import tangos as db
+        Mint = np.ones(len(self.rawdat['ID1']))*-1
+        if doonly is None:
+            doonly = np.arange(len(Mint))
+        if usenewmass:
+            mbh = pynbody.array.SimArray(np.minimum(self.rawdat['newmass2'], self.rawdat['newmass1']),'Msol')
+        else:
+            mbh = pynbody.array.SimArray(np.minimum(self.rawdat['merge_mass_2'],self.rawdat['merge_mass_1']))
+        for ii in doonly:
+            host = db.get_halo(sim+'/'+self.rawdat['snap_before'][ii]+'/'+str(int(self.rawdat['halo_number()'][ii])))
+            if host is None:
+                continue
+            try:
+                Mint[ii] = host.calculate('at('+str(r)+",tot_mass_profile)")
+            except:
+                continue
+        z = np.copy(self.rawdat['redshift'])
+        z[(z > 2)] = 2
+        sigma = pynbody.array.SimArray(190 * (self.rawdat['Mstar'] / 1e11) ** 0.2 * (1 + z) ** 0.44, 'km s**-1')
+        r90 = util.G.in_units('kpc**3 s**-2 Msol**-1') * mbh / sigma.in_units('kpc s**-1') ** 2
+        lnlam = np.log(pynbody.array.SimArray(r, 'kpc') / r90)
+        vc = np.sqrt(util.G.in_units('kpc**3 Msol**-1 Gyr**-2')*Mint/r)
+        self.rawdat['tdf'] = 1.17/lnlam * Mint/mbh * r/vc
