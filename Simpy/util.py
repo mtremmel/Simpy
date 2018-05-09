@@ -11,6 +11,10 @@ loglbol_sun = np.log10(lbol_sun)
 mh = pynbody.array.SimArray(1.6726219e-24, 'g')
 kb = pynbody.array.SimArray(1.380658e-16, 'erg K**-1')
 
+sigmaT = pynbody.array.SimArray(6.6525e-29,'m**2')
+
+t_edd = sigmaT.in_units('cm**2')*c/(4.*np.pi*G*mh)
+
 def L_edd(mass):
     return mass*lbol_sun * 3.2e4
 
