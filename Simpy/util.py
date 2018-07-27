@@ -108,5 +108,9 @@ def find_sats(Mvir, cen, Rvir, strict = False):
             sub[i] = 1
     return sub
 
-
+def binomial_error(ntot, n_true):
+    z = 1.96 #95% confidence
+    if n_true > ntot:
+        raise ValueError("n_true cannot exceed ntot")
+    return z/ntot * np.sqrt(n_true*(ntot-n_true)/ntot)
 
