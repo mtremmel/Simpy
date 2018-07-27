@@ -112,5 +112,5 @@ def binomial_error(ntot, n_true):
     z = 1.96 #95% confidence
     if n_true > ntot:
         raise ValueError("n_true cannot exceed ntot")
-    return z/ntot * np.sqrt(n_true*(ntot-n_true)/ntot)
+    return float(z)/ntot * np.sqrt(float(n_true)*(ntot-n_true)/ntot)
 
