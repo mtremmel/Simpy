@@ -228,7 +228,25 @@ def create_halo_tree_files(dbsim, h=0.6776931508813172, nmax=None):
 		cnt += 1
 
 
-
-
-
+def make_ascii_table_from_database(step, filename,format=None, header=None, order=True,*properties):
+	import numpy as np
+	data = step.gather_property('halo_number()',*properties)
+	if header is not None and len(header)!=len(properties)+1:
+		header = None
+		print "Warning header given does not fit format!"
+	if header is None:
+		header = np.array(properties)
+	header_str = " "
+	for name in header:
+		header_str += name+' '
+	if format is None:
+		format = ['%d']
+		for ii in range(len(data)-1):
+			format.append('%f')
+	if order:
+		idorder = np.argsort(data[0])
+		for i in range(len(data)):
+			data[i] = data[i][idorder]
+	print len(data), data[0]
+	np.savetxt(filename,np.column_stack(data), fmt=format, header=header_str)
 

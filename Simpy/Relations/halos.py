@@ -110,14 +110,14 @@ def SMHM_db(sim, step, style, fitstyle=['c-','r-'], fit=['Mos', 'Krav'], minmass
     import tangos as db
     step = db.get_timestep(sim+'/%'+str(step))
     if contam_limit:
-        Mvir, Mstar, Rvir, cen, contam = step.gather_property('Mvir', 'Mstar', 'Rvir','SSC','contamination_fraction')
+        Mvir, Mstar, Rvir, cen, contam = step.gather_property('Mvir', 'Mstar', 'max_radius','shrink_center','contamination_fraction')
         ok = np.where(contam<contam_limit)
         Mvir = Mvir[ok]
         Mstar = Mstar[ok]
         Rvir = Rvir[ok]
         cen = cen[ok]
     else:
-        Mvir, Mstar, Rvir, cen = step.gather_property('Mvir', 'Mstar', 'Rvir','SSC')
+        Mvir, Mstar, Rvir, cen = step.gather_property('Mvir', 'Mstar', 'max_radius','shrink_center')
     if remove_sats is True or return_subs is True:
         sub = np.zeros(len(Mstar))
         for i in range(len(Mvir)):
