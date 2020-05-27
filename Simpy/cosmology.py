@@ -5,19 +5,110 @@ import numpy as np
 from scipy import optimize as opt
 from scipy import integrate
 from . import util
+import math
 
-def getTime(z,sim):
-        c = cosmo.Cosmology(sim=sim)
-        return other_cosmo.age(sim,z=0)*c.Exp2Time(1.0 / (1+z))/c.Exp2Time(1)
+_interp_points = 1000
 
-def getScaleFactor(times,s, verbose=False):
+def _a_dot(a, h0, om_m, om_l):
+    om_k = 1.0 - om_m - om_l
+    return h0 * a * np.sqrt(om_m * (a ** -3) + om_k * (a ** -2) + om_l)
+
+def _a_dot_recip(*args):
+    return 1. / _a_dot(*args)
+
+def tdyne(time, sim=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.456, h0=0.67769, overden=200):
+        a,z = getScaleFactor(arr.SimArray([time],'Gyr'), s=sim, OmegaM=OmegaM, h0=h0, Omegab=Omegab, Lambda=Lambda)
+        rho = overden * rho_crit(z, OmegaM=OmegaM, h0=h0, Omegab=Omegab, Lambda=Lambda, unit='Msol kpc**-3')
+        return np.sqrt(3*np.pi/(16*util.G.in_units('Msol**-1 kpc**3 Gyr**-2')*rho))
+
+def ntdyne(tref, t):
+        def func(x):
+                return 1 / tdyne(x)
+        if isinstance(t, np.ndarray) or isinstance(t, list):
+                results = []
+                for tt in t:
+                        results.append(integrate.quad(func,tref,tt)[0])
+        else:
+                results = integrate.quad(func,tref,t)[0]
+        return np.array(results)
+
+def rho_crit(z, sim=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.456, h0=0.67769, unit=None):
+        if z is None:
+                z = sim.properties['z']
+
+        if unit is None:
+                try:
+                        unit = sim.dm["mass"].units / sim.dm["pos"].units ** 3
+                except arr.units.UnitsException:
+                        unit = arr.units.NoUnit()
+
+        if hasattr(unit, "_no_unit"):
+                unit = units.Unit("Msol kpc^-3 a^-3")
+
+        if sim:
+                omM = sim.properties['omegaM0']
+                omL = sim.properties['omegaL0']
+                h0 = sim.properties['h']
+        else:
+                omM = OmegaM
+                omL = Lambda
+                h0 = h0
+        a = 1.0 / (1.0 + z)
+        H_z = _a_dot(a, h0, omM, omL) / a
+        H_z = arr.units.Unit("100 km s^-1 Mpc^-1") * H_z
+
+        rho_crit = (3 * H_z ** 2) / (8 * math.pi * arr.units.G)
+
+        return arr.SimArray(rho_crit.in_units(unit), unit)
+
+def getTime(z,sim=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.456, h0=0.67769, unit='Gyr'):
+        c = cosmo.Cosmology(sim=sim, Ob = Omegab, Om=OmegaM, L = Lambda)
+        import scipy
+        import scipy.integrate
+        from scipy.interpolate import interp1d
+
+        if z is None:
+                z = sim.properties['z']
+
+        if sim is not None:
+                h0 = sim.properties['h']
+                omM = sim.properties['omegaM0']
+                omL = sim.properties['omegaL0']
+        else:
+                omM = OmegaM
+                omL = Lambda
+
+        conv = arr.units.Unit("0.01 s Mpc km^-1").ratio(unit)
+
+        def get_age(x):
+                x = 1.0 / (1.0 + x)
+                return scipy.integrate.quad(_a_dot_recip, 0, x, (h0, omM, omL))[0] * conv
+
+        if isinstance(z, np.ndarray) or isinstance(z, list):
+                if len(z) > _interp_points:
+                        a_vals = np.logspace(-3, 0, _interp_points)
+                        z_vals = 1. / a_vals - 1.
+                        log_age_vals = np.log(getTime(z_vals, sim))
+                        interp = interp1d(np.log(a_vals), log_age_vals, bounds_error=False)
+                        log_a_input = np.log(1. / (1. + z))
+                        results = np.exp(interp(log_a_input))
+                else:
+                        results = np.array(map(get_age, z))
+                results = results.view(SimArray)
+                results.units = unit
+        else:
+                results = get_age(z)
+        return results
+        #return other_cosmo.age(sim,z=z)*c.Exp2Time(1.0 / (1+z))/c.Exp2Time(1)
+
+def getScaleFactor(times,s=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.456, h0=0.67769, verbose=False):
         redshift = np.zeros(np.size(times))
         ntimes = np.size(times)
         for tt in range(np.size(times)):
                 if tt%100==0 and verbose is True:
                         print tt/np.float(np.size(times)) * 100, '% done'
                 def func(z):
-                        return getTime(z,s) - times.in_units('Gyr')[tt]
+                        return getTime(z,s,OmegaM=OmegaM, Lambda=Lambda, Omegab=Omegab, h0=h0) - times.in_units('Gyr')[tt]
                 try: redshift[tt] = opt.newton(func,0)
                 except:
                         try:
