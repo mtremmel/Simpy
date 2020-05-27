@@ -4,6 +4,7 @@ import pynbody.array as arr
 import numpy as np
 from scipy import optimize as opt
 from scipy import integrate
+from scipy import interpolate
 from . import util
 import math
 
@@ -21,9 +22,9 @@ def tdyne(time, sim=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.456, h0=0.67769
         rho = overden * rho_crit(z, OmegaM=OmegaM, h0=h0, Omegab=Omegab, Lambda=Lambda, unit='Msol kpc**-3')
         return np.sqrt(3*np.pi/(16*util.G.in_units('Msol**-1 kpc**3 Gyr**-2')*rho))
 
-def ntdyne(tref, t):
+def ntdyne(tref, t, **kwargs):
         def func(x):
-                return 1 / tdyne(x)
+                return 1 / tdyne(x, **kwargs)
         if isinstance(t, np.ndarray) or isinstance(t, list):
                 results = []
                 for tt in t:
@@ -31,6 +32,28 @@ def ntdyne(tref, t):
         else:
                 results = integrate.quad(func,tref,t)[0]
         return np.array(results)
+
+def interp_ntdyne(tref=None, times = None, **kwargs):
+        if tref is None and times is None and len(kwargs.keys())==0:
+                import pickle
+                import os
+                default_file = os.path.join(os.path.dirname(__file__), "default_tdyne_data.pkl")
+                f = open(default_file, 'rb')
+                tdyne_interp_data = pickle.load(f)
+                f.close()
+                td_ex = tdyne_interp_data['tdyne']
+                times = tdyne_interp_data['times']
+                print(tdyne_interp_data['notes'])
+        else:
+                if not tref:
+                        tref = 0.2
+                if not times:
+                        times = np.arange(0.3,13.9,0.1)
+                if not sim:
+                        td_ex = ntdyne(tref, times, **kwargs)
+                else:
+                        td_ex = ntdyne(tref, times, sim=sim)
+        return interpolate.interp1d(times, td_ex)
 
 def rho_crit(z, sim=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.456, h0=0.67769, unit=None):
         if z is None:
