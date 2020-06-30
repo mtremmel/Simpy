@@ -33,7 +33,7 @@ def sepOrbitbyStep(simname, minstep=0, maxstep=1000000000, MBHinit=1e6, NCHILADA
 	MBHinit = MBHinit / float(munits)
 	if not os.path.exists('orbitsteps'): os.system('mkdir orbitsteps')
 	os.chdir('orbitsteps')
-	print "separating orbit file by step..."
+	print("separating orbit file by step...")
 	os.system(
 		"awk -F ' ' '{if($4 - $13 > " + str(MBHinit) + " && $3!=int($3) && $3 >= " + str(minstep) + " && $3 <= " + str(
 			maxstep) + ") print>(int($3)+1); if($4 - $13 > " + str(MBHinit) + " && $3==int($3) && $3 >= " + str(
@@ -49,7 +49,7 @@ def extract_single_BH(simname, bhiord):
 
 
 def read_full_orbit_file(filename, simname):
-	f = open('files.list','r')
+	f = open('files.list', 'r')
 	files = f.readlines()
 	s = pynbody.load(files[0].strip('\n'))
 	f.close()
@@ -63,31 +63,31 @@ def read_full_orbit_file(filename, simname):
 	output = {'iord':bhid, 'time':time, 'step':step, 'mass':mass, 'x':x, 'y':y,
 			  'z':z, 'vx':vx, 'vy':vy, 'vz':vz, 'pot':pot, 'mdot':mdot, 'dm':dm, 'E':E, 'dt':dt, 'a':a}
 	if a is None:
-		a, = cosmology.getScaleFactor(pynbody.array.SimArray(time,s.infer_original_units('Gyr')),s)
+		a, = cosmology.getScaleFactor(pynbody.array.SimArray(time, s.infer_original_units('Gyr')), s)
 		output['a'] = a
 	units = {'x':'kpc', 'y':'kpc', 'z':'kpc', 'vx':'km s**-1', 'vy':'km s**-1', 'vz':'km s**-1',
 			 'mdot':'Msol yr**-1', 'dm':'Msol', 'dt':'Gyr', 'time':'Gyr', 'mass':'Msol'}
 
 	for key in ['x', 'y', 'z', 'vx', 'vy', 'vz']:
-		print "fixing scale factor for", key
+		print(("fixing scale factor for", key))
 		output[key] *= output['a']
 
-	for key in units.keys():
-		print "converting units for ", key
+	for key in list(units.keys()):
+		print(("converting units for ", key))
 		origunit = s.infer_original_units(units[key])
 		if key in ['x', 'y', 'z', 'vx', 'vy', 'vz']: origunit = origunit / pynbody.units.Unit('a')
-		output[key] = pynbody.array.SimArray(output[key],origunit)
+		output[key] = pynbody.array.SimArray(output[key], origunit)
 		output[key] = output[key].in_units(units[key])
 
 	order = np.argsort(output['time'])
-	util.cutdict(output,order)
+	util.cutdict(output, order)
 	return output
 
 
 def smooth_raw_orbit_data(output, key, nsteps, maxstep=4096, minstep=0):
 	ok = np.where((output['step']>=minstep)&(output['step']<maxstep))[0]
-	util.cutdict(output,ok)
-	ustep, ind = np.unique(output['step'].astype(np.int),return_index=True)
+	util.cutdict(output, ok)
+	ustep, ind = np.unique(output['step'].astype(np.int), return_index=True)
 	ss = np.where(ustep%nsteps == 0)[0]
 
 	smoothed_dat = []
@@ -119,16 +119,16 @@ def getOrbitValbyStep(simname, minstep=1, maxstep=4096, MBHinit=1e6, clean=False
 	output = {'iord': [], 'time': [], 'step': [], 'mass': [], 'x': [], 'y': [], 'z': [], 'vx': [], 'vy': [], 'vz': [],
 			'mdot': [], 'mdotmean': [], 'mdotsig': [], 'a': [], 'dM': []}
 	oldform = False
-	f = open('files.list','r')
+	f = open('files.list', 'r')
 	files = f.readlines()
 	s = pynbody.load(files[0].strip('\n'))
 	f.close()
 	if not os.path.exists('orbitsteps/') or newdata is True:
-		print "Running code to extract data by step from raw orbit file. . ."
+		print("Running code to extract data by step from raw orbit file. . .")
 		sepOrbitbyStep(simname, minstep=minstep, maxstep=maxstep, MBHinit=MBHinit)
 	for i in range(minstep, maxstep + 1):
 		if os.path.exists('orbitsteps/' + str(i)):
-			print "getting data for step ", i
+			print(("getting data for step ", i))
 			try:
 				bhid, time, step, mass, x, y, z, vx, vy, vz, pot, mdot, dm, E, dt, a = \
 					readcol('orbitsteps/' + str(i), twod=False)
@@ -140,10 +140,10 @@ def getOrbitValbyStep(simname, minstep=1, maxstep=4096, MBHinit=1e6, clean=False
 							readcol('orbitsteps/' + str(i), twod=False)
 					except:
 						oldform = False
-						print "ERROR reading step! skipping. . ."
+						print("ERROR reading step! skipping. . .")
 						continue
 				else:
-					print "ERROR reading step! skipping. . ."
+					print("ERROR reading step! skipping. . .")
 					continue
 			if clean:
 				os.system('rm orbitsteps/' + str(i))
@@ -166,16 +166,16 @@ def getOrbitValbyStep(simname, minstep=1, maxstep=4096, MBHinit=1e6, clean=False
 		if oldform is False:
 			a = a[order]
 		else:
-			a,redsh= cosmology.getScaleFactor(pynbody.array.SimArray(time,s.infer_original_units('Gyr')), s)
+			a, redsh= cosmology.getScaleFactor(pynbody.array.SimArray(time, s.infer_original_units('Gyr')), s)
 			del redsh
 			gc.collect()
 
 		ubhid, uind = np.unique(bhid, return_index=True)
 		for ii in range(len(ubhid)):
 			if ii < len(ubhid) - 1:
-				idind = range(uind[ii], uind[ii + 1])
+				idind = list(range(uind[ii], uind[ii + 1]))
 			else:
-				idind = range(uind[ii], len(step))
+				idind = list(range(uind[ii], len(step)))
 			curstep, = np.where(step[idind] == i)
 			if len(curstep) == 0: continue
 			curstep = curstep[0]
@@ -226,12 +226,12 @@ def truncOrbitFile(simname, minstep=1, maxstep=4096, ret_output=False, MBHinit=1
 	tofile = tuple(tofile)
 	outputname = simname + '.shortened.orbit'
 	if os.path.exists(outputname) and overwrite is False:
-		outf = open(outputname,'a')
+		outf = open(outputname, 'a')
 	else:
-		outf = open(outputname,'w')
-	print "saving to file..."
+		outf = open(outputname, 'w')
+	print("saving to file...")
 	np.savetxt(outf, np.column_stack(tofile),
-			fmt=['%d', '%f', '%d', '%e', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f','%e'])
+			fmt=['%d', '%f', '%d', '%e', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f', '%e'])
 	del tofile
 	outf.close()
 	gc.collect()
@@ -250,16 +250,16 @@ def sticthOrbitSteps(simname, nfiles, overwrite=False, nstart=1):
 	:param nstart: what number file to start with
 	'''
 
-	outorder = ['iord', 'time', 'step', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'mdot', 'mdotmean', 'mdotsig', 'a','dM']
+	outorder = ['iord', 'time', 'step', 'mass', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'mdot', 'mdotmean', 'mdotsig', 'a', 'dM']
 	outputname = simname + '.shortened.orbit'
 
 	if os.path.exists(outputname) and overwrite == False:
-		outf = open(outputname,'a')
+		outf = open(outputname, 'a')
 	else:
-		outf = open(outputname,'w')
+		outf = open(outputname, 'w')
 	for i in range(nfiles):
 		num = i + nstart
-		print "reading in data from ", simname + '.shortened.orbit' + str(num)
+		print(("reading in data from ", simname + '.shortened.orbit' + str(num)))
 		f = open(simname + '.shortened.orbit' + str(num), 'rb')
 		output_part = pickle.load(f)
 		f.close()
@@ -272,7 +272,7 @@ def sticthOrbitSteps(simname, nfiles, overwrite=False, nstart=1):
 		gc.collect()
 		tofile = tuple(tofile)
 		np.savetxt(outf, np.column_stack(tofile),
-			fmt=['%d', '%f', '%d', '%e', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f','%e'])
+			fmt=['%d', '%f', '%d', '%e', '%f', '%f', '%f', '%f', '%f', '%f', '%e', '%e', '%e', '%f', '%e'])
 		del(tofile)
 		gc.collect()
 	outf.close()
@@ -286,12 +286,12 @@ class Orbit(object):
 		self.filename=savefile
 		ofile = simname + ".shortened.orbit"
 		if not os.path.exists(ofile):
-			print "ERROR shortened orbit file not found! Exiting..."
+			print("ERROR shortened orbit file not found! Exiting...")
 			return
 		Files.cklists(simname, NCHILADA=NCHILADA)
 
 		# read raw data from shortened orbit file
-		print "reading in data. . ."
+		print("reading in data. . .")
 		bhid, time, step, mass, x, y, z, vx, vy, vz, mdot, mdotmean, mdotsig, scalefac, dM = readcol(ofile,
 																										 twod=False,
 																										 nanval=0.0)
@@ -312,7 +312,7 @@ class Orbit(object):
 		# control for "fake" bhs caused by restarts from outputs
 
 		if os.path.exists(self.simname + '.starlog'):
-			print "checking for fake BHs. . ."
+			print("checking for fake BHs. . .")
 			sl = pynbody.tipsy.StarLog(self.simname + '.starlog')
 			slbhiords = sl['iord'][(sl['tform'] < 0)]
 			ok, = np.where(np.in1d(self.data['iord'], slbhiords))
@@ -325,7 +325,7 @@ class Orbit(object):
 		# convert comoving quantities to physical units
 		for key in ['x', 'y', 'z', 'vx', 'vy', 'vz']:
 			self.data[key] *= self.data['scalefac']
-		for key in self.data.keys():
+		for key in list(self.data.keys()):
 			unit = None
 			if key == 'fake?': continue
 			if defunits[key] is not None:
@@ -336,7 +336,7 @@ class Orbit(object):
 				self.data[key].convert_units(defunits[key])
 
 		# get information on iord,step data for easy future data recovery
-		print "reducing data. . ."
+		print("reducing data. . .")
 		self.bhiords, self.id_slice = self._get_slice_ind('iord')
 		self.steps, self.step_slice = self._get_slice_ind('step')
 		self.times = np.unique(self.data['time'])
@@ -377,11 +377,11 @@ class Orbit(object):
 		if filename is None:
 			if self.filename is not None: ff = self.filename
 			else:
-				print "WARNING! Filename not found. Using default"
+				print("WARNING! Filename not found. Using default")
 				ff = 'BHorbit.pkl'
 		else: ff = filename
-		f = open(ff,'wb')
-		pickle.dump(self,f)
+		f = open(ff, 'wb')
+		pickle.dump(self, f)
 		f.close()
 		return
 
@@ -399,7 +399,7 @@ class Orbit(object):
 		#time = self.single_BH_data(iord, 'time')
 		nind = len(rawdat) - len(rawdat)%nsteps
 		use = np.arange(nind)
-		rawdat = rawdat[use].reshape((nind/nsteps,nsteps))
+		rawdat = rawdat[use].reshape((nind/nsteps, nsteps))
 		#time = time[use].reshape((nind/nsteps,nsteps))
 		meandat = rawdat.mean(axis=1)
 		#meantime = time.mean(axis=1)
@@ -422,42 +422,42 @@ class Orbit(object):
 			ord = np.argsort(sliords)
 			bhind, = np.where(np.in1d(sliords[ord], self.bhiords))
 			self.tform = sl['tform'][ord][bhind] * -1
-			if self.tform.min() < 0: print "WARNING! Positive tforms were found for BHs!"
+			if self.tform.min() < 0: print("WARNING! Positive tforms were found for BHs!")
 			gc.collect()
 		else:
 			cnt = 0
 			self.tform = np.ones(len(self.bhiords)) * -1
 			for id in self.bhiords:
-				self.tform[cnt] = self.single_BH_data(id,'time').min()
+				self.tform[cnt] = self.single_BH_data(id, 'time').min()
 				cnt += 1
 
 	def get_distance(self, ID1, ID2,boxsize=25,comove=True):
-		time1 = self.single_BH_data(ID1,'time')
-		time2 = self.single_BH_data(ID2,'time')
-		x1 = self.single_BH_data(ID1,'x')
-		x2 = self.single_BH_data(ID2,'x')
-		y1 = self.single_BH_data(ID1,'y')
-		y2 = self.single_BH_data(ID2,'y')
-		z1 = self.single_BH_data(ID1,'z')
-		z2 = self.single_BH_data(ID2,'z')
-		scale = self.single_BH_data(ID1,'scalefac')
-		mint = np.max([time1.min(),time2.min()])
-		maxt = np.minimum(time2.max(),time1.max())
+		time1 = self.single_BH_data(ID1, 'time')
+		time2 = self.single_BH_data(ID2, 'time')
+		x1 = self.single_BH_data(ID1, 'x')
+		x2 = self.single_BH_data(ID2, 'x')
+		y1 = self.single_BH_data(ID1, 'y')
+		y2 = self.single_BH_data(ID2, 'y')
+		z1 = self.single_BH_data(ID1, 'z')
+		z2 = self.single_BH_data(ID2, 'z')
+		scale = self.single_BH_data(ID1, 'scalefac')
+		mint = np.max([time1.min(), time2.min()])
+		maxt = np.minimum(time2.max(), time1.max())
 
 		use1 = np.where((time1<=maxt)&(time1>=mint))[0]
 		use2 = np.where((time2<=maxt)&(time2>=mint))[0]
 
 		if len(use1) == 0 or len(use2) == 0:
-			print "uh no no time match"
+			print("uh no no time match")
 			return
 
 		if len(use1) != len(use2):
 			if len(use1)< len(use2):
-				use1 = np.append(use1,use1[-1])
+				use1 = np.append(use1, use1[-1])
 				if len(use1) != len(use2):
-					print "SHIIIIIIT"
+					print("SHIIIIIIT")
 			else:
-				print "SHIIIIIIIT oh no"
+				print("SHIIIIIIIT oh no")
 
 		xd = x1[use1]-x2[use2]
 		yd = y1[use1]-y2[use2]
@@ -520,7 +520,7 @@ class Orbit(object):
 				if os.path.exists(simfiles[i].strip('\n') + '.amiga.grp'):
 					grpfile = simfiles[i].strip('\n') + '.amiga.grp'
 				else:
-					print "ERROR there is no grp file for this step!"
+					print("ERROR there is no grp file for this step!")
 					continue
 			sim = pynbody.load(simfiles[i].strip('\n'))
 			simind = np.where(np.in1d(sim.stars['iord'], self.bhiords))
@@ -580,58 +580,58 @@ class Orbit(object):
 		if type == 'redshift':
 			z = self.data['scalefac']**-1 -1
 			if xlog is False:
-				plotting.plt.plot(z[ord],macc/volume,style, linewidth=lw, label=label)
+				plotting.plt.plot(z[ord], macc/volume, style, linewidth=lw, label=label)
 			else:
-				plotting.plt.plot(z[ord]+1,macc/volume,style, linewidth=lw, label=label)
+				plotting.plt.plot(z[ord]+1, macc/volume, style, linewidth=lw, label=label)
 
 			if plotdata is True:
-				import colldata as dat
+				from . import colldata as dat
 				err = dat.shankar09H - dat.shankar09
 				if xlog is True:
-					plotting.plt.plot(dat.Uneda14z,dat.Uneda14rho,'k^',label='Ueda+ 14')
-					plotting.plt.errorbar([1.03],[dat.shankar09],yerr=[err],color='black',fmt='D',label="Shankar+ 09")
-					plotting.plt.errorbar([dat.Salvaterra12z+1],[dat.Salvaterra12],
-										color='black',fmt='x',xerr=[dat.Salvaterra12zH-dat.Salvaterra12z],
-										yerr=0.5*dat.Salvaterra12,uplims=[True],label='Salvaterra+ 12')
-					plotting.plt.errorbar(dat.Treister13z+1,dat.Treister13,
-										color='black',fmt='o',xerr=dat.Treister13zErr,
-										yerr=0.5*dat.Treister13,uplims=[True,True,True], label='Treister+ 13')
-					plotting.plt.errorbar(dat.Hopkins07zp1,10**dat.Hopkins07,
-										color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
-					plotting.plt.plot(dat.Lacy15zBF_eps06_z2max+1,10**dat.Lacy15rhoBF_z2max,color='grey', linestyle='-',lw=3, label='Lacy+ 15', alpha=0.5)
-					plotting.plt.plot(dat.Lacy15zBF_eps06_z2max+1,10**dat.Lacy15rhoBF_eps06_z2max,color='grey', linestyle='-',lw=3, alpha=0.5)
-					plotting.plt.fill_between(dat.Lacy15zBF_eps06_z2max+1, 10**dat.Lacy15rhoBF_z2max, 10**dat.Lacy15rhoBF_eps06_z2max, facecolor='grey',alpha=0.2)
+					plotting.plt.plot(dat.Uneda14z, dat.Uneda14rho, 'k^', label='Ueda+ 14')
+					plotting.plt.errorbar([1.03], [dat.shankar09], yerr=[err], color='black', fmt='D', label="Shankar+ 09")
+					plotting.plt.errorbar([dat.Salvaterra12z+1], [dat.Salvaterra12],
+										color='black', fmt='x', xerr=[dat.Salvaterra12zH-dat.Salvaterra12z],
+										yerr=0.5*dat.Salvaterra12, uplims=[True], label='Salvaterra+ 12')
+					plotting.plt.errorbar(dat.Treister13z+1, dat.Treister13,
+										color='black', fmt='o', xerr=dat.Treister13zErr,
+										yerr=0.5*dat.Treister13, uplims=[True, True, True], label='Treister+ 13')
+					plotting.plt.errorbar(dat.Hopkins07zp1, 10**dat.Hopkins07,
+										color='grey', fmt='o', yerr=(dat.Hopkins07merr, dat.Hopkins07perr), label='Hopkins+ 07')
+					plotting.plt.plot(dat.Lacy15zBF_eps06_z2max+1, 10**dat.Lacy15rhoBF_z2max, color='grey', linestyle='-', lw=3, label='Lacy+ 15', alpha=0.5)
+					plotting.plt.plot(dat.Lacy15zBF_eps06_z2max+1, 10**dat.Lacy15rhoBF_eps06_z2max, color='grey', linestyle='-', lw=3, alpha=0.5)
+					plotting.plt.fill_between(dat.Lacy15zBF_eps06_z2max+1, 10**dat.Lacy15rhoBF_z2max, 10**dat.Lacy15rhoBF_eps06_z2max, facecolor='grey', alpha=0.2)
 				else:
-					plotting.plt.plot(dat.Uneda14z-1,dat.Uneda14rho,'k^',label='Ueda+ 14')
-					plotting.plt.errorbar([0.03],[dat.shankar09],yerr=[err],
-										color='black',fmt='D',label="Shankar+ 09")
-					plotting.plt.errorbar([dat.Salvaterra12z],[dat.Salvaterra12],
-										color='black',fmt='x',xerr=[dat.Salvaterra12zH-dat.Salvaterra12z],
-										yerr=0.5*dat.Salvaterra12,uplims=[True],label='Salvaterra+ 12')
-					plotting.plt.errorbar(dat.Treister13z,dat.Treister13,
-										color='black',fmt='o',xerr=dat.Treister13zErr,
-										yerr=0.5*dat.Treister13,uplims=[True,True,True], label='Treister+ 13')
-					plotting.plt.errorbar(dat.Hopkins07zp1-1,10**dat.Hopkins07,
-										color='grey',fmt='o',yerr=(dat.Hopkins07merr,dat.Hopkins07perr),label='Hopkins+ 07')
-					plotting.plt.plot(dat.Lacy15zBF_eps06_z2max,10**dat.Lacy15rhoBF_z2max,color='grey', linestyle='-',lw=3, label='Lacy+ 15', alpha=0.5)
-					plotting.plt.plot(dat.Lacy15zBF_eps06_z2max,10**dat.Lacy15rhoBF_eps06_z2max,color='grey', linestyle='-',lw=3, alpha=0.5)
+					plotting.plt.plot(dat.Uneda14z-1, dat.Uneda14rho, 'k^', label='Ueda+ 14')
+					plotting.plt.errorbar([0.03], [dat.shankar09], yerr=[err],
+										color='black', fmt='D', label="Shankar+ 09")
+					plotting.plt.errorbar([dat.Salvaterra12z], [dat.Salvaterra12],
+										color='black', fmt='x', xerr=[dat.Salvaterra12zH-dat.Salvaterra12z],
+										yerr=0.5*dat.Salvaterra12, uplims=[True], label='Salvaterra+ 12')
+					plotting.plt.errorbar(dat.Treister13z, dat.Treister13,
+										color='black', fmt='o', xerr=dat.Treister13zErr,
+										yerr=0.5*dat.Treister13, uplims=[True, True, True], label='Treister+ 13')
+					plotting.plt.errorbar(dat.Hopkins07zp1-1, 10**dat.Hopkins07,
+										color='grey', fmt='o', yerr=(dat.Hopkins07merr, dat.Hopkins07perr), label='Hopkins+ 07')
+					plotting.plt.plot(dat.Lacy15zBF_eps06_z2max, 10**dat.Lacy15rhoBF_z2max, color='grey', linestyle='-', lw=3, label='Lacy+ 15', alpha=0.5)
+					plotting.plt.plot(dat.Lacy15zBF_eps06_z2max, 10**dat.Lacy15rhoBF_eps06_z2max, color='grey', linestyle='-', lw=3, alpha=0.5)
 					plotting.plt.fill_between(dat.Lacy15zBF_eps06_z2max, 10**dat.Lacy15rhoBF_z2max, 10**dat.Lacy15rhoBF_eps0_z2max,
-											  facecolor='grey',edgecolor='grey',alpha=0.2)
+											  facecolor='grey', edgecolor='grey', alpha=0.2)
 
 		if type == 'time' and plotdata is True:
-			print "WARNING! Data only valid for redshift plotting. Ignoring keyword for time plot"
+			print("WARNING! Data only valid for redshift plotting. Ignoring keyword for time plot")
 		if type== 'time':
-			plotting.plt.plot(self.data['time'].in_units('Gyr'),macc/volume,style, linewidth=lw, label=label)
+			plotting.plt.plot(self.data['time'].in_units('Gyr'), macc/volume, style, linewidth=lw, label=label)
 		if overplot is False:
 			if xlog is True:
-				plotting.plt.xscale('log',base=10)
-				plotting.plt.xticks([1,2,3,4,5,6,7,8,9,10,11],['0','1','2','3','4','5','6','7','8','9','10'])
-			if ylog is True: plotting.plt.yscale('log',base=10)
+				plotting.plt.xscale('log', base=10)
+				plotting.plt.xticks([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'])
+			if ylog is True: plotting.plt.yscale('log', base=10)
 			if type == 'redshift':
-				plotting.plt.xlabel('Redshift',fontsize=30)
+				plotting.plt.xlabel('Redshift', fontsize=30)
 			if type == 'time':
-				plotting.plt.xlabel('Time (Gyr)',fontsize=30)
-			plotting.plt.ylabel(r'$\rho_{acc}$ [M$_{\odot}$ cMpc$^{-3}$]',fontsize=30)
+				plotting.plt.xlabel('Time (Gyr)', fontsize=30)
+			plotting.plt.ylabel(r'$\rho_{acc}$ [M$_{\odot}$ cMpc$^{-3}$]', fontsize=30)
 		if label is not None or plotdata is True: plotting.plt.legend(fontsize=20)
 		return
 
@@ -639,58 +639,58 @@ class Orbit(object):
 				volume=25**3, overplot=False,label=None, bins=50, redshift=1, plotdata=True, dotitle=True,lw=2):
 		from .. import plotting
 		from .. import cosmology
-		import colldata as dat
+		from . import colldata as dat
 
 		f = open('files.list', 'r')
 		simfiles = f.readlines()
 		f.close()
 		sim = pynbody.load(simfiles[0].strip('\n'))
-		tt = self.single_BH_data(self.bhiords[0],'time')
+		tt = self.single_BH_data(self.bhiords[0], 'time')
 		dt = tt[1] - tt[0]
 		zz = np.where((redshift > dat.hop_bhlf_zbinsl)&(redshift < dat.hop_bhlf_zbinsh))
-		print "single timestep time: ", dt
+		print(("single timestep time: ", dt))
 		if maxM is None: maxM = self.data['mass'].max()*2
 		if minM is None: minM = 0
 		if maxL is None: maxL = self.data['lum'].max()*2
 		if minL is None: minL = 0
 		ok, = np.where((self.data['lum'] > minL)&(self.data['lum'] <= maxL)&(self.data['mass']>minM)&(self.data['mass']<maxM)&(self.data['scalefac']**-1 - 1 > dat.hop_bhlf_zbinsl[zz])&(self.data['scalefac']**-1 - 1 < dat.hop_bhlf_zbinsh[zz]))
-		tlz = cosmology.getTime(dat.hop_bhlf_zbinsl[zz],sim)
-		thz = cosmology.getTime(dat.hop_bhlf_zbinsh[zz],sim)
+		tlz = cosmology.getTime(dat.hop_bhlf_zbinsl[zz], sim)
+		thz = cosmology.getTime(dat.hop_bhlf_zbinsh[zz], sim)
 		T = tlz - thz
 		if minL >0: lrange = [np.log10(minL), np.log10(maxL)]
 		else: lrange = [np.log10(self.data['lum'].min()), np.log10(maxL)]
 		dlogl = (lrange[1] - lrange[0])/float(bins)
-		data = np.histogram(np.log10(self.data['lum'][ok]),bins=bins,range=lrange)
+		data = np.histogram(np.log10(self.data['lum'][ok]), bins=bins, range=lrange)
 		phi = data[0]*(dt/(T*dlogl*volume))
 		lbins = data[1]
-		plotting.plt.step(lbins[0:-1],np.log10(phi),style, label=label, linewidth=lw, where='post')
+		plotting.plt.step(lbins[0:-1], np.log10(phi), style, label=label, linewidth=lw, where='post')
 		if plotdata is True:
 			# Hopkins 07 data
 			tardat, = np.where(dat.hop_bhlf_obs['redshift']==dat.hop_bhlf_z[zz])
-			plotting.plt.errorbar(dat.hop_bhlf_obs['lbol'][tardat] + util.loglbol_sun, dat.hop_bhlf_obs['dphi'][tardat],yerr=dat.hop_bhlf_obs['sig'][tardat],fmt='o',color='grey',ecolor='grey',label='Hopkins+ 2007 (Compilation)')
+			plotting.plt.errorbar(dat.hop_bhlf_obs['lbol'][tardat] + util.loglbol_sun, dat.hop_bhlf_obs['dphi'][tardat], yerr=dat.hop_bhlf_obs['sig'][tardat], fmt='o', color='grey', ecolor='grey', label='Hopkins+ 2007 (Compilation)')
 			if dat.hop_bhlf_z[zz] == 6:
 				# For z = 6, Barger+ 03 data
-				plotting.plt.errorbar([dat.bar_bhlfz6_L],[dat.bar_bhlfz6_phi],
-									xerr=dat.bar_bhlfz6_Lerr,yerr=dat.bar_bhlfz6_phierr,
-									fmt='^',color='k',label='Barger+2003')
+				plotting.plt.errorbar([dat.bar_bhlfz6_L], [dat.bar_bhlfz6_phi],
+									xerr=dat.bar_bhlfz6_Lerr, yerr=dat.bar_bhlfz6_phierr,
+									fmt='^', color='k', label='Barger+2003')
 				# and Fiore+ 12 data
-				plotting.plt.errorbar([dat.fio_bhlf_L6F],[dat.fio_bhlf_phi6F],
-									xerr=[[dat.fio_bhlf_L6Fm],[dat.fio_bhlf_L6Fp]],
-									yerr=[[dat.fio_bhlf_errphi6Fm],[dat.fio_bhlf_errphi6Fp]],
-									fmt='s',color='k',label='Fiore+ 2012')
+				plotting.plt.errorbar([dat.fio_bhlf_L6F], [dat.fio_bhlf_phi6F],
+									xerr=[[dat.fio_bhlf_L6Fm], [dat.fio_bhlf_L6Fp]],
+									yerr=[[dat.fio_bhlf_errphi6Fm], [dat.fio_bhlf_errphi6Fp]],
+									fmt='s', color='k', label='Fiore+ 2012')
 			if dat.hop_bhlf_z[zz] == 5:
-				l1450 = np.log10(4.4)+util.mcABconv(dat.mcg_bhlf_obs['M1450'],util.c/0.145e-4)
+				l1450 = np.log10(4.4)+util.mcABconv(dat.mcg_bhlf_obs['M1450'], util.c/0.145e-4)
 				dphi = 10**dat.mcg_bhlf_obs['logphi']
 				dphip = (2./5.) * (dphi + dat.mcg_bhlf_obs['sig'])
 				dphim = (2./5.) * (dphi - dat.mcg_bhlf_obs['sig'])
 				dphi = np.log10((2./5.)*dphi)
-				dphierr = [dphi-np.log10(dphim),np.log10(dphip)-dphi]
-				plotting.plt.errorbar(l1450,dphi,yerr=dphierr,fmt='D',color='k',label='McGreer+ 2013')
+				dphierr = [dphi-np.log10(dphim), np.log10(dphip)-dphi]
+				plotting.plt.errorbar(l1450, dphi, yerr=dphierr, fmt='D', color='k', label='McGreer+ 2013')
 		if overplot is False:
 			if dotitle is True:
 				plotting.plt.title(str(dat.hop_bhlf_zbinsl[zz[0]])+' < z < '+str(dat.hop_bhlf_zbinsh[zz[0]]))
-			plotting.plt.xlabel(r'log$_{10}$($L_{bol}$ [ergs/s]))',fontsize=30)
-			plotting.plt.ylabel(r'log$_{10}$($\phi$ [Mpc$^{-3}$ dex$^{-1}$])',fontsize=30)
+			plotting.plt.xlabel(r'log$_{10}$($L_{bol}$ [ergs/s]))', fontsize=30)
+			plotting.plt.ylabel(r'log$_{10}$($\phi$ [Mpc$^{-3}$ dex$^{-1}$])', fontsize=30)
 		if label is not None or plotdata is True:
-			plotting.plt.legend(loc='lower left',fontsize=20)
+			plotting.plt.legend(loc='lower left', fontsize=20)
 		return

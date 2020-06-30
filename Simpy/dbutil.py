@@ -17,7 +17,7 @@ def list_db_redshift(dbsim):
 def hist_by_step_intervals(dbsim, data, type='time',weight=None, dxnorm=True, ret_data=False, plot=True, **kwargs):
 
 	if weight is not None:
-		if type(weight)!=list and type(weight)!=np.ndarray:
+		if not isinstance(weight, list) and not isinstance(weight, np.ndarray):
 			weight = np.ones(len(data))*weight
 
 	if type=='time':
@@ -26,13 +26,13 @@ def hist_by_step_intervals(dbsim, data, type='time',weight=None, dxnorm=True, re
 		binedge = list_db_redshift(dbsim)[::-1]
 
 
-	n, bins = np.histogram(data,bins=binedge,weights=weight,**kwargs)
+	n, bins = np.histogram(data, bins=binedge, weights=weight, **kwargs)
 
 	if dxnorm is True:
 		n = n/(bins[1:]-bins[:-1])
 
 	if plot is True:
-		plt.step(bins,np.append(n,n[-1]),**kwargs)
+		plt.step(bins, np.append(n, n[-1]), **kwargs)
 
 	if ret_data is True:
 		return n, bins
@@ -52,7 +52,7 @@ class PopEvol(object):
 			self.data[p] = []
 
 		for hid in hidlist:
-			print "collecting data for halo ", hid
+			print(("collecting data for halo ", hid))
 			self.data['hid'].append(hid)
 			if type == 'backward':
 				rawdat =  step.halos[hid-1].reverse_property_cascade(*proplist)
@@ -64,7 +64,7 @@ class PopEvol(object):
 				self.data[p].append(rawdat[cnt])
 				cnt += 1
 
-	def get_data_zrange(self,zmin,zmax, key):
+	def get_data_zrange(self, zmin, zmax, key):
 		output = []
 		for i in range(len(self.data['hid'])):
 			ztarget = np.where((self.data['z()'][i]>=zmin)&(self.data['z()'][i]<zmax))[0]

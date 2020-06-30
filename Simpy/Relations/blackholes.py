@@ -34,12 +34,12 @@ def BHMBulge(logMbulge):
 def plt_BHMStar(simname, step, marker='o', size = 100, color='blue', label=None, fit=True, fiterr=True, remove_sats=True, alpha=1.0):
     from .. import plotting
     import tangos as db
-    print "getting data from database..."
+    print("getting data from database...")
     bhdata, Mstar, cen, Rvir, Mvir = db.get_timestep(simname+'/%'+step).gather_property('bh().BH_mass', 'Mstar', 'SSC', 'Rvir', 'Mvir')
     sats = np.zeros(len(Mstar))
     if remove_sats is True:
         for i in range(len(Mstar)):
-            D = np.sqrt(np.sum((cen[i] - cen)**2,axis=1))
+            D = np.sqrt(np.sum((cen[i] - cen)**2, axis=1))
             close = np.where((D>0)&(D<Rvir)&(Mvir[i]<Mvir))[0]
             if len(close)>0:
                 sats[i] = 1
@@ -48,20 +48,20 @@ def plt_BHMStar(simname, step, marker='o', size = 100, color='blue', label=None,
         bhdata = bhdata[ok]
     plotting.plt.scatter(Mstar*0.6, bhdata, marker=marker, s=size, color=color, label=label, alpha=alpha)
     if fit is True:
-        lmstarE = np.arange(9,9.8,0.1)
-        lmstar = np.arange(9.7,12,0.1)
+        lmstarE = np.arange(9, 9.8, 0.1)
+        lmstar = np.arange(9.7, 12, 0.1)
         bhmassE = BHMstar(lmstarE)
         #lmstar = np.arange(np.log10(Mstar[(Mstar > 0)]).min() - 1., np.log10(Mstar[(Mstar > 0)]).max() + 1., 0.1)
         bhmass = BHMstar(lmstar)
-        plotting.plt.plot(10**lmstar, 10**bhmass,'k-', label='Schramm+Silverman 13',lw=2)
-        plotting.plt.plot(10**lmstarE, 10**bhmassE,'k--',lw=2)
+        plotting.plt.plot(10**lmstar, 10**bhmass, 'k-', label='Schramm+Silverman 13', lw=2)
+        plotting.plt.plot(10**lmstarE, 10**bhmassE, 'k--', lw=2)
         if fiterr is True:
-            plotting.plt.fill_between(10**np.concatenate([lmstarE,lmstar]),10**(np.concatenate([bhmassE,bhmass])+0.3),
-                                      10**(np.concatenate([bhmassE,bhmass])-0.3),color='Grey',alpha=0.5)
+            plotting.plt.fill_between(10**np.concatenate([lmstarE, lmstar]), 10**(np.concatenate([bhmassE, bhmass])+0.3),
+                                      10**(np.concatenate([bhmassE, bhmass])-0.3), color='Grey', alpha=0.5)
 
-    plotting.plt.yscale('log',base=10)
-    plotting.plt.xscale('log',base=10)
-    plotting.plt.legend(loc='upper left',fontsize=25)
+    plotting.plt.yscale('log', base=10)
+    plotting.plt.xscale('log', base=10)
+    plotting.plt.legend(loc='upper left', fontsize=25)
     plotting.plt.ylabel(r"M$_{BH}$ [M$_{\odot}$]")
     plotting.plt.xlabel(r"M$_{\star}$ [M$_{\odot}$]")
 
@@ -70,9 +70,9 @@ def Find_AGN(dbsim, lAGN=1e43, dmax=10):
            'mass_brightest':[], 'haloID':[], 'all_AGN_mass':[], 'all_AGN_lum':[], 'all_AGN_dist':[],'numberAGN':[], 'redshift':[],
            'Mstar':[], 'Mgas':[],'Mvir':[]}
     for step in dbsim.timesteps:
-        print step
+        print(step)
         try:
-            mdot, host, distance, mass, Mvir, Mgas, Mstar = step.gather_property('BH_mdot_ave','host_halo.halo_number()','BH_central_distance', 'BH_mass',
+            mdot, host, distance, mass, Mvir, Mgas, Mstar = step.gather_property('BH_mdot_ave', 'host_halo.halo_number()', 'BH_central_distance', 'BH_mass',
                                                           'host_halo.Mvir', 'host_halo.Mgas', 'host_halo.Mstar')
         except:
             continue
@@ -86,12 +86,12 @@ def Find_AGN(dbsim, lAGN=1e43, dmax=10):
         Mstar = Mstar[ord]
 
 
-        uid, ind, cnt = np.unique(host,return_index=True,return_counts=True)
+        uid, ind, cnt = np.unique(host, return_index=True, return_counts=True)
         for i in range(len(uid)):
             if len(uid)>10:
-                if i%int(len(uid)/10.)==0: print float(i)/len(uid)*100,'% done'
+                if i%int(len(uid)/10.)==0: print((float(i)/len(uid)*100, '% done'))
             else:
-                print float(i)/len(uid)*100, '% done'
+                print((float(i)/len(uid)*100, '% done'))
             lum = mdot[ind[i]:ind[i]+cnt[i]]*util.c**2*util.M_sun_g/(3600.*24.*365.)
             dist = distance[ind[i]:ind[i]+cnt[i]]*(1+step.redshift)
             ok = np.where(dist<10)[0]

@@ -8,7 +8,7 @@ import gc
 
 
 #Moster relations
-def moster13allvar(logM,z,M10,M11,N10,N11,b10,b11,g10,g11):
+def moster13allvar(logM, z, M10, M11, N10, N11, b10, b11, g10, g11):
     r = z/(z+1)
     logM1 = M10 + M11 * r
     N = N10 + N11 * r
@@ -27,9 +27,9 @@ def moster13(logM, z):
     b11 = -0.826
     g10 =  0.608
     g11 =  0.329
-    return moster13allvar(logM,z,M10,M11,N10,N11,b10,b11,g10,g11)
+    return moster13allvar(logM, z, M10, M11, N10, N11, b10, b11, g10, g11)
 
-def errmoster13(logM,z):
+def errmoster13(logM, z):
     M10 = 11.590
     M11 =  1.195
     N10 =  0.0351
@@ -46,17 +46,17 @@ def errmoster13(logM,z):
     sigb11 = 0.225
     sigg10 = 0.059
     sigg11 = 0.173
-    sigvar = [sigM10,sigM11,sigN10,sigN11,sigb10,sigb11,sigg10,sigg11]
+    sigvar = [sigM10, sigM11, sigN10, sigN11, sigb10, sigb11, sigg10, sigg11]
     sigma = np.zeros(len(logM))
     for i in range(len(logM)):
-        point = [logM[i],z,M10,M11,N10,N11,b10,b11,g10,g11]
+        point = [logM[i], z, M10, M11, N10, N11, b10, b11, g10, g11]
         for j in range(8):
-            sigma[i] += util.partial_derivative(moster13allvar,var=j+2,point=point)**2 * sigvar[j]**2
+            sigma[i] += util.partial_derivative(moster13allvar, var=j+2, point=point)**2 * sigvar[j]**2
     sigma = np.sqrt(sigma)
     return sigma
 
 #Behroozi data
-def behroozi13(logM,z):
+def behroozi13(logM, z):
     a = 1./(z+1)
     #z = a**-1 - 1
     v = np.exp(-4.*a**2)
@@ -87,17 +87,17 @@ def kravstov14(logM, z = 0.1):
 
 
 def getstats(simname, step):
-    print "getting halo stats..."
+    print("getting halo stats...")
     if os.path.exists(simname + '.' + step + '.amiga.stat'):
         amigastat = readcol(simname + '.' + step + '.amiga.stat', asdict=True)
         type = 'amiga'
     else:
-            print "amiga file failed, looking for rockstar"
+            print("amiga file failed, looking for rockstar")
             if os.path.exists(simname + '.' + step + '.rockstar.stat'):
                 amigastat = readcol(simname + '.' + step + '.rockstar.stat', asdict=True)
                 type = 'rockstar'
             else:
-                print "ERROR cannot find recognized stat file (amiga.stat or rockstar.stat)"
+                print("ERROR cannot find recognized stat file (amiga.stat or rockstar.stat)")
     s = pynbody.load(simname+'.'+step)
     a = s.properties['a']
     del(s)
@@ -105,23 +105,23 @@ def getstats(simname, step):
     return amigastat, a**-1 -1, type
 
 
-def SMHM_db(sim, step, style, fitstyle=['c-','r-'], fit=['Mos', 'Krav'], minmass=None,
+def SMHM_db(sim, step, style, fitstyle=['c-', 'r-'], fit=['Mos', 'Krav'], minmass=None,
             maxmass=None, markersize=5,label=None, correct=True, error=True, return_subs=False, remove_sats=True, contam_limit=None):
     import tangos as db
     step = db.get_timestep(sim+'/%'+str(step))
     if contam_limit:
-        Mvir, Mstar, Rvir, cen, contam = step.gather_property('Mvir', 'Mstar', 'max_radius','shrink_center','contamination_fraction')
+        Mvir, Mstar, Rvir, cen, contam = step.gather_property('Mvir', 'Mstar', 'max_radius', 'shrink_center', 'contamination_fraction')
         ok = np.where(contam<contam_limit)
         Mvir = Mvir[ok]
         Mstar = Mstar[ok]
         Rvir = Rvir[ok]
         cen = cen[ok]
     else:
-        Mvir, Mstar, Rvir, cen = step.gather_property('Mvir', 'Mstar', 'max_radius','shrink_center')
+        Mvir, Mstar, Rvir, cen = step.gather_property('Mvir', 'Mstar', 'max_radius', 'shrink_center')
     if remove_sats is True or return_subs is True:
         sub = np.zeros(len(Mstar))
         for i in range(len(Mvir)):
-            int = np.where((np.sqrt(np.sum((cen[i] - cen)**2,axis=1))<Rvir)&(np.sum((cen[i] - cen)**2,axis=1)>0)&(Mvir[i]<Mvir))
+            int = np.where((np.sqrt(np.sum((cen[i] - cen)**2, axis=1))<Rvir)&(np.sum((cen[i] - cen)**2, axis=1)>0)&(Mvir[i]<Mvir))
             if len(int[0])>0:
                 sub[i] = 1
         if remove_sats is True:
@@ -134,7 +134,7 @@ def SMHM_db(sim, step, style, fitstyle=['c-','r-'], fit=['Mos', 'Krav'], minmass
         Mstar *= 0.6
         Mvir /= 0.8
 
-    plotting.plt.plot(Mvir, Mstar/Mvir, style, markersize=markersize, label=label,zorder=1)
+    plotting.plt.plot(Mvir, Mstar/Mvir, style, markersize=markersize, label=label, zorder=1)
 
     if minmass is None:
         minmass = Mvir.min()/2.
@@ -142,14 +142,14 @@ def SMHM_db(sim, step, style, fitstyle=['c-','r-'], fit=['Mos', 'Krav'], minmass
         maxmass = Mvir.max()*2.
 
     cnt = 0
-    logmv_fit = np.arange(np.log10(minmass),np.log10(maxmass),0.1)
+    logmv_fit = np.arange(np.log10(minmass), np.log10(maxmass), 0.1)
     if fit is not None:
         for ff in fit:
-            if ff not in ['Mos','Beh', 'Krav', 'Moster', 'Behroozi', 'Kravtsov']:
-                print "fit request ", ff, " not understood... should be in list", \
-                    ['Mos','Beh', 'Krav', 'Moster', 'Behroozi', 'Kravtsov']
+            if ff not in ['Mos', 'Beh', 'Krav', 'Moster', 'Behroozi', 'Kravtsov']:
+                print(("fit request ", ff, " not understood... should be in list", \
+                    ['Mos', 'Beh', 'Krav', 'Moster', 'Behroozi', 'Kravtsov']))
                 continue
-            print "found fit relation for", ff
+            print(("found fit relation for", ff))
 
             if ff in ['Mos', 'Moster']:
                 fitfunc = moster13
@@ -162,26 +162,26 @@ def SMHM_db(sim, step, style, fitstyle=['c-','r-'], fit=['Mos', 'Krav'], minmass
                 flabel = 'Kravtsov+ 14'
 
             ratio_fit = fitfunc(logmv_fit, step.redshift)
-            plotting.plt.plot(10**logmv_fit, ratio_fit, fitstyle[cnt], label=flabel, lw=5,alpha=0.75,zorder=10)
-            if ff in ['Mos','Moster'] and error is True:
+            plotting.plt.plot(10**logmv_fit, ratio_fit, fitstyle[cnt], label=flabel, lw=5, alpha=0.75, zorder=10)
+            if ff in ['Mos', 'Moster'] and error is True:
                 sigma = errmoster13(logmv_fit, step.redshift)
-                plotting.plt.fill_between(10**logmv_fit,ratio_fit-sigma,ratio_fit+sigma,facecolor='grey',
-                                          edgecolor='k', lw=1.5, alpha=0.5,zorder=10)
+                plotting.plt.fill_between(10**logmv_fit, ratio_fit-sigma, ratio_fit+sigma, facecolor='grey',
+                                          edgecolor='k', lw=1.5, alpha=0.5, zorder=10)
 
             cnt += 1
 
     plotting.plt.ylabel(r'M$_{*}$/M$_{vir}$')
     plotting.plt.xlabel(r'M$_{vir}$ [M$_{\odot}$]')
-    plotting.plt.legend(loc='lower right',fontsize=25)
-    plotting.plt.yscale('log',base=10)
-    plotting.plt.xscale('log',base=10)
+    plotting.plt.legend(loc='lower right', fontsize=25)
+    plotting.plt.yscale('log', base=10)
+    plotting.plt.xscale('log', base=10)
     plotting.plt.xlim(minmass, maxmass)
 
     if return_subs:
         return sub
 
 
-def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None,
+def SMHM(sim, step, style, color, fitstyle=['k-', 'k--'], fit=['Mos', 'Krav'], minmass=None, maxmass=None,
          markersize=5,label=None, correct=True, usedb=False, remove_sats=True, only_sats=False, error=True, alpha=1.0,
          remove_sats_hard=False, boxsize=25, ret_data=False):
     if usedb is True:
@@ -190,8 +190,8 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
         if remove_sats or only_sats:
             Mvir, Mstar, sub = dbstep.gather_property('Mvir', 'Mstar', 'Sub')
             if len(Mvir)==0:
-                print "Warning Sub halos not implemented yet in your database! " \
-                      "please turn off sats options or re-run with usedb False"
+                print("Warning Sub halos not implemented yet in your database! " \
+                      "please turn off sats options or re-run with usedb False")
                 return
         else:
             Mvir, Mstar = dbstep.gather_property('Mvir', 'Mstar')
@@ -259,16 +259,16 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
     if maxmass is None:
         maxmass = Mvir.max()*2.
 
-    logmv_fit = np.arange(np.log10(minmass),np.log10(maxmass),0.1)
+    logmv_fit = np.arange(np.log10(minmass), np.log10(maxmass), 0.1)
     cnt = 0
-    plotting.plt.plot(Mvir, Mstar/Mvir, style, color=color, markersize=markersize, label=label, alpha=alpha,zorder=1)
+    plotting.plt.plot(Mvir, Mstar/Mvir, style, color=color, markersize=markersize, label=label, alpha=alpha, zorder=1)
     if fit is not None:
         for ff in fit:
-            if ff not in ['Mos','Beh', 'Krav', 'Moster', 'Behroozi', 'Kravtsov']:
-                print "fit request ", ff, " not understood... should be in list", \
-                    ['Mos','Beh', 'Krav', 'Moster', 'Behroozi', 'Kravtsov']
+            if ff not in ['Mos', 'Beh', 'Krav', 'Moster', 'Behroozi', 'Kravtsov']:
+                print(("fit request ", ff, " not understood... should be in list", \
+                    ['Mos', 'Beh', 'Krav', 'Moster', 'Behroozi', 'Kravtsov']))
                 continue
-            print "found fit relation for", ff
+            print(("found fit relation for", ff))
 
             if ff in ['Mos', 'Moster']:
                 fitfunc = moster13
@@ -281,19 +281,19 @@ def SMHM(sim, step, style, color, fitstyle=['k-','k--'], fit=['Mos', 'Krav'], mi
                 flabel = 'Kravtsov+ 14, z < 0.1'
 
             ratio_fit = fitfunc(logmv_fit, redshift)
-            plotting.plt.plot(10**logmv_fit, ratio_fit, fitstyle[cnt], label=flabel, lw=5,alpha=0.75,zorder=10)
+            plotting.plt.plot(10**logmv_fit, ratio_fit, fitstyle[cnt], label=flabel, lw=5, alpha=0.75, zorder=10)
             if ff in ['Mos', 'Moster'] and error is True:
                 sigma = errmoster13(logmv_fit, redshift)
-                plotting.plt.fill_between(10**logmv_fit,ratio_fit-sigma,ratio_fit+sigma, facecolor='grey',
-                                          edgecolor='k', lw=1.5, alpha=0.5,zorder=10)
+                plotting.plt.fill_between(10**logmv_fit, ratio_fit-sigma, ratio_fit+sigma, facecolor='grey',
+                                          edgecolor='k', lw=1.5, alpha=0.5, zorder=10)
 
             cnt += 1
 
     plotting.plt.ylabel(r'M$_{*}$/M$_{vir}$')
     plotting.plt.xlabel(r'M$_{vir}$ [M$_{\odot}$]')
-    plotting.plt.legend(loc='lower right',fontsize=25)
-    plotting.plt.yscale('log',base=10)
-    plotting.plt.xscale('log',base=10)
+    plotting.plt.legend(loc='lower right', fontsize=25)
+    plotting.plt.yscale('log', base=10)
+    plotting.plt.xscale('log', base=10)
     plotting.plt.xlim(minmass, maxmass)
 
     if ret_data:
@@ -304,7 +304,7 @@ def mergerhist(dbsim, moreprops=None, names=None, hmax=3000,nstart=0,nend=-1,sav
             'Mgas1':[], 'Mgas2':[], 'Mgasf':[], 'nMerge':[], 'dbstep':[],'redshift':[],
             'N1':[], 'N2':[], 'Nf':[]}
     for step in dbsim.timesteps[nstart:nend]:
-        print step
+        print(step)
         N = []
         Nf = []
         Mvir = []
@@ -316,9 +316,9 @@ def mergerhist(dbsim, moreprops=None, names=None, hmax=3000,nstart=0,nend=-1,sav
         cnt = 0
         for h in step.halos:
             if h.halo_number > hmax: break
-            if h.next is None: continue
+            if h.__next__ is None: continue
             #if 'Mvir' not in h.keys() or 'Mvir' not in h.next.keys(): continue
-            if 'BH_central' not in h.keys() or 'BH_central' not in h.next.keys(): continue
+            if 'BH_central' not in list(h.keys()) or 'BH_central' not in list(h.next.keys()): continue
             N.append(h.halo_number)
             Nf.append(h.next.halo_number)
             Mvir.append(h.NDM*3.4e5)
@@ -328,7 +328,7 @@ def mergerhist(dbsim, moreprops=None, names=None, hmax=3000,nstart=0,nend=-1,sav
             Mgas.append(h.NGas)
             Mgasf.append(h.next.NGas)
             if cnt%200 == 0:
-                print cnt/2000.
+                print((cnt/2000.))
             cnt += 1
         N = np.array(N)
         Nf = np.array(Nf)
@@ -340,8 +340,8 @@ def mergerhist(dbsim, moreprops=None, names=None, hmax=3000,nstart=0,nend=-1,sav
         Mgasf = np.array(Mgasf)
 
 
-        ziparr = np.array(zip(Nf,1./Mvir),dtype=[('nf','int64'),('mv','float')])
-        order = np.argsort(ziparr,order=('nf','mv'))
+        ziparr = np.array(list(zip(Nf, 1./Mvir)), dtype=[('nf', 'int64'), ('mv', 'float')])
+        order = np.argsort(ziparr, order=('nf', 'mv'))
         Nf = Nf[order]
         N = N[order]
         Mvir = Mvir[order]
@@ -351,12 +351,12 @@ def mergerhist(dbsim, moreprops=None, names=None, hmax=3000,nstart=0,nend=-1,sav
         Mgas = Mgas[order]
         Mgasf = Mgasf[order]
 
-        uNf, ind, inv, cnt = np.unique(Nf,return_index=True, return_inverse=True,return_counts=True)
+        uNf, ind, inv, cnt = np.unique(Nf, return_index=True, return_inverse=True, return_counts=True)
 
         mm = np.where(cnt > 1)[0]
 
         if len(mm)==0:
-            print "No Mergers This Step"
+            print("No Mergers This Step")
         indm = ind[mm]
 
         data['Mvirf'].extend(Mvirf[indm])
@@ -378,13 +378,13 @@ def mergerhist(dbsim, moreprops=None, names=None, hmax=3000,nstart=0,nend=-1,sav
         data['dbstep'].extend(fextent)
 
         data['nMerge'].extend(cnt[mm])
-    for key in data.keys():
+    for key in list(data.keys()):
         data[key] = np.array(data[key])
 
     if savefile is not None:
-        f = open(savefile,'wb')
+        f = open(savefile, 'wb')
         import pickle
-        pickle.dump(data,f)
+        pickle.dump(data, f)
         f.close()
 
     return data
@@ -394,7 +394,7 @@ def mergerhist_slow(dbsim, moreprops=None, names=None, ret_totals=False, nsteps 
     data = {'time': [], 'Mstar1':[], 'Mstar2':[], 'Mstarf':[],'Mvir1':[], 'Mvir2':[], 'Mvirf':[],
             'Mgas1':[], 'Mgas2':[], 'Mgasf':[], 'nMerge':[], 'dbstep':[],'redshift':[],
             'N1':[], 'N2':[], 'Nf':[]}
-    allprops = ['t()', 'halo_number()','later(1).halo_number()', 'Mvir', 'later(1).Mvir',
+    allprops = ['t()', 'halo_number()', 'later(1).halo_number()', 'Mvir', 'later(1).Mvir',
                 'Mstar', 'later(1).Mstar', 'Mgas', 'later(1).Mgas']
 
     if names is None or len(names)!=len(moreprops):
@@ -412,7 +412,7 @@ def mergerhist_slow(dbsim, moreprops=None, names=None, ret_totals=False, nsteps 
         allprops.append(p)
         allprops.append('later(1).'+p)
 
-    print allprops
+    print(allprops)
 
     nmergers = []
     redshifts = []
@@ -424,12 +424,12 @@ def mergerhist_slow(dbsim, moreprops=None, names=None, ret_totals=False, nsteps 
         if nsteps is not None:
             if loopcnt >= nsteps: break
         loopcnt +=1
-        print step
+        print(step)
         try:
             dbdata = step.gather_property(*allprops)
 
         except:
-            print "No halo data this step"
+            print("No halo data this step")
             nmergers.append(0)
             times.append(step.time_gyr)
             redshifts.append(step.redshift)
@@ -444,8 +444,8 @@ def mergerhist_slow(dbsim, moreprops=None, names=None, ret_totals=False, nsteps 
         Mgas = dbdata[7]
         Mgasf = dbdata[8]
 
-        ziparr = np.array(zip(Nf,1./Mvir),dtype=[('nf','int64'),('mv','float')])
-        order = np.argsort(ziparr,order=('nf','mv'))
+        ziparr = np.array(list(zip(Nf, 1./Mvir)), dtype=[('nf', 'int64'), ('mv', 'float')])
+        order = np.argsort(ziparr, order=('nf', 'mv'))
         Nf = Nf[order]
         time = time[order]
         N = N[order]
@@ -459,12 +459,12 @@ def mergerhist_slow(dbsim, moreprops=None, names=None, ret_totals=False, nsteps 
         for i in range(len(dbdata)-9):
             dbdata[9+i] = dbdata[9+i][order]
 
-        uNf, ind, inv, cnt = np.unique(Nf,return_index=True, return_inverse=True,return_counts=True)
+        uNf, ind, inv, cnt = np.unique(Nf, return_index=True, return_inverse=True, return_counts=True)
 
         mm = np.where(cnt > 1)[0]
 
         if len(mm)==0:
-            print "No Mergers This Step"
+            print("No Mergers This Step")
             nmergers.append(0)
             times.append(step.time_gyr)
             redshifts.append(step.redshift)
@@ -503,7 +503,7 @@ def mergerhist_slow(dbsim, moreprops=None, names=None, ret_totals=False, nsteps 
             indtrack = indtrack+2
 
         data['nMerge'].extend(cnt[mm])
-    for key in data.keys():
+    for key in list(data.keys()):
         data[key] = np.array(data[key])
     if ret_totals:
         return data, nmergers, times, redshifts
@@ -517,23 +517,23 @@ class HaloMergers(object):
         if mhist:
             self.data = mhist
         if not mhist and not dbsim:
-            print "ERROR requires either a dbsim object or an already made merger data structure"
+            print("ERROR requires either a dbsim object or an already made merger data structure")
 
     def __getitem__(self, item):
         return self.data[item]
 
     def keys(self):
-        return self.data.keys()
+        return list(self.data.keys())
 
     def dtBHmerge(self):
         import tangos as db
         self.data['dtBHmerge'] = np.ones(len(self.data['time']))*-1
         self.data['dtBHmerge_min'] = np.ones(len(self.data['time']))*-1
-        if 'time_next' not in self.data.keys():
+        if 'time_next' not in list(self.data.keys()):
             self.get_tnext(self)
         for ii in range(len(self.data['time'])):
             if ii % 100 == 0:
-                print float(ii)/float(len(self.data['time'])) * 100, "% done"
+                print((float(ii)/float(len(self.data['time'])) * 100, "% done"))
             bh1 = db.get_halo(self.data['dbstep'][ii]+'/1.'+str(self.data['bh().halo_number()1'][ii]))
             bh2 = db.get_halo(self.data['dbstep'][ii]+'/1.'+str(self.data['bh().halo_number()2'][ii]))
             bhc1, time1 = bh1.property_cascade('halo_number()', 't()')
@@ -542,7 +542,7 @@ class HaloMergers(object):
             if len(im)>0:
                 tmerge = time1[im[0]]
                 if tmerge != time2[im[0]]:
-                    print "WEIRD ONE"
+                    print("WEIRD ONE")
                 self.data['dtBHmerge'][ii] = tmerge - self.data['time'][ii]
                 self.data['dtBHmerge_min'][ii] = self.data['dtBHmerge'][ii] - self.data['time_next'][ii]
 
@@ -553,7 +553,7 @@ class HaloMergers(object):
         self.data['redshift_next'] = np.ones(len(self.data['time']))*-1
         for ii in range(len(self.data['time'])):
             if ii % 100 == 0:
-                print float(ii)/float(len(self.data['time'])) * 100, "% done"
+                print((float(ii)/float(len(self.data['time'])) * 100, "% done"))
             step = db.get_timestep(self.data['dbstep'][ii])
             self.data['time_next'][ii] = step.next.time_gyr
             self.data['redshift_next'][ii] = step.next.redshift
@@ -569,14 +569,14 @@ class HaloMergers(object):
         self.data['Mgas2_start'] = np.ones(len(self.data['time']))*-1
         for ii in range(len(self.data['time'])):
             if ii % 100 == 0:
-                print float(ii)/float(len(self.data['time'])) * 100, "% done"
+                print((float(ii)/float(len(self.data['time'])) * 100, "% done"))
             h1 = db.get_halo(self.data['dbstep'][ii]+'/'+str(self.data['N1'][ii]))
             h2 = db.get_halo(self.data['dbstep'][ii]+'/'+str(self.data['N2'][ii]))
 
             pos1, Rvir1, time1, Mvir1, Mstar1, Mgas1 = h1.reverse_property_cascade('SSC', 'Rvir', 't()', 'Mvir', 'Mstar', 'Mgas')
             pos2, Rvir2, time2, Mvir2, Mstar2, Mgas2 = h2.reverse_property_cascade('SSC', 'Rvir', 't()', 'Mvir', 'Mstar', 'Mgas')
             ll = min(len(time1), len(time2))
-            dist = np.sqrt(np.sum((pos1[0:ll] - pos2[0:ll])**2,axis=1))
+            dist = np.sqrt(np.sum((pos1[0:ll] - pos2[0:ll])**2, axis=1))
             sep = np.where(dist>Rvir1[0:ll]+Rvir2[0:ll])[0]
             if len(sep)==0:
                 #print "cannot find output when objects were not close"

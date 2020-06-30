@@ -18,7 +18,7 @@ def _a_dot_recip(*args):
     return 1. / _a_dot(*args)
 
 def tdyne(time, sim=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.456, h0=0.67769, overden=200):
-        a,z = getScaleFactor(arr.SimArray([time],'Gyr'), s=sim, OmegaM=OmegaM, h0=h0, Omegab=Omegab, Lambda=Lambda)
+        a, z = getScaleFactor(arr.SimArray([time], 'Gyr'), s=sim, OmegaM=OmegaM, h0=h0, Omegab=Omegab, Lambda=Lambda)
         rho = overden * rho_crit(z, OmegaM=OmegaM, h0=h0, Omegab=Omegab, Lambda=Lambda, unit='Msol kpc**-3')
         return np.sqrt(3*np.pi/(16*util.G.in_units('Msol**-1 kpc**3 Gyr**-2')*rho))
 
@@ -28,13 +28,13 @@ def ntdyne(tref, t, **kwargs):
         if isinstance(t, np.ndarray) or isinstance(t, list):
                 results = []
                 for tt in t:
-                        results.append(integrate.quad(func,tref,tt)[0])
+                        results.append(integrate.quad(func, tref, tt)[0])
         else:
-                results = integrate.quad(func,tref,t)[0]
+                results = integrate.quad(func, tref, t)[0]
         return np.array(results)
 
 def interp_ntdyne(tref=None, times = None, **kwargs):
-        if tref is None and times is None and len(kwargs.keys())==0:
+        if tref is None and times is None and len(list(kwargs.keys()))==0:
                 import pickle
                 import os
                 default_file = os.path.join(os.path.dirname(__file__), "default_tdyne_data.pkl")
@@ -43,12 +43,12 @@ def interp_ntdyne(tref=None, times = None, **kwargs):
                 f.close()
                 td_ex = tdyne_interp_data['tdyne']
                 times = tdyne_interp_data['times']
-                print(tdyne_interp_data['notes'])
+                print((tdyne_interp_data['notes']))
         else:
                 if not tref:
                         tref = 0.2
                 if not times:
-                        times = np.arange(0.3,13.9,0.1)
+                        times = np.arange(0.3, 13.9, 0.1)
                 if not sim:
                         td_ex = ntdyne(tref, times, **kwargs)
                 else:
@@ -116,7 +116,7 @@ def getTime(z,sim=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.456, h0=0.67769, 
                         log_a_input = np.log(1. / (1. + z))
                         results = np.exp(interp(log_a_input))
                 else:
-                        results = np.array(map(get_age, z))
+                        results = np.array(list(map(get_age, z)))
                 results = results.view(SimArray)
                 results.units = unit
         else:
@@ -129,16 +129,16 @@ def getScaleFactor(times,s=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.456, h0=
         ntimes = np.size(times)
         for tt in range(np.size(times)):
                 if tt%100==0 and verbose is True:
-                        print tt/np.float(np.size(times)) * 100, '% done'
+                        print((tt/np.float(np.size(times)) * 100, '% done'))
                 def func(z):
-                        return getTime(z,s,OmegaM=OmegaM, Lambda=Lambda, Omegab=Omegab, h0=h0) - times.in_units('Gyr')[tt]
-                try: redshift[tt] = opt.newton(func,0)
+                        return getTime(z, s, OmegaM=OmegaM, Lambda=Lambda, Omegab=Omegab, h0=h0) - times.in_units('Gyr')[tt]
+                try: redshift[tt] = opt.newton(func, 0)
                 except:
                         try:
-                                print "trying again"
-                                redshift[tt] = opt.newton(func,20)
+                                print("trying again")
+                                redshift[tt] = opt.newton(func, 20)
                         except:
-                                print "ERROR did not converge", times[tt],tt
+                                print(("ERROR did not converge", times[tt], tt))
                                 redshift[tt] = -1
         scaleFac = 1./(1+redshift)
         return scaleFac, redshift
@@ -150,18 +150,18 @@ def comoving_dist(z, omegaM, omegaL, h):
         dH = util.c/(1.0e5*h*100.)
 
         def func(z):
-                return 1./HoverH0(z,omegaM, omegaL)
+                return 1./HoverH0(z, omegaM, omegaL)
 
         def get_d(x):
-                return dH * integrate.quad(func,0,x)[0]
+                return dH * integrate.quad(func, 0, x)[0]
 
         if isinstance(z, np.ndarray) or isinstance(z, list):
-                return np.array(map(get_d, z))
+                return np.array(list(map(get_d, z)))
         else:
                 return get_d(z)
 
 def lum_distance(z, omegaM, omegaL, h):
-        dc = comoving_dist(z,omegaM, omegaL, h)
+        dc = comoving_dist(z, omegaM, omegaL, h)
         return dc*(1+z)
 
 def event_count(N, z, omegaM, omegaL, h):
@@ -174,17 +174,17 @@ def get_hmf_data(simpath,log_M_min=8., log_M_max=15.,**kwargs):
         sim.properties['sigma8'] = 0.77
         log_M_min += np.log10(sim.properties['h'])
         log_M_max += np.log10(sim.properties['h'])
-        mass, sig, phi = pynbody.analysis.halo_mass_function(sim,pspec=pynbody.analysis.hmf.PowerSpectrumCAMBLive,
-                                                             log_M_max=log_M_max,log_M_min=log_M_min,**kwargs)
-        return np.log10(mass/sim.properties['h']),phi*sim.properties['h']**3, sim.properties['z']
+        mass, sig, phi = pynbody.analysis.halo_mass_function(sim, pspec=pynbody.analysis.hmf.PowerSpectrumCAMBLive,
+                                                             log_M_max=log_M_max, log_M_min=log_M_min, **kwargs)
+        return np.log10(mass/sim.properties['h']), phi*sim.properties['h']**3, sim.properties['z']
 
 def get_hmf_data_all(log_M_min=8., log_M_max=15.,**kwargs):
-        f = open('files.list','r')
+        f = open('files.list', 'r')
         hmf = {'z':[], 'mass':[], 'phi':[]}
         for l in f:
                 name = l.strip('\n')
-                print name
-                lm, phi, z = get_hmf_data(name,log_M_min=log_M_min, log_M_max=log_M_max,**kwargs)
+                print(name)
+                lm, phi, z = get_hmf_data(name, log_M_min=log_M_min, log_M_max=log_M_max, **kwargs)
                 hmf['z'].append(z)
                 hmf['mass'].append(lm)
                 hmf['phi'].append(phi)
@@ -193,15 +193,15 @@ def get_hmf_data_all(log_M_min=8., log_M_max=15.,**kwargs):
 
 class HMF(object):
         def __init__(self,log_M_min=8.0, log_M_max=15.0,delta_log_M=0.1,**kwargs):
-                self.hmf = get_hmf_data_all(log_M_min=log_M_min, log_M_max=log_M_max,delta_log_M=delta_log_M,**kwargs)
+                self.hmf = get_hmf_data_all(log_M_min=log_M_min, log_M_max=log_M_max, delta_log_M=delta_log_M, **kwargs)
                 self.minlm = log_M_min
                 self.maxlm = log_M_max
                 self.delta = delta_log_M
 
-        def calc_rho(self,logm,z):
+        def calc_rho(self, logm, z):
                 j, = np.where(z>self.hmf['z'])
                 if logm > self.maxlm or logm < self.minlm:
-                        print "value for logM excedes maximum or is less than minimum value calculated"
+                        print("value for logM excedes maximum or is less than minimum value calculated")
                         raise ValueError
                 i = int((logm - self.minlm)/self.delta)
                 if len(j) ==0:
@@ -216,16 +216,16 @@ class HMF(object):
         def get_N_halos(self,dbsim, check_contam=True):
                 self.z = []
                 self.mbins = np.arange(self.minlm, self.maxlm+self.delta, self.delta)
-                self.nhalos = np.zeros((len(dbsim.timesteps),len(self.mbins)-1))
+                self.nhalos = np.zeros((len(dbsim.timesteps), len(self.mbins)-1))
                 cnt = 0
                 for step in dbsim.timesteps:
-                        print step.extension
+                        print((step.extension))
                         if not check_contam:
                                 Mvir, = step.gather_property('Mvir')
                         else:
-                                Mvir,contam =  step.gather_property('Mvir','contamination_fraction')
+                                Mvir, contam =  step.gather_property('Mvir', 'contamination_fraction')
                                 Mvir = Mvir[(contam<0.1)]
-                        N, bins = np.histogram(np.log10(Mvir),bins=self.mbins)
+                        N, bins = np.histogram(np.log10(Mvir), bins=self.mbins)
                         self.nhalos[cnt,:] = N
                         self.z.append(step.redshift)
                         cnt += 1

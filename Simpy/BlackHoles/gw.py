@@ -4,7 +4,7 @@ import numpy as np
 class GWemit(object):
 #GW emission approx. without spin given by Ajith+ 2008
 # (http://journals.aps.org/prd/pdf/10.1103/PhysRevD.77.104017)
-	def __init__(self, mass1, mass2, z,omegaM, omegaL, h):
+	def __init__(self, mass1, mass2, z, omegaM, omegaL, h):
 		self.masses = (mass1, mass2)
 		self.z = z
 		self.cosmology = {'omegaM': omegaM, 'omegaL': omegaL, 'h':h}
@@ -21,30 +21,30 @@ class GWemit(object):
 		a = 2.9740e-1
 		b = 4.4810e-2
 		c = 9.5560e-2
-		return self.freq(a,b,c)
+		return self.freq(a, b, c)
 
 	def freq_ring(self):
 		a = 5.94110e-1
 		b = 8.97940e-2
 		c = 1.91110e-1
-		return self.freq(a,b,c)
+		return self.freq(a, b, c)
 
 	def freq_cut(self):
 		a = 8.48450e-1
 		b = 1.28480e-1
 		c = 2.72990e-1
-		return self.freq(a,b,c)
+		return self.freq(a, b, c)
 
 	def sigfreq(self):
 		a = 5.08010e-1
 		b = 7.75150e-2
 		c = 2.23690e-2
-		return self.freq(a,b,c)
+		return self.freq(a, b, c)
 
 	def ampGW(self, f):
 		M = self.masses[0]+self.masses[1]
 		n = self.masses[0]*self.masses[1]/M**2
-		dL = cosmology.lum_distance(self.z,self.cosmology['omegaM'], self.cosmology['omegaL'],self.cosmology['h'])
+		dL = cosmology.lum_distance(self.z, self.cosmology['omegaM'], self.cosmology['omegaL'], self.cosmology['h'])
 
 		#dL *= 3.086e+24
 		C = (util.G.in_units('Mpc**3 Msol**-1 s**-2')**(5./6.)/util.c.in_units('Mpc s**-1')**(3./2.)) * \
@@ -55,7 +55,7 @@ class GWemit(object):
 		fc = self.freq_cut()
 		sig = self.sigfreq()
 
-		def LL(sig,f,fr):
+		def LL(sig, f, fr):
 			return (1/(2.*np.pi))*sig/((f-fr)**2 + (sig**2)/4.)
 
 		output = np.ones(len(f)) * -1
@@ -65,7 +65,7 @@ class GWemit(object):
 
 		output[bfmerger] = C * (f/fm)**(-7./6.)
 		output[merger] = C * (f/fm)**(-2./3.)
-		output[ring] = C * np.pi*sig/2. * (fr/fm)**(-2./3.) * LL(sig,f,fr)
+		output[ring] = C * np.pi*sig/2. * (fr/fm)**(-2./3.) * LL(sig, f, fr)
 
 		return output
 
@@ -103,7 +103,7 @@ class SalcidoGW(object):
 		return util.c**2*(M1+M2)*F*eps/(fqnr-fm)
 
 	def strain(self, eps=0.1, a=0.95):
-		dL = cosmology.lum_distance(self.z,self.cosmology['omegaM'], self.cosmology['omegaL'], self.cosmology['h'])
+		dL = cosmology.lum_distance(self.z, self.cosmology['omegaM'], self.cosmology['omegaL'], self.cosmology['h'])
 		dL *= 3.086e+24
 		Ef = self.dEdf(eps, a)
 		return np.sqrt(2.*util.G/util.c**3) * ((1+self.z)/(np.pi*dL)) * np.sqrt(Ef)

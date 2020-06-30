@@ -12,7 +12,7 @@ def findmergers(outname, diagname='*out*'):
 
 def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt', NCHILADA=True, out_ext='.mergers',t_end=13.8):
     if not os.path.exists(mergename):
-        print "didn't find merger file... getting mergers from outputs"
+        print("didn't find merger file... getting mergers from outputs")
         findmergers(mergename, diagname=outname)
     if not os.path.exists('files.list'):
         Files.getFileLists(simname, NCHILADA=NCHILADA)
@@ -53,7 +53,7 @@ def reducedata(simname, RetData=False, outname='*out*', mergename='BHmerge.txt',
     for key in outkeys:
         tofile.append(output[key])
     tofile = tuple(tofile)
-    print "saving to file..."
+    print("saving to file...")
     np.savetxt(simname + out_ext, np.column_stack(tofile), fmt=['%f', '%f', '%d', '%d', '%f', '%f'])
     if RetData == True:
         return output
@@ -103,7 +103,7 @@ def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=Fals
     if return_details is True:
         if usenewmass:
             if leastmass:
-                massnew = np.copy(np.minimum(bhmergers['newmass2'][useonly[match]],bhmergers['newmass1'][useonly[match]]))
+                massnew = np.copy(np.minimum(bhmergers['newmass2'][useonly[match]], bhmergers['newmass1'][useonly[match]]))
             else:
                 massnew = np.copy(bhmergers['newmass2'][useonly[match]])
         else:
@@ -115,7 +115,7 @@ def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=Fals
         masslist = np.copy(massnew)
         timenew = np.copy(bhmergers['time'][useonly[match]])
         timelist = np.copy(timenew)
-        if 'tdf' in bhmergers.keys():
+        if 'tdf' in list(bhmergers.keys()):
             tdfnew = np.copy(bhmergers['tdf'][useonly[match]])
             tdflist = np.copy(tdfnew)
         else:
@@ -129,12 +129,12 @@ def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=Fals
         for eid in idnew:
             match, = np.where(bhmergers['ID1'][useonly]==eid)
             if len(match)>0:
-                idnext = np.append(idnext,bhmergers['ID2'][useonly[match]])
+                idnext = np.append(idnext, bhmergers['ID2'][useonly[match]])
                 if return_details is True:
                     if usenewmass:
                         if leastmass:
                             massnext = \
-                                np.append(massnext, np.minimum(bhmergers['newmass2'][useonly[match]],bhmergers['newmass1'][useonly[match]]))
+                                np.append(massnext, np.minimum(bhmergers['newmass2'][useonly[match]], bhmergers['newmass1'][useonly[match]]))
                         else:
                             massnext = np.append(massnext, bhmergers['newmass2'][useonly[match]])
                     else:
@@ -142,38 +142,38 @@ def get_complete_prog_list(bhmergers,bhid,tmax,useonly=None, return_details=Fals
                             massnext = \
                                 np.append(massnext, np.minimum(bhmergers['merge_mass_2'][useonly[match]], bhmergers['merge_mass_1'][useonly[match]]))
                         else:
-                            massnext = np.append(massnext,bhmergers['merge_mass_2'][useonly[match]])
-                    timenext = np.append(timenext,bhmergers['time'][useonly[match]])
-                    if 'tdf' in bhmergers.keys():
-                        tdfnext = np.append(tdfnext,bhmergers['tdf'][useonly[match]])
+                            massnext = np.append(massnext, bhmergers['merge_mass_2'][useonly[match]])
+                    timenext = np.append(timenext, bhmergers['time'][useonly[match]])
+                    if 'tdf' in list(bhmergers.keys()):
+                        tdfnext = np.append(tdfnext, bhmergers['tdf'][useonly[match]])
         idnew = idnext
-        idlist = np.append(idlist,idnew)
+        idlist = np.append(idlist, idnew)
         if return_details is True:
-            masslist = np.append(masslist,massnext)
-            timelist = np.append(timelist,timenext)
-            tdflist = np.append(tdflist,tdfnext)
+            masslist = np.append(masslist, massnext)
+            timelist = np.append(timelist, timenext)
+            tdflist = np.append(tdflist, tdfnext)
     if return_details is True:
-        return idlist, masslist, timelist,tdflist
+        return idlist, masslist, timelist, tdflist
     else:
         return idlist
 
 def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, bins=50,
-                     tzrange=[0,25], xlog=True, ylog=True, lw=3, label=None, ret_data=False,
+                     tzrange=[0, 25], xlog=True, ylog=True, lw=3, label=None, ret_data=False,
                      pltredshift=True):
-    if type(vol_weights)==list or type(vol_weights)==np.ndarray:
+    if isinstance(vol_weights, list) or isinstance(vol_weights, np.ndarray):
         if len(vol_weights)!=1 and len(vol_weights) != len(time):
-            print "ERROR do not understand vol_weights format... aborting"
+            print("ERROR do not understand vol_weights format... aborting")
             return
     else:
-        print "here"
+        print("here")
         vol_weights = np.ones(len(time))*vol_weights
-    if type(bins)!= list and type(bins)!=np.ndarray:
+    if not isinstance(bins, list) and not isinstance(bins, np.ndarray):
         dtz = (tzrange[1]-tzrange[0])/float(bins)
-        tzbins = np.arange(tzrange[0],tzrange[1]+dtz,dtz)
+        tzbins = np.arange(tzrange[0], tzrange[1]+dtz, dtz)
     else:
         tzbins = bins
     if pltredshift:
-        tedges = np.array([cosmology.getTime(z,sim) for z in tzbins])
+        tedges = np.array([cosmology.getTime(z, sim) for z in tzbins])
     else:
         tedges = tzbins
 
@@ -186,53 +186,53 @@ def plt_merger_rates(time,sim, color='b',linestyle='-', vol_weights=1./25.**3, b
     rate = data[0]/dt
     tzbins = tzbins[tsorted]
     if pltredshift is False:
-        plotting.plt.step(tzbins[0:],np.append(rate,rate[-1]), color=color,linestyle=linestyle, label=label, linewidth=lw, where='post')
+        plotting.plt.step(tzbins[0:], np.append(rate, rate[-1]), color=color, linestyle=linestyle, label=label, linewidth=lw, where='post')
         plotting.plt.xlabel('Time (Gyr)')
     else:
         if xlog is False:
-            plotting.plt.step(tzbins[0:],np.append(rate,rate[-1]), color=color,linestyle=linestyle, label=label, linewidth=lw, where='post')
+            plotting.plt.step(tzbins[0:], np.append(rate, rate[-1]), color=color, linestyle=linestyle, label=label, linewidth=lw, where='post')
 
         else:
-            plotting.plt.step(tzbins[0:]+1,np.append(rate,rate[-1]), color=color,linestyle=linestyle, label=label, linewidth=lw, where='post')
+            plotting.plt.step(tzbins[0:]+1, np.append(rate, rate[-1]), color=color, linestyle=linestyle, label=label, linewidth=lw, where='post')
 
     plotting.plt.xlabel('Redshift')
 
     if xlog is True:
-        plotting.plt.xscale('log',base=10)
+        plotting.plt.xscale('log', base=10)
         if pltredshift is True:
-            plotting.plt.xticks([1,2,3,4,5,6,9,11,16,21],['0','1','2','3','4','5','8','10','15','20'])
+            plotting.plt.xticks([1, 2, 3, 4, 5, 6, 9, 11, 16, 21], ['0', '1', '2', '3', '4', '5', '8', '10', '15', '20'])
     if ylog is True:
-        plotting.plt.yscale('log',base=10)
+        plotting.plt.yscale('log', base=10)
 
     if ret_data is True:
-        return rate, tzbins,tedges
+        return rate, tzbins, tedges
 
 
-def mass_binned_counts(redshift,Mvir,hmf,s,weights=None,zrange=[0,10],dz=0.5,tnorm=True, logz=True):
+def mass_binned_counts(redshift,Mvir,hmf,s,weights=None,zrange=[0, 10],dz=0.5,tnorm=True, logz=True):
     if logz is True:
-        lzbins = np.arange(zrange[0],zrange[1]+dz,dz)
+        lzbins = np.arange(zrange[0], zrange[1]+dz, dz)
         zbins = 10**lzbins
         zmid = zbins[0:-1] + (zbins[1:]-zbins[0:-1])*0.5
     else:
-        zbins = np.arange(zrange[0],zrange[1]+dz,dz)
+        zbins = np.arange(zrange[0], zrange[1]+dz, dz)
         zmid = zbins[0:-1]+dz/2.
-    Mbins = np.arange(hmf.minlm,hmf.maxlm+hmf.delta,hmf.delta)
+    Mbins = np.arange(hmf.minlm, hmf.maxlm+hmf.delta, hmf.delta)
 
-    mbin_counts = np.zeros((len(zbins)-1,len(Mbins)-1))
-    mbin_total = np.zeros((len(zbins)-1,len(Mbins)-1))
+    mbin_counts = np.zeros((len(zbins)-1, len(Mbins)-1))
+    mbin_total = np.zeros((len(zbins)-1, len(Mbins)-1))
 
     for i in range(len(zbins)-1):
         o, = np.where((redshift>=zbins[i])&(redshift<zbins[i+1]))
-        n,b = np.histogram(np.log10(Mvir[o]),bins=Mbins,weights=weights[o])
+        n, b = np.histogram(np.log10(Mvir[o]), bins=Mbins, weights=weights[o])
         mbin_counts[i,:] = n
         zind = np.where((hmf.z >= zbins[i])&(hmf.z < zbins[i+1]))[0]
         if len(zind) > 0:
-            mbin_total[i,:] = np.sum(hmf.nhalos[zind,:],axis=0)/float(len(zind))
+            mbin_total[i,:] = np.sum(hmf.nhalos[zind,:], axis=0)/float(len(zind))
         if len(zind) == 0:
             z1 = np.where(hmf.z > zmid[i])[0]
             z2 = np.where(hmf.z < zmid[i])[0]
             if len(z1)== 0 or len(z2) == 0:
-                print "ERROR make sure the z bins are within the available snapshot z range"
+                print("ERROR make sure the z bins are within the available snapshot z range")
                 raise RuntimeError
             z1 = z1[-1]
             z2 = z2[0]
@@ -242,12 +242,12 @@ def mass_binned_counts(redshift,Mvir,hmf,s,weights=None,zrange=[0,10],dz=0.5,tno
         bad = np.where((mbin_total[i,:]==0)&(mbin_counts[i,:]>0))[0]
         while len(bad)>0:
             for bi in bad:
-                mbin_counts[i,bi-1] += mbin_counts[i,bi]
-                mbin_counts[i,bi] = 0
+                mbin_counts[i, bi-1] += mbin_counts[i, bi]
+                mbin_counts[i, bi] = 0
             bad = np.where((mbin_total[i,:]==0)&(mbin_counts[i,:]>0))[0]
 
     if tnorm is True:
-        tedges = pynbody.array.SimArray([cosmology.getTime(z,s) for z in zbins],'Gyr')
+        tedges = pynbody.array.SimArray([cosmology.getTime(z, s) for z in zbins], 'Gyr')
         dt = np.abs(tedges[0:-1]-tedges[1:])
     else:
         dt = None
@@ -256,23 +256,23 @@ def mass_binned_counts(redshift,Mvir,hmf,s,weights=None,zrange=[0,10],dz=0.5,tno
 
 
 def raw_mass_bin_to_rates(cnt, tot, z, norm, hmf, ptype='obs'):
-    f = open('files.list','r')
+    f = open('files.list', 'r')
     s = pynbody.load(f.readline().strip('\n'))
     frac = np.nan_to_num(cnt/tot)
     n = np.zeros_like(frac)
     for i in range(len(z)):
         ind = np.argmin(np.abs(z[i]-hmf.z))
-        n[i,0:-1] = frac[i,0:-1]*hmf.hmf['phi'][ind]*0.3
+        n[i, 0:-1] = frac[i, 0:-1]*hmf.hmf['phi'][ind]*0.3
 
     if ptype == 'obs':
         nall = n.sum(axis=1)/norm
-        nobs = cosmology.event_count(nall,z,s.properties['omegaM0'], s.properties['omegaL0'], s.properties['h'])
+        nobs = cosmology.event_count(nall, z, s.properties['omegaM0'], s.properties['omegaL0'], s.properties['h'])
         return nobs
     if ptype == 'rate':
         return n.sum(axis=1)/norm
 
 
-def combine_merger_data(z,mh,hmf,s, weights=None,zrange=[0,10],dz=0.5,tnorm=True,rel_weights=[8,1], logz=True, ptype='obs'):
+def combine_merger_data(z,mh,hmf,s, weights=None,zrange=[0, 10],dz=0.5,tnorm=True,rel_weights=[8, 1], logz=True, ptype='obs'):
     todo = len(z)
     if weights is None:
         weights = []
@@ -286,11 +286,11 @@ def combine_merger_data(z,mh,hmf,s, weights=None,zrange=[0,10],dz=0.5,tnorm=True
         cnt += cn*rel_weights[i+1]
         tot += tn*rel_weights[i+1]
     if ptype=='obs':
-        nobs = raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf,ptype=ptype)
+        nobs = raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf, ptype=ptype)
     if ptype=='rate':
-        nobs = raw_mass_bin_to_rates(cnt, tot, zmid, dt*1e9, hmf,ptype=ptype)
+        nobs = raw_mass_bin_to_rates(cnt, tot, zmid, dt*1e9, hmf, ptype=ptype)
     if ptype=='zdist':
-        nobs = raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf,ptype='rate')
+        nobs = raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf, ptype='rate')
     return nobs, zmid
 
 def cal_weights(z, mh, hmf, s, hmf_comp = None, rel_weight=None):
@@ -300,11 +300,11 @@ def cal_weights(z, mh, hmf, s, hmf_comp = None, rel_weight=None):
             target = np.where((z<hmf.z[i])&(z>=hmf.z[i+1])&(np.log10(mh)>hmf.mbins[j])&(np.log10(mh)<=hmf.mbins[j+1]))[0]
             #if hmf_comp is None:
             if len(target)==0: continue
-            nh_hmf = hmf.nhalos[i+1,j]
+            nh_hmf = hmf.nhalos[i+1, j]
             jj = j
             while nh_hmf == 0:
                 jj = jj -1
-                nh_hmf = hmf.nhalos[i+1,jj]
+                nh_hmf = hmf.nhalos[i+1, jj]
             weights[target] = hmf.hmf['phi'][i+1][jj]*0.3/nh_hmf
     return weights
   #          else:
@@ -324,9 +324,9 @@ def cal_weights(z, mh, hmf, s, hmf_comp = None, rel_weight=None):
        #                             (hmfc.nhalos[ocomp_h[0],j]-hmfc.nhalos[ocomp_l[0],j])/((hmfc.z[ocomp_l[0]]-hmfc.z[ocomp_h[0]])) *
 
 def calc_nobs(z, m1, m2, mh, hmf, s, weights=None, rel_weights=[1],
-              msum_range=None, mmin_range=None, mh_range=None, ratio_range=None, zrange=[0,10], dz = 0.5, logz=True, ptype='obs'):
-    if type(z) != list or type(m1) != list or type(m2) != list or type(mh) != list:
-        print "expecting lists of arrays!"
+              msum_range=None, mmin_range=None, mh_range=None, ratio_range=None, zrange=[0, 10], dz = 0.5, logz=True, ptype='obs'):
+    if not isinstance(z, list) or not isinstance(m1, list) or not isinstance(m2, list) or not isinstance(mh, list):
+        print("expecting lists of arrays!")
         raise ValueError
     zuse_l = []
     m1use_l = []
@@ -349,7 +349,7 @@ def calc_nobs(z, m1, m2, mh, hmf, s, weights=None, rel_weights=[1],
             if weights:
                 wuse = wuse[ok]
         if mmin_range is not None:
-            ok = np.where((np.minimum(m1use,m2use)>=mmin_range[0])&(np.minimum(m1use,m2use)<mmin_range[1]))[0]
+            ok = np.where((np.minimum(m1use, m2use)>=mmin_range[0])&(np.minimum(m1use, m2use)<mmin_range[1]))[0]
             zuse = zuse[ok]
             m1use = m1use[ok]
             m2use = m2use[ok]
@@ -365,7 +365,7 @@ def calc_nobs(z, m1, m2, mh, hmf, s, weights=None, rel_weights=[1],
             if weights:
                 wuse = wuse[ok]
         if ratio_range is not None:
-            ratio = np.minimum(m1use,m2use)/np.maximum(m1use,m2use)
+            ratio = np.minimum(m1use, m2use)/np.maximum(m1use, m2use)
             ok = np.where((ratio>=ratio_range[0])&(ratio<ratio_range[1]))[0]
             zuse = zuse[ok]
             m1use = m1use[ok]
@@ -383,44 +383,44 @@ def calc_nobs(z, m1, m2, mh, hmf, s, weights=None, rel_weights=[1],
         if len(z)==1:
             cnt, tot, dt, dz, zmid = mass_binned_counts(zuse_l[0], mhuse_l[0], hmf, s, np.ones(len(zuse_l[0])), zrange, dz, True, logz)
             if ptype=='obs':
-                return raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf,ptype=ptype), zmid
+                return raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf, ptype=ptype), zmid
             if ptype=='rate':
-                return raw_mass_bin_to_rates(cnt, tot, zmid, dt*1e9, hmf,ptype=ptype), zmid
+                return raw_mass_bin_to_rates(cnt, tot, zmid, dt*1e9, hmf, ptype=ptype), zmid
             if ptype=='zdist':
-                return raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf,ptype='rate'), zmid
+                return raw_mass_bin_to_rates(cnt, tot, zmid, dz, hmf, ptype='rate'), zmid
         else:
-            return combine_merger_data(z,mh,hmf,s, weights=None,zrange=zrange,dz=dz,rel_weights=rel_weights, logz=logz, ptype=ptype)
+            return combine_merger_data(z, mh, hmf, s, weights=None, zrange=zrange, dz=dz, rel_weights=rel_weights, logz=logz, ptype=ptype)
     else:
         if logz is True:
-            zbins = 10**np.arange(zrange[0],zrange[1]+dz,dz)
+            zbins = 10**np.arange(zrange[0], zrange[1]+dz, dz)
         else:
-            zbins = np.arange(zrange[0],zrange[1]+dz,dz)
+            zbins = np.arange(zrange[0], zrange[1]+dz, dz)
         zmid = zbins[0:-1]+0.5*(zbins[1:]-zbins[0:-1])
-        n, zbins = np.histogram(zuse_l[0],weights=w_l[0],bins=zbins)
+        n, zbins = np.histogram(zuse_l[0], weights=w_l[0], bins=zbins)
         n *= rel_weights[0]
         for i in range(len(zuse_l)-1):
-            nn, zbinsn = np.histogram(zuse_l[i+1],weights=w_l[i+1],bins=zbins)
+            nn, zbinsn = np.histogram(zuse_l[i+1], weights=w_l[i+1], bins=zbins)
             n += nn*rel_weights[i+1]
         if ptype=='obs':
-            return cosmology.event_count(n,zmid,s.properties['omegaM0'], s.properties['omegaL0'], s.properties['h'])/dz, zmid
+            return cosmology.event_count(n, zmid, s.properties['omegaM0'], s.properties['omegaL0'], s.properties['h'])/dz, zmid
         if ptype=='rate':
-            tedges = pynbody.array.SimArray([cosmology.getTime(z,s) for z in zbins],'Gyr')
+            tedges = pynbody.array.SimArray([cosmology.getTime(z, s) for z in zbins], 'Gyr')
             dt = np.abs(tedges[0:-1]-tedges[1:]) * 1e9
-            return n/dt,zmid
+            return n/dt, zmid
         if ptype=='zdist':
             return n/dz, zmid
 
 
 
 class mergerCat(object):
-    def __init__(self,simname):
+    def __init__(self, simname):
         self.simname = simname
         self.db_mergers = {}
         mergerfile = simname+'.mergers'
-        print "reading .mergers file..."
-        time, step, ID, IDeat, ratio, kick = readcol(mergerfile,twod=False)
+        print("reading .mergers file...")
+        time, step, ID, IDeat, ratio, kick = readcol(mergerfile, twod=False)
 
-        print "checking for bad IDs..."
+        print("checking for bad IDs...")
         bad = np.where(ID<0)[0]
         if len(bad)>0:
             ID[bad] = 2*2147483648 + ID[bad]
@@ -431,21 +431,21 @@ class mergerCat(object):
         uIDeat, indices = np.unique(IDeat, return_index=True)
 
         self.rawdat = {'time':time, 'ID1':ID, 'ID2':IDeat, 'ratio':ratio, 'kick':kick, 'step':step}
-        util.cutdict(self.rawdat,indices)
+        util.cutdict(self.rawdat, indices)
         ordr = np.argsort(self.rawdat['ID2'])
-        util.cutdict(self.rawdat,ordr)
+        util.cutdict(self.rawdat, ordr)
 
-        f = open('files.list','r')
+        f = open('files.list', 'r')
         s = pynbody.load(f.readline().strip('\n'))
         f.close()
-        scale, red = cosmology.getScaleFactor(pynbody.array.SimArray(self.rawdat['time'],'Gyr'),s)
+        scale, red = cosmology.getScaleFactor(pynbody.array.SimArray(self.rawdat['time'], 'Gyr'), s)
         self.rawdat['redshift'] = red
 
         uIDeat, cnt = np.unique(self.rawdat['ID2'], return_counts=True)
         if len(np.where(cnt>1)[0])>0:
-            print "SHIIIIIIT"
+            print("SHIIIIIIT")
 
-    def get_halo_info(self,dbsim,halo_props = ['halo_number()','Mvir', 'Mstar', 'Mgas']):
+    def get_halo_info(self,dbsim,halo_props = ['halo_number()', 'Mvir', 'Mstar', 'Mgas']):
         import tangos as db
         self.rawdat['snap_after'] = np.zeros(len(self.rawdat['ID1'])).astype('S100')
         self.rawdat['snap_before'] = np.zeros(len(self.rawdat['ID1'])).astype('S100')
@@ -457,7 +457,7 @@ class mergerCat(object):
         for p in halo_props:
             self.rawdat[p] = np.ones(len(self.rawdat['ID1'])) * -1
         for i in range(len(self.rawdat['ID1'])):
-            if i%100 == 0: print float(i)/len(self.rawdat['ID1']) * 100, '% done'
+            if i%100 == 0: print((float(i)/len(self.rawdat['ID1']) * 100, '% done'))
             id1 = self.rawdat['ID1'][i]
             id2 = self.rawdat['ID2'][i]
             if self.rawdat['redshift'][i]<zsteps.min():
@@ -471,12 +471,12 @@ class mergerCat(object):
                 if ind > 0:
                     bh = db.get_halo(str(dbsim.timesteps[ind-1].path)+'/1.'+str(id1))
                     if bh is not None:
-                        bh = bh.next
+                        bh = bh.__next__
             if bh is None:
                 if ind > 0:
                     bh = db.get_halo(str(dbsim.timesteps[ind-1].path)+'/1.'+str(id2))
                     if bh is not None:
-                        bh = bh.next
+                        bh = bh.__next__
             if bh is None:
                 ii = np.where(self.rawdat['ID2']==self.rawdat['ID1'][i])[0]
                 if len(ii)>0:
@@ -484,13 +484,13 @@ class mergerCat(object):
                     bh = db.get_halo(str(dbsim.timesteps[ind].path)+'/1.'+str(id3))
             if bh is None:
                 continue
-            if 'host_halo' in bh.keys():
+            if 'host_halo' in list(bh.keys()):
                 hosth = bh['host_halo']
             else:
                 hosth = None
             if hosth is not None:
-                if "BH_central" in hosth.keys():
-                    if type(hosth['BH_central'])==list:
+                if "BH_central" in list(hosth.keys()):
+                    if isinstance(hosth['BH_central'], list):
                         cenbhs = np.array([halobh.halo_number for halobh in hosth['BH_central']])
                     else:
                         cenbhs = np.array([hosth['BH_central']])
@@ -528,17 +528,17 @@ class mergerCat(object):
         self.steptimes = []
 
         for step in dbsim.timesteps:
-            print step
+            print(step)
             try:
                 data = step.gather_property(*proplist)
             except:
-                print "Nothing found in this step"
+                print("Nothing found in this step")
                 self.nmergers.append(0)
                 self.steptimes.append(step.time_gyr)
                 continue
 
-            stepnum = re.match("^(.*)\.(0[0-9]*)$",step.filename).groups()[1]
-            stepnumA = re.match("^(.*)\.(0[0-9]*)$",step.next.filename).groups()[1]
+            stepnum = re.match("^(.*)\.(0[0-9]*)$", step.filename).groups()[1]
+            stepnumA = re.match("^(.*)\.(0[0-9]*)$", step.next.filename).groups()[1]
 
             self.nmergers.append(len(data[0]))
             self.steptimes.append(step.time_gyr)
@@ -546,9 +546,9 @@ class mergerCat(object):
             self.db_mergers['ID1'].extend(data[1])
             self.db_mergers['ID2'].extend(data[0])
 
-            tt1, tt2 = np.unique(data[0],return_counts=True)
+            tt1, tt2 = np.unique(data[0], return_counts=True)
             if len(np.where(tt2>1)[0])>0:
-                print "Double counted IDs: ", tt1[(tt2>1)]
+                print(("Double counted IDs: ", tt1[(tt2>1)]))
                 raise RuntimeError("ERROR double counted IDeat in database analysis")
 
             self.db_mergers['host_N_1'].extend(data[4])
@@ -567,20 +567,20 @@ class mergerCat(object):
                 self.db_mergers[properties[i]+'_f'].extend(data[index+1])
                 index += 3
 
-        for key in self.db_mergers.keys():
+        for key in list(self.db_mergers.keys()):
             self.db_mergers[key] = np.array(self.db_mergers[key])
 
-        self._match_data_to_raw('ratio', 'kick', 'time','step', 'redshift')
+        self._match_data_to_raw('ratio', 'kick', 'time', 'step', 'redshift')
 
     def __getitem__(self, item):
         return self.rawdat[item]
 
     def keys(self):
-        return self.rawdat.keys()
+        return list(self.rawdat.keys())
 
     def get_snap_name(self):
-        if 'step' not in self.data.keys():
-            print "ERROR 'step' is not a property that has been calculated"
+        if 'step' not in list(self.data.keys()):
+            print("ERROR 'step' is not a property that has been calculated")
             raise RuntimeError
         small = np.where(self.data['step_after']<100)[0]
         med = np.where(self.data['step_after']<1000)[0]
@@ -595,15 +595,15 @@ class mergerCat(object):
 
     def _match_data_to_raw(self,*properties):
         ordee = np.argsort(self.db_mergers['ID2'])
-        match = np.where(np.in1d(self.db_mergers['ID2'][ordee],self.rawdat['ID2']))[0]
-        match2 = np.where(np.in1d(self.rawdat['ID2'],self.data['ID2'][ordee]))[0]
+        match = np.where(np.in1d(self.db_mergers['ID2'][ordee], self.rawdat['ID2']))[0]
+        match2 = np.where(np.in1d(self.rawdat['ID2'], self.data['ID2'][ordee]))[0]
 
         if len(match) != len(match2):
-            print self.db_mergers['ID2'][ordee], self.rawdat['ID2']
-            print match, match2
+            print((self.db_mergers['ID2'][ordee], self.rawdat['ID2']))
+            print((match, match2))
             raise RuntimeError("ERROR match not returning same number of elements")
 
-        if len(np.where(np.equal(self.db_mergers['ID2'][ordee[match]],self.rawdat['ID2'][match2]) is False)[0])>0:
+        if len(np.where(np.equal(self.db_mergers['ID2'][ordee[match]], self.rawdat['ID2'][match2]) is False)[0])>0:
             raise RuntimeError("ERROR something wrong with array matching")
 
 
@@ -615,13 +615,13 @@ class mergerCat(object):
     def calc_GW_emission(self, sim):
         from . import gw
 
-        if 'merge_mass_1' not in self.rawdat.keys():
-            print "ERROR need to find final masses for BHs"
+        if 'merge_mass_1' not in list(self.rawdat.keys()):
+            print("ERROR need to find final masses for BHs")
             return
 
         ok = np.where((self.rawdat['merge_mass_1'] > 0)&(self.rawdat['merge_mass_2']>0))[0]
 
-        self.gwemit = gw.GWemit(self.rawdat['merge_mass_1'][ok], self.rawdat['merge_mass_2'][ok],self.rawdat['redshift'][ok],
+        self.gwemit = gw.GWemit(self.rawdat['merge_mass_1'][ok], self.rawdat['merge_mass_2'][ok], self.rawdat['redshift'][ok],
                                 sim.properties['omegaM0'], sim.properties['omegaL0'], sim.properties['h'])
 
         self.rawdat['GW_freq_merge'] = np.ones(len(self.rawdat['ID1']))*-1
@@ -634,17 +634,17 @@ class mergerCat(object):
         self.rawdat['GW_strain_merge'][ok] = self.gwemit.ampGW_merger() * 2.0 * self.rawdat['GW_freq_merge'][ok]
         self.rawdat['GW_strain_ring'][ok] = self.gwemit.ampGW_ring() * 2.0 * self.rawdat['GW_freq_ring'][ok]
 
-    def get_vol_weight_hmf(self,hmf):
+    def get_vol_weight_hmf(self, hmf):
         self.rawdat['volweight'] = np.ones(len(self.rawdat['ID1'])) * -1
-        if 'Mvir' not in self.rawdat.keys():
-            print "halo information not found!"
+        if 'Mvir' not in list(self.rawdat.keys()):
+            print("halo information not found!")
             raise RuntimeError
         for i in range(len(self.rawdat['ID1'])):
             if self.rawdat['Mvir'][i] < 0:
                 continue
-            self.rawdat['volweight'][i] = hmf.calc_rho(np.log10(self.rawdat['Mvir'][i]),self.rawdat['snap_after'][i])
+            self.rawdat['volweight'][i] = hmf.calc_rho(np.log10(self.rawdat['Mvir'][i]), self.rawdat['snap_after'][i])
 
-    def get_final_values(self,bhorbit):
+    def get_final_values(self, bhorbit):
         self.rawdat['merge_mass_2'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['merge_mass_1'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['merge_mdot_2'] = np.ones(len(self.rawdat['ID1']))*-1
@@ -654,17 +654,17 @@ class mergerCat(object):
         self.rawdat['tform1'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['tform2'] = np.ones(len(self.rawdat['ID1']))*-1
         for i in range(len(self.rawdat['ID1'])):
-            mass1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'mass')
-            mass2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'mass')
+            mass1 = bhorbit.single_BH_data(self.rawdat['ID1'][i], 'mass')
+            mass2 = bhorbit.single_BH_data(self.rawdat['ID2'][i], 'mass')
 
-            mdot1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'mdotmean')
-            mdot2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'mdotmean')
+            mdot1 = bhorbit.single_BH_data(self.rawdat['ID1'][i], 'mdotmean')
+            mdot2 = bhorbit.single_BH_data(self.rawdat['ID2'][i], 'mdotmean')
 
-            lum1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'lum')
-            lum2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'lum')
+            lum1 = bhorbit.single_BH_data(self.rawdat['ID1'][i], 'lum')
+            lum2 = bhorbit.single_BH_data(self.rawdat['ID2'][i], 'lum')
 
-            time1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'time')
-            time2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'time')
+            time1 = bhorbit.single_BH_data(self.rawdat['ID1'][i], 'time')
+            time2 = bhorbit.single_BH_data(self.rawdat['ID2'][i], 'time')
 
             if len(time1)>0:
                 oo = np.where(bhorbit.bhiords == self.rawdat['ID1'][i])[0]
@@ -703,30 +703,30 @@ class mergerCat(object):
         self.rawdat[tstr] = np.ones(len(self.rawdat['ID1']))*-1
         for i in range(len(self.rawdat['ID1'])):
             if i %100==0:
-                print float(i)/float(len(self.rawdat['ID1']))*100, '% done'
+                print((float(i)/float(len(self.rawdat['ID1']))*100, '% done'))
 
-            x1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'x')
-            x2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'x')
-            y1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'y')
-            y2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'y')
-            z1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'z')
-            z2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'z')
+            x1 = bhorbit.single_BH_data(self.rawdat['ID1'][i], 'x')
+            x2 = bhorbit.single_BH_data(self.rawdat['ID2'][i], 'x')
+            y1 = bhorbit.single_BH_data(self.rawdat['ID1'][i], 'y')
+            y2 = bhorbit.single_BH_data(self.rawdat['ID2'][i], 'y')
+            z1 = bhorbit.single_BH_data(self.rawdat['ID1'][i], 'z')
+            z2 = bhorbit.single_BH_data(self.rawdat['ID2'][i], 'z')
 
-            lum1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'lum')
-            lum2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'lum')
+            lum1 = bhorbit.single_BH_data(self.rawdat['ID1'][i], 'lum')
+            lum2 = bhorbit.single_BH_data(self.rawdat['ID2'][i], 'lum')
 
-            time1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'time')
-            time2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'time')
+            time1 = bhorbit.single_BH_data(self.rawdat['ID1'][i], 'time')
+            time2 = bhorbit.single_BH_data(self.rawdat['ID2'][i], 'time')
 
-            scale1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'scalefac')
-            scale2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'scalefac')
+            scale1 = bhorbit.single_BH_data(self.rawdat['ID1'][i], 'scalefac')
+            scale2 = bhorbit.single_BH_data(self.rawdat['ID2'][i], 'scalefac')
 
-            mass1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'mass')
-            mass2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'mass')
+            mass1 = bhorbit.single_BH_data(self.rawdat['ID1'][i], 'mass')
+            mass2 = bhorbit.single_BH_data(self.rawdat['ID2'][i], 'mass')
             if len(time1) == 0 or len(time2) == 0:
                 continue
 
-            mint = np.max([time1.min(),time2.min()])
+            mint = np.max([time1.min(), time2.min()])
             maxt = time2.max()
 
             use1 = np.where((time1<=maxt)&(time1>=mint))[0]
@@ -737,12 +737,12 @@ class mergerCat(object):
 
             if len(use1) != len(use2):
                 if len(use1)< len(use2):
-                    use1 = np.append(use1,use1[-1])
+                    use1 = np.append(use1, use1[-1])
                     if len(use1) != len(use2):
-                        print "SHIIIIIIT"
+                        print("SHIIIIIIT")
                 else:
-                    print "SHIIIIIIIT"
-                    print self.rawdat['ID1'][i], self.rawdat['ID2'][i]
+                    print("SHIIIIIIIT")
+                    print((self.rawdat['ID1'][i], self.rawdat['ID2'][i]))
 
             xd = x1[use1]-x2[use2]
             yd = y1[use1]-y2[use2]
@@ -762,7 +762,7 @@ class mergerCat(object):
 
             dist = np.sqrt(xd**2 + yd**2 + zd**2)
             if len(use1) != len(dist) or len(use2) != len(dist):
-                print len(use1), len(use2), len(dist)
+                print((len(use1), len(use2), len(dist)))
             if comove:
                 dist /= scale1[use1]
             close = np.where(dist<maxD)[0]
@@ -788,7 +788,7 @@ class mergerCat(object):
                     self.closeBHevol['mass1'].extend(mass1[use1[close]])
                     self.closeBHevol['mass2'].extend(mass2[use2[close]])
         if gather_array is True:
-            for key in self.closeBHevol.keys():
+            for key in list(self.closeBHevol.keys()):
                 self.closeBHevol[key] = np.array(self.closeBHevol[key])
 
     def get_halo_interaction(self, dbsim,boxsize=25):
@@ -826,7 +826,7 @@ class mergerCat(object):
         #badmatch = 0
         for i in range(len(self.rawdat['ID1'])):
             if i%30 == 0:
-                print float(i)/float(len(self.rawdat['ID1']))*100, '% done'
+                print((float(i)/float(len(self.rawdat['ID1']))*100, '% done'))
             try:
                 bh1 = db.get_halo(str(dbsim.path)+'/%'+str(self.rawdat['snap_before'][i])+'/1.'+str(self.rawdat['ID1'][i]))
                 bh2 = db.get_halo(str(dbsim.path)+'/%'+str(self.rawdat['snap_before'][i])+'/1.'+str(self.rawdat['ID2'][i]))
@@ -836,13 +836,13 @@ class mergerCat(object):
 
             try:
                 timeh, hn, mv, mg, ms, rvirh, steph, ssch, mbhh = host.previous.reverse_property_cascade(
-                    't()','halo_number()','Mvir','Mgas','Mstar','Rvir','step_path()', 'SSC', 'bh().BH_mass')
+                    't()', 'halo_number()', 'Mvir', 'Mgas', 'Mstar', 'Rvir', 'step_path()', 'SSC', 'bh().BH_mass')
 
                 time1, hn1, mv1, mg1, ms1, mbh1, dbh1, ssc, rvir, step1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()',
-                                                          'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass','BH_central_distance',
+                                                          'host_halo.Mvir', 'host_halo.Mgas', 'host_halo.Mstar', 'BH_mass', 'BH_central_distance',
                                                             'host_halo.SSC', 'host_halo.Rvir', 'step_path()')
                 time2, hn2, mv2, mg2, ms2, mbh2, dbh2, ssc2, rvir2, step2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()',
-                                                          'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass','BH_central_distance',
+                                                          'host_halo.Mvir', 'host_halo.Mgas', 'host_halo.Mstar', 'BH_mass', 'BH_central_distance',
                                                             'host_halo.SSC', 'host_halo.Rvir', 'step_path()')
             except:
                 continue
@@ -858,7 +858,7 @@ class mergerCat(object):
                 if len(o1)==0 or len(o2)==0:
                     break
                 if len(o1) > 1 or len(o2) > 1:
-                    print "WEIRD"
+                    print("WEIRD")
                 if hn[ii] != hn1[o1[0]] and hn[ii] == hn2[o2[0]]:
                     bha = bh1
                     accid=1
@@ -874,20 +874,20 @@ class mergerCat(object):
                 continue
             try:
                 timea, hna, mva, mga, msa, mbha, dbha, ssca, rvira, stepa, red = bha.reverse_property_cascade('t()', 'host_halo.halo_number()',
-                                                          'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass','BH_central_distance',
+                                                          'host_halo.Mvir', 'host_halo.Mgas', 'host_halo.Mstar', 'BH_mass', 'BH_central_distance',
                                                             'host_halo.SSC', 'host_halo.Rvir', 'step_path()', 'z()')
             except:
-                print "bad bha reverse"
+                print("bad bha reverse")
                 continue
 
-            matcha = np.where(np.in1d(timea,timeh))[0]
-            matchh = np.where(np.in1d(timeh,timea))[0]
+            matcha = np.where(np.in1d(timea, timeh))[0]
+            matchh = np.where(np.in1d(timeh, timea))[0]
             if len(np.where(timea[matcha]!=timeh[matchh])[0])>0:
-                print "FUCK times are still weird", bha, host
+                print(("FUCK times are still weird", bha, host))
 
-            xd = ssca[matcha,0]-ssch[matchh,0]
-            yd = ssca[matcha,1]-ssch[matchh,1]
-            zd = ssca[matcha,2]-ssch[matchh,2]
+            xd = ssca[matcha, 0]-ssch[matchh, 0]
+            yd = ssca[matcha, 1]-ssch[matchh, 1]
+            zd = ssca[matcha, 2]-ssch[matchh, 2]
 
             scale = 1./(red[matcha]+1)
 
@@ -961,7 +961,7 @@ class mergerCat(object):
 
     def get_halo_merger(self,dbsim,overwrite=False, detail=False):
         import tangos as db
-        if 'dt_hmerger' not in self.rawdat.keys() or overwrite==True:
+        if 'dt_hmerger' not in list(self.rawdat.keys()) or overwrite==True:
             self.rawdat['dt_hmerger'] = np.ones(len(self.rawdat['ID1']))*-1
             self.rawdat['dt_hmerger_min'] = np.ones(len(self.rawdat['ID1']))*-1
             if detail == True:
@@ -982,7 +982,7 @@ class mergerCat(object):
         badmatch = 0
         for i in range(len(self.rawdat['ID1'])):
             if i%30 == 0:
-                print float(i)/float(len(self.rawdat['ID1']))*100, '% done'
+                print((float(i)/float(len(self.rawdat['ID1']))*100, '% done'))
             if self.rawdat['dt_hmerger'][i] >= 0 and overwrite == False:
                 continue
             try:
@@ -992,34 +992,34 @@ class mergerCat(object):
                 continue
 
             if bh1 is None or bh2 is None:
-                self.rawdat['dt_hmerger'][i] = self.rawdat['time'][i] - min(self.rawdat['tform1'][i],self.rawdat['tform2'][i])
+                self.rawdat['dt_hmerger'][i] = self.rawdat['time'][i] - min(self.rawdat['tform1'][i], self.rawdat['tform2'][i])
                 self.rawdat['dt_hmerger_min'][i] = 0
                 continue
 
             try:
                 if detail==True:
                     time1, hn1, mv1, mg1, ms1, mbh1, dbh1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()',
-                                                          'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass','BH_central_distance')
+                                                          'host_halo.Mvir', 'host_halo.Mgas', 'host_halo.Mstar', 'BH_mass', 'BH_central_distance')
                     time2, hn2, mv2, mg2, ms2, mbh2, dbh2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()',
-                                                          'host_halo.Mvir', 'host_halo.Mgas','host_halo.Mstar', 'BH_mass','BH_central_distance')
+                                                          'host_halo.Mvir', 'host_halo.Mgas', 'host_halo.Mstar', 'BH_mass', 'BH_central_distance')
                 else:
                     time1, hn1, ndm1 = bh1.reverse_property_cascade('t()', 'host_halo.halo_number()', 'host_halo.NDM()')
                     time2, hn2, ndm2 = bh2.reverse_property_cascade('t()', 'host_halo.halo_number()', 'host_halo.NDM()')
             except:
                 badmatch +=1
                 continue
-            match1 = np.where(np.in1d(time1,time2))[0]
-            match2 = np.where(np.in1d(time2,time1))[0]
-            if not np.array_equal(time1[match1],time2[match2]):
-                print "WARNING time arrays don't match!"
+            match1 = np.where(np.in1d(time1, time2))[0]
+            match2 = np.where(np.in1d(time2, time1))[0]
+            if not np.array_equal(time1[match1], time2[match2]):
+                print("WARNING time arrays don't match!")
             if len(match1)==0 or len(match2)==0:
                 badmatch += 1
                 continue
             diff = np.where(hn1[match1]!=hn2[match2])[0]
             if len(diff)==0:
                 nodiff += 1
-                self.rawdat['dt_hmerger'][i] = self.rawdat['time'][i] - max(self.rawdat['tform1'][i],self.rawdat['tform2'][i])
-                self.rawdat['dt_hmerger_min'][i] = self.rawdat['time'][i] - max(time1.min(),time2.min())
+                self.rawdat['dt_hmerger'][i] = self.rawdat['time'][i] - max(self.rawdat['tform1'][i], self.rawdat['tform2'][i])
+                self.rawdat['dt_hmerger_min'][i] = self.rawdat['time'][i] - max(time1.min(), time2.min())
                 if detail == True:
                     self.rawdat['hmerger_mvir_1'][i] = mv1[-1]
                     self.rawdat['hmerger_mgas_1'][i] = mg1[-1]
@@ -1039,7 +1039,7 @@ class mergerCat(object):
             else:
                 th1p = self.rawdat['time'][i]
             if th1 != th2:
-                print "WARNING halo merge times not correct"
+                print("WARNING halo merge times not correct")
 
             self.rawdat['dt_hmerger'][i] = self.rawdat['time'][i] - th1
             if self.rawdat['time'][i] - th1p > 0:
@@ -1061,36 +1061,36 @@ class mergerCat(object):
             else:
                 self.rawdat['hmerger_ndm_1'][i] = ndm1[match1[diff[0]]]
                 self.rawdat['hmerger_ndm_2'][i] = ndm2[match2[diff[0]]]
-        print "finished with ", nodiff, "BHs having never been in different halos and ", badmatch, "bad matches"
+        print(("finished with ", nodiff, "BHs having never been in different halos and ", badmatch, "bad matches"))
 
     def get_close_time(self,bhorbit, maxD, boxsize=25,comove=False, timestep=None):
         tstr = 't_'+str(maxD)
-        print "hey this is updated!"
+        print("hey this is updated!")
         if comove:
             tstr = tstr+'c'
         self.rawdat[tstr] = np.ones(len(self.rawdat['ID1']))*-1
         for i in range(len(self.rawdat['ID1'])):
             if i %100==0:
-                print float(i)/float(len(self.rawdat['ID1']))*100, '% done'
+                print((float(i)/float(len(self.rawdat['ID1']))*100, '% done'))
 
-            x1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'x')
-            x2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'x')
-            y1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'y')
-            y2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'y')
-            z1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'z')
-            z2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'z')
+            x1 = bhorbit.single_BH_data(self.rawdat['ID1'][i], 'x')
+            x2 = bhorbit.single_BH_data(self.rawdat['ID2'][i], 'x')
+            y1 = bhorbit.single_BH_data(self.rawdat['ID1'][i], 'y')
+            y2 = bhorbit.single_BH_data(self.rawdat['ID2'][i], 'y')
+            z1 = bhorbit.single_BH_data(self.rawdat['ID1'][i], 'z')
+            z2 = bhorbit.single_BH_data(self.rawdat['ID2'][i], 'z')
 
-            time1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'time')
-            time2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'time')
+            time1 = bhorbit.single_BH_data(self.rawdat['ID1'][i], 'time')
+            time2 = bhorbit.single_BH_data(self.rawdat['ID2'][i], 'time')
 
-            scale1 = bhorbit.single_BH_data(self.rawdat['ID1'][i],'scalefac')
-            scale2 = bhorbit.single_BH_data(self.rawdat['ID2'][i],'scalefac')
+            scale1 = bhorbit.single_BH_data(self.rawdat['ID1'][i], 'scalefac')
+            scale2 = bhorbit.single_BH_data(self.rawdat['ID2'][i], 'scalefac')
 
             if len(time1) == 0 or len(time2) == 0:
                 continue
 
             #tsame = self.rawdat['time'][i]-self.rawdat['dt_hmerger_min'][i]
-            mint = max(time1.min(),time2.min())
+            mint = max(time1.min(), time2.min())
             maxt = time2.max()
 
             use1 = np.where((time1<=maxt)&(time1>=mint))[0]
@@ -1101,12 +1101,12 @@ class mergerCat(object):
 
             if len(use1) != len(use2):
                 if len(use1)< len(use2):
-                    use1 = np.append(use1,use1[-1])
+                    use1 = np.append(use1, use1[-1])
                     if len(use1) != len(use2):
-                        print "SHIIIIIIT"
+                        print("SHIIIIIIT")
                 else:
-                    print "SHIIIIIIIT"
-                    print self.rawdat['ID1'][i], self.rawdat['ID2'][i]
+                    print("SHIIIIIIIT")
+                    print((self.rawdat['ID1'][i], self.rawdat['ID2'][i]))
 
             xd = x1[use1]-x2[use2]
             yd = y1[use1]-y2[use2]
@@ -1126,7 +1126,7 @@ class mergerCat(object):
 
             dist = np.sqrt(xd**2 + yd**2 + zd**2)
             if len(use1) != len(dist) or len(use2) != len(dist):
-                print len(use1), len(use2), len(dist)
+                print((len(use1), len(use2), len(dist)))
             if comove:
                 dist /= scale1[use1]
 
@@ -1146,9 +1146,9 @@ class mergerCat(object):
 
     def get_new_masses(self,orig_seed = 1e6, new_seed = 1e3, useonly=None, doonly=None):
         from . import util
-        self.rawdat['newmass1'] = util.get_new_masses(self.rawdat['ID1'],self.rawdat['time']-0.001,self.rawdat['merge_mass_1'],
+        self.rawdat['newmass1'] = util.get_new_masses(self.rawdat['ID1'], self.rawdat['time']-0.001, self.rawdat['merge_mass_1'],
                                                       self, orig_seed=orig_seed, new_seed = new_seed, useonly=useonly)
-        self.rawdat['newmass2'] = util.get_new_masses(self.rawdat['ID2'],self.rawdat['time']-0.001,self.rawdat['merge_mass_2'],
+        self.rawdat['newmass2'] = util.get_new_masses(self.rawdat['ID2'], self.rawdat['time']-0.001, self.rawdat['merge_mass_2'],
                                                       self, orig_seed=orig_seed, new_seed = new_seed, useonly=useonly)
 
 
@@ -1156,16 +1156,16 @@ class mergerCat(object):
         from .. import util
         z = np.copy(self.rawdat['redshift'])
         z[(z>2)]=2
-        sigma = pynbody.array.SimArray(190 * (self.rawdat['Mstar']/1e11)**0.2 * (1+z)**0.44,'km s**-1')
+        sigma = pynbody.array.SimArray(190 * (self.rawdat['Mstar']/1e11)**0.2 * (1+z)**0.44, 'km s**-1')
         if usenewmass:
-            mbh = pynbody.array.SimArray(np.minimum(self.rawdat['newmass2'], self.rawdat['newmass1']),'Msol')
+            mbh = pynbody.array.SimArray(np.minimum(self.rawdat['newmass2'], self.rawdat['newmass1']), 'Msol')
         else:
-            mbh = pynbody.array.SimArray(np.minimum(self.rawdat['merge_mass_2'],self.rawdat['merge_mass_1']))
+            mbh = pynbody.array.SimArray(np.minimum(self.rawdat['merge_mass_2'], self.rawdat['merge_mass_1']))
         #rsch = Simpy.util.G.in_units('km**3 s**-2 Msol**-1') * mbh/Simpy.util.c.in_units('km s**-1')**2
         r90 = util.G.in_units('kpc**3 s**-2 Msol**-1')*mbh/sigma.in_units('kpc s**-1')**2
-        lnlam = np.log(pynbody.array.SimArray(r,'kpc')/r90)
+        lnlam = np.log(pynbody.array.SimArray(r, 'kpc')/r90)
 
-        tdf = 19/lnlam * (r/5)**2 * (sigma/pynbody.array.SimArray(200.,'km s**-1')) * (pynbody.array.SimArray(1e8,'Msol')/mbh)
+        tdf = 19/lnlam * (r/5)**2 * (sigma/pynbody.array.SimArray(200., 'km s**-1')) * (pynbody.array.SimArray(1e8, 'Msol')/mbh)
         self.rawdat['tdf'] = tdf
 
     def calc_DF_timescale_2(self, sim='cosmo25', r=0.7, usenewmass=False, doonly=None):
@@ -1175,9 +1175,9 @@ class mergerCat(object):
         if doonly is None:
             doonly = np.arange(len(Mint))
         if usenewmass:
-            mbh = pynbody.array.SimArray(np.minimum(self.rawdat['newmass2'], self.rawdat['newmass1']),'Msol')
+            mbh = pynbody.array.SimArray(np.minimum(self.rawdat['newmass2'], self.rawdat['newmass1']), 'Msol')
         else:
-            mbh = pynbody.array.SimArray(np.minimum(self.rawdat['merge_mass_2'],self.rawdat['merge_mass_1']))
+            mbh = pynbody.array.SimArray(np.minimum(self.rawdat['merge_mass_2'], self.rawdat['merge_mass_1']))
         for ii in doonly:
             host = db.get_halo(sim+'/'+self.rawdat['snap_before'][ii]+'/'+str(int(self.rawdat['halo_number()'][ii])))
             if host is None:

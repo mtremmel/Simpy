@@ -3,7 +3,7 @@ def tform_fromsnap(sim, units):
 	except:
 		try: tform = sim.stars['timeform'].in_units(units)
 		except:
-			print "ERROR! Cannot find formation times for this format!"
+			print("ERROR! Cannot find formation times for this format!")
 			return
 	return tform
 

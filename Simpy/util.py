@@ -3,15 +3,15 @@ import scipy
 import pynbody
 
 #useful constants
-c = pynbody.array.SimArray(2.99792458e10,'cm s**-1')
+c = pynbody.array.SimArray(2.99792458e10, 'cm s**-1')
 lbol_sun = 3.9e33
-G = pynbody.array.SimArray(6.67259e-8,'cm**3 s**-2 g**-1')
+G = pynbody.array.SimArray(6.67259e-8, 'cm**3 s**-2 g**-1')
 M_sun_g = 1.988547e33
 loglbol_sun = np.log10(lbol_sun)
 mh = pynbody.array.SimArray(1.6726219e-24, 'g')
 kb = pynbody.array.SimArray(1.380658e-16, 'erg K**-1')
 
-sigmaT = pynbody.array.SimArray(6.6525e-29,'m**2')
+sigmaT = pynbody.array.SimArray(6.6525e-29, 'm**2')
 
 t_edd = sigmaT.in_units('cm**2')*c/(4.*np.pi*G*mh)
 
@@ -19,7 +19,7 @@ def L_edd(mass):
     return mass*lbol_sun * 3.2e4
 
 def cutdict(target, goodinds):
-    for key in target.keys():
+    for key in list(target.keys()):
         target[key] = target[key][goodinds]
     return
 
@@ -31,14 +31,14 @@ def partial_derivative(func, var=0, point=[]):
     return scipy.misc.derivative(wraps, point[var], dx = 1e-8)
 
 def init_iord_to_fpos(snap):
-    iord_to_fpos = np.empty(snap['iord'].max()+1,dtype=np.dtype('int64'))
-    iord_to_fpos[snap['iord']] = np.linspace(0,len(snap)-1,len(snap)).astype(np.int64)
+    iord_to_fpos = np.empty(snap['iord'].max()+1, dtype=np.dtype('int64'))
+    iord_to_fpos[snap['iord']] = np.linspace(0, len(snap)-1, len(snap)).astype(np.int64)
     return iord_to_fpos
 
 def wrap(relpos,scale,boxsize=25e3):
     bphys = boxsize*scale
     bad = np.where(np.abs(relpos) > bphys/2.)
-    if type(bphys) == np.ndarray:
+    if isinstance(bphys, np.ndarray):
         relpos[bad] = -1.0 * (relpos[bad] / np.abs(relpos[bad])) * np.abs(bphys[bad] - np.abs(relpos[bad]))
     else:
         relpos[bad] = -1.0 * (relpos[bad]/np.abs(relpos[bad])) * np.abs(bphys - np.abs(relpos[bad]))
@@ -47,21 +47,20 @@ def wrap(relpos,scale,boxsize=25e3):
 
 def histogram(a,inbins,weights=None):
     if (np.size(np.shape(inbins))!=2) | (np.shape(inbins)[1] != 2):
-            print "bins have wrong shape! shoudl be: [[a,b],[b,c],[c,d]...]"
+            print("bins have wrong shape! shoudl be: [[a,b],[b,c],[c,d]...]")
             return
-    edges = np.array(inbins.ravel())
-    edges.sort()
+    edges = sorted(np.array(inbins.ravel()))
     edges = np.unique(edges)
-    n, edges= np.histogram(a,bins=edges,weights=weights)
+    n, edges= np.histogram(a, bins=edges, weights=weights)
     hist = np.zeros(len(inbins))
-    binInds = np.searchsorted(edges,inbins)
+    binInds = np.searchsorted(edges, inbins)
 
     for i in range(len(inbins)):
-            hist[i] = np.sum(n[binInds[i,0]:binInds[i,1]])
+            hist[i] = np.sum(n[binInds[i, 0]:binInds[i, 1]])
 
     return hist
 
-def timeweightedAve(x,dt):
+def timeweightedAve(x, dt):
     T = np.sum(dt)
     mindt = dt[(dt>0)].min()
     xsum = np.sum(x*dt)
@@ -70,29 +69,29 @@ def timeweightedAve(x,dt):
     return ave, np.sqrt(variance), xsum
 
 #convert monochromatic AB absolute magnitude to log(luminosity [ergs/s])
-def mcABconv(mag,nu):
+def mcABconv(mag, nu):
     C = 20.638
     return -(2./5.)*mag + C + np.log10(nu)
 
 def smoothdata(rawdat,nsteps=20,ret_std=False, dosum=False):
     nind = len(rawdat) - len(rawdat)%nsteps
     use = np.arange(nind)
-    newdat = rawdat[use].reshape((nind/nsteps,nsteps))
+    newdat = rawdat[use].reshape((nind/nsteps, nsteps))
     if dosum:
-        meandat = np.nansum(newdat,axis=1)
+        meandat = np.nansum(newdat, axis=1)
     else:
-        meandat = np.nanmean(newdat,axis=1)
+        meandat = np.nanmean(newdat, axis=1)
     if ret_std is False:
         return meandat
     else:
         std = rawdat.std(axis=1)
         return meandat, std
 
-def get_rates_by_z(zin,s,range=[0,20],nbins=40,units='yr**-1',weights=None):
+def get_rates_by_z(zin,s,range=[0, 20],nbins=40,units='yr**-1',weights=None):
     import numpy as np
     from . import cosmology
-    n,zbins = np.histogram(zin,weights=weights,range=range,bins=nbins)
-    tedges = pynbody.array.SimArray([cosmology.getTime(z,s) for z in zbins],'Gyr')
+    n, zbins = np.histogram(zin, weights=weights, range=range, bins=nbins)
+    tedges = pynbody.array.SimArray([cosmology.getTime(z, s) for z in zbins], 'Gyr')
     dt = np.abs(tedges[0:-1]-tedges[1:])
     n = n/dt
     return n.in_units(units), zbins
@@ -101,9 +100,9 @@ def find_sats(Mvir, cen, Rvir, strict = False):
     sub = np.zeros(len(Mvir))
     for i in range(len(Mvir)):
         if strict is False:
-            int = np.where((np.sqrt(np.sum((cen[i] - cen)**2,axis=1))<Rvir)&(np.sum((cen[i] - cen)**2,axis=1)>0)&(Mvir[i]<Mvir))
+            int = np.where((np.sqrt(np.sum((cen[i] - cen)**2, axis=1))<Rvir)&(np.sum((cen[i] - cen)**2, axis=1)>0)&(Mvir[i]<Mvir))
         else:
-            int = np.where((np.sqrt(np.sum((cen[i] - cen)**2,axis=1))<Rvir)&(np.sum((cen[i] - cen)**2,axis=1)>0))
+            int = np.where((np.sqrt(np.sum((cen[i] - cen)**2, axis=1))<Rvir)&(np.sum((cen[i] - cen)**2, axis=1)>0))
         if len(int[0])>0:
             sub[i] = 1
     return sub

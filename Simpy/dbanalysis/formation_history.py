@@ -8,7 +8,7 @@ def get_merger_ratios(merger_list, property):
 	cnt = 0
 	for mm in merger_list:
 		try:
-			ratio[cnt] = min(mm[0][property],mm[1][property])/max(mm[0][property],mm[1][property])
+			ratio[cnt] = min(mm[0][property], mm[1][property])/max(mm[0][property], mm[1][property])
 			cnt += 1
 		except KeyError:
 			cnt += 1
@@ -18,9 +18,9 @@ def get_merger_ratios(merger_list, property):
 
 def sSFR(halo, return_mstar=False):
 	SFH = halo.calculate("reassemble(SFR_histogram)")
-	Mstar, time = halo.reverse_property_cascade("Mstar","t()")
+	Mstar, time = halo.reverse_property_cascade("Mstar", "t()")
 	t_sfh = np.arange((len(SFH)))*0.01
-	Mstar_interp = np.interp(t_sfh,time[::-1],Mstar[::-1])
+	Mstar_interp = np.interp(t_sfh, time[::-1], Mstar[::-1])
 	sSFR = SFH/Mstar_interp
 	if return_mstar is True:
 		return sSFR, t_sfh, Mstar_interp
@@ -42,7 +42,7 @@ def plot_merger_times(halo, y_range, sim = None, ratio_property=None, convert_to
 		x = z
 
 	if ratio_range is None:
-			ratio_range=[0.1,1]
+			ratio_range=[0.1, 1]
 
 	for i in range(len(ratio)):
 		if ratio[i] < ratio_range[0] or ratio[i] > ratio_range[1]:
@@ -51,4 +51,4 @@ def plot_merger_times(halo, y_range, sim = None, ratio_property=None, convert_to
 			alpha = 0.9/(ratio_range[1]-ratio_range[0]) * (ratio[i] - ratio_range[0]) + 0.1
 		if alpha > 1: alpha = 1
 		if alpha < 0: alpha = 0
-		plotting.plt.plot([x[i],x[i]],y_range,alpha=alpha,**kwargs)
+		plotting.plt.plot([x[i], x[i]], y_range, alpha=alpha, **kwargs)

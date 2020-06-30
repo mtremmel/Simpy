@@ -7,7 +7,7 @@ For a modular ascii table reader, http://cxc.harvard.edu/contrib/asciitable/ is
 probably better.  This single-function code is probably more intuitive to an
 end-user, though.
 """
-import string,re,sys
+import string, re, sys
 import numpy
 try:
     from scipy.stats import mode
@@ -90,7 +90,7 @@ def readcol(filename,skipline=0,skipafter=0,names=False,fsep=None,twod=True,
     contain data.  If you have scipy and columns of varying length, readcol will
     read in all of the rows with length=mode(row lengths).
     """
-    f=open(filename,'r').readlines()
+    f=open(filename, 'r').readlines()
 
     null=[f.pop(0) for i in range(skipline)]
 
@@ -100,13 +100,13 @@ def readcol(filename,skipline=0,skipafter=0,names=False,fsep=None,twod=True,
         asStruct = asRecArray
 
     if namecomment is False and (names or asdict or asStruct):
-        while 1:
+        while True:
             line = f.pop(0)
             if line[0] != comment:
                 nameline = line
                 if header_badchars:
                     for c in header_badchars:
-                        nameline = nameline.replace(c,' ')
+                        nameline = nameline.replace(c, ' ')
                 nms=nameline.split(fsep)
                 break
             elif len(f) == 0:
@@ -114,7 +114,7 @@ def readcol(filename,skipline=0,skipafter=0,names=False,fsep=None,twod=True,
     else:
         if names or asdict or asStruct:
             # can specify name line
-            if type(names) == type(1):
+            if isinstance(names, type(1)):
                 nameline = f.pop(names)
             else:
                 nameline = f.pop(0)
@@ -122,45 +122,45 @@ def readcol(filename,skipline=0,skipafter=0,names=False,fsep=None,twod=True,
                 nameline = nameline[1:]
             if header_badchars:
                 for c in header_badchars:
-                    nameline = nameline.replace(c,' ')
+                    nameline = nameline.replace(c, ' ')
             nms=nameline.split(fsep)
 
     null=[f.pop(0) for i in range(skipafter)]
 
     if fixedformat:
-        myreadff = lambda x: readff(x,fixedformat)
-        splitarr = map(myreadff,f)
-        splitarr = filter(commentfilter,splitarr)
+        myreadff = lambda x: readff(x, fixedformat)
+        splitarr = list(map(myreadff, f))
+        splitarr = list(filter(commentfilter, splitarr))
     else:
-        fstrip = map(string.strip,f)
+        fstrip = list(map(str.strip, f))
         fseps = [ fsep for i in range(len(f)) ]
-        splitarr = map(string.split,fstrip,fseps)
+        splitarr = list(map(str.split, fstrip, fseps))
         if removeblanks:
-            for i in xrange(splitarr.count([''])):
+            for i in range(splitarr.count([''])):
                 splitarr.remove([''])
 
-        splitarr = filter(commentfilter,splitarr)
+        splitarr = list(filter(commentfilter, splitarr))
 
         # check to make sure each line has the same number of columns to avoid
         # "ValueError: setting an array element with a sequence."
-        nperline = map(len,splitarr)
+        nperline = list(map(len, splitarr))
         if hasmode:
-            ncols,nrows = mode(nperline)
+            ncols, nrows = mode(nperline)
             if nrows != len(splitarr):
                 if verbose:
-                    print "Removing %i rows that don't match most common length %i.  \
-                     \n%i rows read into array." % (len(splitarr) - nrows,ncols,nrows)
-                for i in xrange(len(splitarr)-1,-1,-1):  # need to go backwards
+                    print(("Removing %i rows that don't match most common length %i.  \
+                     \n%i rows read into array." % (len(splitarr) - nrows, ncols, nrows)))
+                for i in range(len(splitarr)-1, -1, -1):  # need to go backwards
                     if nperline[i] != ncols:
                         splitarr.pop(i)
 
     try:
-        x = numpy.asarray( splitarr , dtype='float')
+        x = numpy.asarray( splitarr, dtype='float')
     except ValueError:
         if verbose:
-            print "WARNING: reading as string array because %s array failed" % 'float'
+            print(("WARNING: reading as string array because %s array failed" % 'float'))
         try:
-            x = numpy.asarray( splitarr , dtype='S')
+            x = numpy.asarray( splitarr, dtype='S')
         except ValueError:
             if hasmode:
                 raise Exception( "ValueError when converting data to array." + \
@@ -177,8 +177,8 @@ def readcol(filename,skipline=0,skipafter=0,names=False,fsep=None,twod=True,
     if nanval is not None:
         x[numpy.isnan(x)] = nanval
     if asdict or asStruct:
-        mydict = dict(zip(nms,x.T))
-        for k,v in mydict.iteritems():
+        mydict = dict(list(zip(nms, x.T)))
+        for k, v in list(mydict.items()):
             mydict[k] = get_autotype(v)
         if asdict:
             return mydict
@@ -187,15 +187,15 @@ def readcol(filename,skipline=0,skipafter=0,names=False,fsep=None,twod=True,
         elif asStruct:
             return Struct(mydict)
     elif names and twod:
-        return nms,x
+        return nms, x
     elif names:
         # if not returning a twod array, try to return each vector as the spec. type
-        return nms,[ get_autotype(x.T[i]) for i in xrange(x.shape[1]) ]
+        return nms, [ get_autotype(x.T[i]) for i in range(x.shape[1]) ]
     else:
         if twod:
             return x
         else:
-            return [ get_autotype(x.T[i]) for i in xrange(x.shape[1]) ]
+            return [ get_autotype(x.T[i]) for i in range(x.shape[1]) ]
 
 def get_autotype(arr):
     """
@@ -205,7 +205,7 @@ def get_autotype(arr):
     """
     try:
         narr = arr.astype('float')
-        if (narr < sys.maxint).all() and (narr % 1).sum() == 0:
+        if (narr < sys.maxsize).all() and (narr % 1).sum() == 0:
             return narr.astype('int')
         else:
             return narr
@@ -217,16 +217,16 @@ class Struct(object):
     Simple struct intended to take a dictionary of column names -> columns
     and turn it into a struct by removing special characters
     """
-    def __init__(self,namedict):
+    def __init__(self, namedict):
         R = re.compile('\W')  # find and remove all non-alphanumeric characters
-        for k in namedict.keys():
+        for k in list(namedict.keys()):
             v = namedict.pop(k)
             if k[0].isdigit():
                 k = 'n'+k
-            namedict[R.sub('',k)] = v
+            namedict[R.sub('', k)] = v
         self.__dict__ = namedict
 
-    def add_column(self,name,data):
+    def add_column(self, name, data):
         """
         Add a new column (attribute) to the struct
         (will overwrite anything with the same name)
@@ -235,8 +235,8 @@ class Struct(object):
 
     def as_recarray(self):
         """ Convert into numpy recordarray """
-        dtype = [(k,v.dtype) for k,v in self.__dict__.iteritems()]
-        R = numpy.recarray(len(self.__dict__[k]),dtype=dtype)
+        dtype = [(k, v.dtype) for k, v in list(self.__dict__.items())]
+        R = numpy.recarray(len(self.__dict__[k]), dtype=dtype)
         for key in self.__dict__:
             R[key] = self.__dict__[key]
         return R
@@ -244,7 +244,7 @@ class Struct(object):
     def __getitem__(self, key):
         return self.__dict__[key]
 
-def readff(s,format):
+def readff(s, format):
     """
     Fixed-format reader
     Pass in a single line string (s) and a format list,
@@ -252,8 +252,8 @@ def readff(s,format):
     """
 
     F = numpy.array([0]+format).cumsum()
-    bothF = zip(F[:-1],F[1:])
-    strarr = [s[l:u] for l,u in bothF]
+    bothF = list(zip(F[:-1], F[1:]))
+    strarr = [s[l:u] for l, u in bothF]
 
     return strarr
 

@@ -16,8 +16,8 @@ kist_sfrminus = np.array([0.0326, 0.015, 0.023, 0.023, 0.021])
 kist_logsfrplus = np.log10(kist_sfrplus + kist_sfr) - np.log10(kist_sfr)
 kist_logsfrminus = np.abs(np.log10(kist_sfr - kist_sfrminus) - np.log10(kist_sfr))
 
-Bluck16_Mvir, Bluck16_Mvir_qfrac = readcol(os.path.join(os.path.dirname(__file__),'data/QuenchFraction/Bluck16_Mvir.csv'),twod=False)
-Bluck16_Mstar, Bluck16_Mstar_qfrac = readcol(os.path.join(os.path.dirname(__file__),'data/QuenchFraction/Bluck16_Mstar.csv'),twod=False)
+Bluck16_Mvir, Bluck16_Mvir_qfrac = readcol(os.path.join(os.path.dirname(__file__), 'data/QuenchFraction/Bluck16_Mvir.csv'), twod=False)
+Bluck16_Mstar, Bluck16_Mstar_qfrac = readcol(os.path.join(os.path.dirname(__file__), 'data/QuenchFraction/Bluck16_Mstar.csv'), twod=False)
 
 
 def genCSFRfit(z, z0, A, B, C):
@@ -26,7 +26,7 @@ def genCSFRfit(z, z0, A, B, C):
 
 def CSFRFit(z, type='beh'):
 	if type != 'beh' and type != 'hop':
-		print "WARNING, type of SFR fit not understood (must be either hop or beh). Assuming beh(roozi)"
+		print("WARNING, type of SFR fit not understood (must be either hop or beh). Assuming beh(roozi)")
 		type = 'beh'
 	if type == 'beh':
 		# Behroozi 13
