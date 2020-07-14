@@ -119,6 +119,7 @@ def getOrbitValbyStep(simname, minstep=1, maxstep=4096, MBHinit=1e6, clean=False
 	output = {'iord': [], 'time': [], 'step': [], 'mass': [], 'x': [], 'y': [], 'z': [], 'vx': [], 'vy': [], 'vz': [],
 			'mdot': [], 'mdotmean': [], 'mdotsig': [], 'a': [], 'dM': []}
 	oldform = False
+	Files.cklists(simname, NCHILADA=NCHILADA)
 	f = open('files.list', 'r')
 	files = f.readlines()
 	s = pynbody.load(files[0].strip('\n'))
