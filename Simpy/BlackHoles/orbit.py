@@ -25,7 +25,7 @@ def mkAbridgedOrbit(simname, sim, endname, lmin=1e43, mmin=1e6):
 
 
 def sepOrbitbyStep(simname, minstep=0, maxstep=1000000000, MBHinit=1e6, NCHILADA=True):
-	Files.cklists(simname, NCHILADA=NCHILADA)
+	Files.cklists(simname)
 	f = open('files.list', 'r')
 	sim = pynbody.load(f.readline().strip('\n'))
 	f.close()
@@ -119,7 +119,7 @@ def getOrbitValbyStep(simname, minstep=1, maxstep=4096, MBHinit=1e6, clean=False
 	output = {'iord': [], 'time': [], 'step': [], 'mass': [], 'x': [], 'y': [], 'z': [], 'vx': [], 'vy': [], 'vz': [],
 			'mdot': [], 'mdotmean': [], 'mdotsig': [], 'a': [], 'dM': []}
 	oldform = False
-	Files.cklists(simname, NCHILADA=NCHILADA)
+	Files.cklists(simname, True)
 	f = open('files.list', 'r')
 	files = f.readlines()
 	s = pynbody.load(files[0].strip('\n'))
