@@ -179,7 +179,7 @@ def getOrbitValbyStep(simname, minstep=1, maxstep=4096, MBHinit=1e6, clean=False
 				idind = list(range(uind[ii], len(step)))
 			curstep, = np.where(step[idind] == i)
 			if len(curstep) == 0: continue
-			curstep = curstep[0]
+			curstep = curstep[-1] #want to count the last one made in case of double entries
 			output['iord'].append(ubhid[ii])
 			output['step'].append(step[idind][curstep])
 			output['mass'].append(mass[idind][curstep])
@@ -192,7 +192,13 @@ def getOrbitValbyStep(simname, minstep=1, maxstep=4096, MBHinit=1e6, clean=False
 			output['vz'].append(vz[idind][curstep])
 			output['mdot'].append(mdot[idind][curstep])
 			output['a'].append(a[idind][curstep])
-			mean, std, dM = util.timeweightedAve(mdot[idind], dt[idind])
+
+			#when doing the average make sure that the newest entries (i.e. the last ones listed) are used
+			tpart = time[idind]
+			mdotpart = mdot[idind]
+			dtpart = dt[idind]
+			tunique, tuind = np.unique(tpart[::-1], return_index=True)
+			mean, std, dM = util.timeweightedAve(mdotpart[::-1][tuind], dtpart[::-1][tuind])
 			output['dM'].append(dM)
 			output['mdotmean'].append(mean)
 			output['mdotsig'].append(std)
