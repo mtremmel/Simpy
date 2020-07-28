@@ -24,7 +24,7 @@ def mkAbridgedOrbit(simname, sim, endname, lmin=1e43, mmin=1e6):
 	return
 
 
-def sepOrbitbyStep(simname, minstep=0, maxstep=1000000000, MBHinit=1e6, NCHILADA=True):
+def sepOrbitbyStep(simname, minstep=0, maxstep=1000000000, MBHinit=1e6, orbit_name='.orbit', NCHILADA=True):
 	Files.cklists(simname)
 	f = open('files.list', 'r')
 	sim = pynbody.load(f.readline().strip('\n'))
@@ -37,7 +37,7 @@ def sepOrbitbyStep(simname, minstep=0, maxstep=1000000000, MBHinit=1e6, NCHILADA
 	os.system(
 		"awk -F ' ' '{if($4 - $13 > " + str(MBHinit) + " && $3!=int($3) && $3 >= " + str(minstep) + " && $3 <= " + str(
 			maxstep) + ") print>(int($3)+1); if($4 - $13 > " + str(MBHinit) + " && $3==int($3) && $3 >= " + str(
-			minstep) + " && $3 <= " + str(maxstep) + ") print>$3}' " + '../' + simname + '.orbit')
+			minstep) + " && $3 <= " + str(maxstep) + ") print>$3}' " + '../' + simname + orbit_name)
 	os.chdir('../')
 	return
 
