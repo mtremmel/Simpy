@@ -17,7 +17,7 @@ def _a_dot(a, h0, om_m, om_l):
 def _a_dot_recip(*args):
     return 1. / _a_dot(*args)
 
-def tdyne(time, sim=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.456, h0=0.67769, overden=200):
+def tdyne(time, sim=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.0456, h0=0.67769, overden=200):
         a, z = getScaleFactor(arr.SimArray([time], 'Gyr'), s=sim, OmegaM=OmegaM, h0=h0, Omegab=Omegab, Lambda=Lambda)
         rho = overden * rho_crit(z, OmegaM=OmegaM, h0=h0, Omegab=Omegab, Lambda=Lambda, unit='Msol kpc**-3')
         return np.sqrt(3*np.pi/(16*util.G.in_units('Msol**-1 kpc**3 Gyr**-2')*rho))
@@ -55,7 +55,7 @@ def interp_ntdyne(tref=None, times = None, **kwargs):
                         td_ex = ntdyne(tref, times, sim=sim)
         return interpolate.interp1d(times, td_ex)
 
-def rho_crit(z, sim=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.456, h0=0.67769, unit=None):
+def rho_crit(z, sim=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.0456, h0=0.67769, unit=None):
         if z is None:
                 z = sim.properties['z']
 
@@ -84,7 +84,7 @@ def rho_crit(z, sim=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.456, h0=0.67769
 
         return arr.SimArray(rho_crit.in_units(unit), unit)
 
-def getTime(z,sim=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.456, h0=0.67769, unit='Gyr'):
+def getTime(z,sim=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.0456, h0=0.67769, unit='Gyr'):
         c = cosmo.Cosmology(sim=sim, Ob = Omegab, Om=OmegaM, L = Lambda)
         import scipy
         import scipy.integrate
@@ -124,7 +124,7 @@ def getTime(z,sim=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.456, h0=0.67769, 
         return results
         #return other_cosmo.age(sim,z=z)*c.Exp2Time(1.0 / (1+z))/c.Exp2Time(1)
 
-def getScaleFactor(times,s=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.456, h0=0.67769, verbose=False):
+def getScaleFactor(times,s=None, OmegaM=0.3086, Lambda=0.6914, Omegab=0.0456, h0=0.67769, verbose=False):
         redshift = np.zeros(np.size(times))
         ntimes = np.size(times)
         for tt in range(np.size(times)):

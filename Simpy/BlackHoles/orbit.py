@@ -287,7 +287,7 @@ def sticthOrbitSteps(simname, nfiles, overwrite=False, nstart=1):
 
 
 class Orbit(object):
-	def __init__(self, simname, savefile=None, NCHILADA=True):
+	def __init__(self, simname, savefile=None, NCHILADA=True, use_starlog=True):
 		self.simname = simname
 		self.nchil = NCHILADA
 		self.filename=savefile
@@ -318,7 +318,7 @@ class Orbit(object):
 
 		# control for "fake" bhs caused by restarts from outputs
 
-		if os.path.exists(self.simname + '.starlog'):
+		if use_starlog is True and os.path.exists(self.simname + '.starlog'):
 			print("checking for fake BHs. . .")
 			sl = pynbody.tipsy.StarLog(self.simname + '.starlog')
 			slbhiords = sl['iord'][(sl['tform'] < 0)]
