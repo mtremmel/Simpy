@@ -684,7 +684,12 @@ class mergerCat(object):
 
             if len(mass1)>0:
                 if len(time2)>0:
-                    argm = np.where((time1<=time2[-1]))[0][-1] #np.argmin(np.abs(time2[-1]-time1))
+                    argm = np.where((time1<=time2[-1]))[0]#np.argmin(np.abs(time2[-1]-time1))
+                    if len(argm)==0:
+                        no_orbit_flag = 1
+                        argm = 0
+                    else:
+                        argm = argm[-1]
                 else:
                     before = np.where(time1<=self.rawdat['time'][i])[0]
                     if len(before)==0:
