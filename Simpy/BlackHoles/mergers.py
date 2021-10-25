@@ -683,14 +683,14 @@ class mergerCat(object):
 
             if len(mass1)>0:
                 if len(time2)>0:
-                    argm = np.argmin(np.abs(time2[-1]-time1))
+                    argm = np.where((time1<=time2[-1]))[0][-1] #np.argmin(np.abs(time2[-1]-time1))
                 else:
-                    argm = np.argmin(np.abs(self.rawdat['time'][i]-time1))
-                    if argm > 0:
-                        argm = argm - 1
+                    argm = np.where(time1<self.rawdat['time'][i])[0][-1] #np.argmin(np.abs(self.rawdat['time'][i]-time1))
                 self.rawdat['merge_mass_1'][i] = mass1[argm]
                 self.rawdat['merge_mdot_1'][i] = mdot1[argm]
                 self.rawdat['merge_lum_1'][i] = lum1[argm]
+                if self.rawdat['merge_mass_2'][i] < 0:
+                    self.rawdat['merge_mass_2'][i] = mass1[argm+1] - mass1[argm]
 
     def get_dual_frac(self,bhorbit,minL=1e43,maxD=10,boxsize=25,comove=True, gather_array=False, timestep=None):
         if gather_array is True:
