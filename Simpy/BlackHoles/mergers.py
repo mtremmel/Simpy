@@ -654,6 +654,7 @@ class mergerCat(object):
         self.rawdat['tform1'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['tform2'] = np.ones(len(self.rawdat['ID1']))*-1
         for i in range(len(self.rawdat['ID1'])):
+            no_orbit_flag = 0
             mass1 = bhorbit.single_BH_data(self.rawdat['ID1'][i], 'mass')
             mass2 = bhorbit.single_BH_data(self.rawdat['ID2'][i], 'mass')
 
@@ -685,11 +686,15 @@ class mergerCat(object):
                 if len(time2)>0:
                     argm = np.where((time1<=time2[-1]))[0][-1] #np.argmin(np.abs(time2[-1]-time1))
                 else:
-                    argm = np.where(time1<self.rawdat['time'][i])[0][-1] #np.argmin(np.abs(self.rawdat['time'][i]-time1))
+                    before = np.where(time1<=self.rawdat['time'][i])[0]
+                    if len(before)==0:
+                        no_orbit_flag = 1
+                        before = np.array([0])
+                    argm = before[-1] #np.argmin(np.abs(self.rawdat['time'][i]-time1))
                 self.rawdat['merge_mass_1'][i] = mass1[argm]
                 self.rawdat['merge_mdot_1'][i] = mdot1[argm]
                 self.rawdat['merge_lum_1'][i] = lum1[argm]
-                if self.rawdat['merge_mass_2'][i] < 0:
+                if self.rawdat['merge_mass_2'][i] < 0 and no_orbit_flag==0:
                     self.rawdat['merge_mass_2'][i] = mass1[argm+1] - mass1[argm]
 
     def get_dual_frac(self,bhorbit,minL=1e43,maxD=10,boxsize=25,comove=True, gather_array=False, timestep=None):
