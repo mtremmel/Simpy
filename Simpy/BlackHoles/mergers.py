@@ -694,8 +694,9 @@ class mergerCat(object):
                 self.rawdat['merge_mass_1'][i] = mass1[argm]
                 self.rawdat['merge_mdot_1'][i] = mdot1[argm]
                 self.rawdat['merge_lum_1'][i] = lum1[argm]
-                if self.rawdat['merge_mass_2'][i] < 0 and no_orbit_flag==0:
+                if self.rawdat['merge_mass_2'][i] < 0 and no_orbit_flag==0 and len(mass1)>=argm+2:
                     self.rawdat['merge_mass_2'][i] = mass1[argm+1] - mass1[argm]
+
 
     def get_dual_frac(self,bhorbit,minL=1e43,maxD=10,boxsize=25,comove=True, gather_array=False, timestep=None):
         if gather_array is True:
