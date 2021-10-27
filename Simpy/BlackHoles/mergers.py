@@ -644,7 +644,7 @@ class mergerCat(object):
                 continue
             self.rawdat['volweight'][i] = hmf.calc_rho(np.log10(self.rawdat['Mvir'][i]), self.rawdat['snap_after'][i])
 
-    def get_final_values(self, bhorbit):
+    def get_final_values(self, bhorbit, boxsize=25):
         self.rawdat['merge_mass_2'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['merge_mass_1'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['merge_mdot_2'] = np.ones(len(self.rawdat['ID1']))*-1
@@ -653,6 +653,7 @@ class mergerCat(object):
         self.rawdat['merge_lum_1'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['tform1'] = np.ones(len(self.rawdat['ID1']))*-1
         self.rawdat['tform2'] = np.ones(len(self.rawdat['ID1']))*-1
+        self.rawdat['init_dist'] = np.ones(len(self.rawdat['ID1']))*-1
         for i in range(len(self.rawdat['ID1'])):
             no_orbit_flag = 0
             mass1 = bhorbit.single_BH_data(self.rawdat['ID1'][i], 'mass')
@@ -675,6 +676,12 @@ class mergerCat(object):
                 oo = np.where(bhorbit.bhiords == self.rawdat['ID2'][i])[0]
                 oo = oo[0]
                 self.rawdat['tform2'][i] = bhorbit.tform[oo]
+
+            if len(time1)>0 and len(time2)>0:
+                d12, t12, z12 = bhorbit.get_distance(self.rawdat['ID1'][i],
+                                                     self.rawdat['ID2'][i],
+                                                     boxsize=boxsize,comove=False)
+                self.rawdat['init_dist'][i] = d12[np.argmin(t12)]
 
 
             if len(mass2)>0:
