@@ -678,11 +678,11 @@ class mergerCat(object):
                 self.rawdat['tform2'][i] = bhorbit.tform[oo]
 
             if len(time1)>0 and len(time2)>0:
-                d12, t12, z12 = bhorbit.get_distance(self.rawdat['ID1'][i],
-                                                     self.rawdat['ID2'][i],
-                                                     boxsize=boxsize,comove=False)
-                self.rawdat['init_dist'][i] = d12[np.argmin(t12)]
-
+                try:
+                    d12, t12, z12 = bhorbit.get_distance(self.rawdat['ID1'][i], self.rawdat['ID2'][i], boxsize=boxsize, comove=False)
+                    self.rawdat['init_dist'][i] = d12[np.argmin(t12)]
+                except:
+                    continue
 
             if len(mass2)>0:
                 self.rawdat['merge_mass_2'][i] = mass2[-1]
